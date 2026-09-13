@@ -60,7 +60,7 @@ class DesktopCatalog:
         cached.row_factory = sqlite3.Row
         try:
             metadata = dict(cached.execute("SELECT Name,Value FROM CatalogMeta"))
-            if metadata.get("version") != "2" or metadata.get("fingerprint") != self._fingerprint():
+            if metadata.get("version") != "3" or metadata.get("fingerprint") != self._fingerprint():
                 cached.close()
                 return False
             sources = json.loads(metadata["sources"])
@@ -68,6 +68,7 @@ class DesktopCatalog:
                 raise ValueError("Invalid catalog source list")
             self.db.close()
             self.db, self.sources = cached, sources
+            self._ensure_order_indexes(cached)
             return True
         except (sqlite3.Error, KeyError, ValueError):
             cached.close()
@@ -79,6 +80,12 @@ class DesktopCatalog:
         connection.execute("PRAGMA query_only=ON")
         return connection
 
+    @staticmethod
+    def _ensure_order_indexes(connection):
+        connection.execute("CREATE INDEX IF NOT EXISTS IX_Media_OrderDesc ON Media((Captured=''),Captured DESC,Key)")
+        connection.execute("CREATE INDEX IF NOT EXISTS IX_Media_OrderAsc ON Media((Captured=''),Captured ASC,Key)")
+        connection.commit()
+
     def refresh(self) -> dict[str, Any]:
         fingerprint = self._fingerprint()
         # Build separately so a failed refresh cannot destroy the current view.
@@ -87,7 +94,7 @@ class DesktopCatalog:
         fresh.executescript("""
             CREATE TABLE Media (
                 Key TEXT PRIMARY KEY, Hash TEXT, FileName TEXT, Path TEXT,
-                Captured TEXT, DateSource TEXT, MediaType TEXT, ByteSize INTEGER,
+                Captured TEXT, DateSource TEXT, MediaType TEXT, ByteSize INTEGER, ModifiedNs INTEGER,
                 MetadataJson TEXT, Description TEXT DEFAULT '', Address TEXT DEFAULT '',
                 AssetId TEXT DEFAULT '', DetailJson TEXT DEFAULT '');
             CREATE TABLE Occurrence (
@@ -127,12 +134,13 @@ class DesktopCatalog:
                         continue
                     self._insert(fresh, binding, path, None, None, None, {})
             fresh.commit()
+            self._ensure_order_indexes(fresh)
             projected_sources = [{
                 "id": s["SourceId"], "name": s["DisplayName"], "path": windows_path(s["RootPath"]),
             } for s in sources]
             fresh.execute("CREATE TABLE CatalogMeta(Name TEXT PRIMARY KEY, Value TEXT)")
             fresh.executemany("INSERT INTO CatalogMeta VALUES(?,?)", [
-                ("version", "2"), ("fingerprint", fingerprint), ("sources", json.dumps(projected_sources)),
+                ("version", "3"), ("fingerprint", fingerprint), ("sources", json.dumps(projected_sources)),
             ])
             fresh.commit()
             temporary = self.cache_path.with_suffix(".tmp.sqlite3")
@@ -162,8 +170,8 @@ class DesktopCatalog:
         media_type = "Video" if PurePosixPath(name).suffix.lower() in VIDEO_EXTENSIONS else "Photo"
         native = windows_path(path)
         db.execute(
-            "INSERT OR IGNORE INTO Media(Key,Hash,FileName,Path,Captured,DateSource,MediaType,ByteSize,MetadataJson) VALUES(?,?,?,?,?,?,?,?,?)",
-            (key, content_hash or "", name, native, captured, date_source, media_type, byte_size, json.dumps(metadata)),
+            "INSERT OR IGNORE INTO Media(Key,Hash,FileName,Path,Captured,DateSource,MediaType,ByteSize,ModifiedNs,MetadataJson) VALUES(?,?,?,?,?,?,?,?,?,?)",
+            (key, content_hash or "", name, native, captured, date_source, media_type, byte_size, modified_ns, json.dumps(metadata)),
         )
         db.execute("INSERT OR IGNORE INTO Occurrence VALUES(?,?,?,?)",
                    (key, binding["SourceId"], binding["DisplayName"], native))
@@ -176,7 +184,7 @@ class DesktopCatalog:
                 "pending": row["pending"] or 0, "sources": self.sources, "protocol": 1}
 
     def page(self, *, query="", source_id="", media_type="", offset=0, limit=120, ascending=False):
-        if not 0 <= offset <= 2_000_000 or not 1 <= limit <= 200:
+        if not 0 <= offset <= 2_000_000 or not 1 <= limit <= 4096:
             raise ValueError("Invalid page bounds.")
         terms, values = ["1=1"], []
         if query:
@@ -203,7 +211,7 @@ class DesktopCatalog:
                 "path": row["Path"], "paths": [a["Path"] for a in aliases],
                 "source": aliases[0]["Source"] if aliases else "", "occurrences": len(aliases),
                 "captured": row["Captured"], "dateSource": row["DateSource"],
-                "mediaType": row["MediaType"], "byteSize": row["ByteSize"],
+                "mediaType": row["MediaType"], "byteSize": row["ByteSize"], "modifiedNs": row["ModifiedNs"],
                 "metadata": json.loads(row["MetadataJson"]), "description": row["Description"],
                 "address": row["Address"], "assetId": row["AssetId"]}
 

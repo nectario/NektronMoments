@@ -11,6 +11,7 @@ using NektronMoments.Services;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.System;
+using NektronMoments.Controls;
 
 namespace NektronMoments;
 
@@ -25,13 +26,19 @@ public sealed partial class MainPage : Page
     private LibraryOverview? _overview;
     private MediaItem? _selected;
     private int _generation, _selectionGeneration, _offset;
-    private bool _ready, _loading, _hasMore, _ascending, _dialog, _importing;
+    private bool _ready, _hasMore, _ascending, _dialog, _importing;
     private string _sourceId = "", _mediaType = "";
     private readonly List<NavigationViewItem> _sourceItems = [];
 
     public MainPage()
     {
         InitializeComponent();
+        _controlsReady = true;
+        Viewer.ItemAt = ItemAtAsync;
+        Viewer.BackRequested += ReturnToGallery;
+        Viewer.ItemChanged += item => { ++_selectionGeneration; _selected = item; };
+        ActualThemeChanged += (_, _) => UpdateThemeChrome();
+        ApplyThumbnailSize(UserPreferences.Number("thumbnailSize", 240), false);
         if (App.MainWindowInstance != null)
             App.MainWindowInstance.Closed += (_, _) => { _lifetime.Cancel(); _search?.Cancel(); _bridge.Dispose(); };
     }
@@ -39,21 +46,26 @@ public sealed partial class MainPage : Page
     {
         if (_ready) return;
         _ready = true;
+        UpdateThemeChrome();
+        PerformanceLabel.Text = $"{PerformanceProfile.Current.Name} · {PerformanceProfile.PhysicalBytes / (1024d * 1024 * 1024):N0} GB";
         await ReloadAsync(false);
         _libraryReadyMs = _startup.ElapsedMilliseconds;
+        _ = ExpandViewportCacheAsync();
 #if DEBUG
         if (File.Exists(Path.Combine(_bridge.Workspace, "build", "verify-windows-ui.flag")))
             await VerifyUiAsync();
 #endif
     }
-    public void Shutdown() { _lifetime.Cancel(); _search?.Cancel(); _bridge.Dispose(); }
+    public void Shutdown() { _lifetime.Cancel(); _search?.Cancel(); _thumbnailPrefetch?.Cancel(); _jobCancellation?.Cancel(); Viewer.Close(); _bridge.Dispose(); }
     private async Task ReloadAsync(bool refresh)
     {
+        if (Viewer.IsOpen) ReturnToGallery();
         SetBusy(true);
         Notice.IsOpen = false;
         try
         {
             _overview = await _bridge.CallAsync<LibraryOverview>(new { command = refresh ? "refresh" : "hello" }, _lifetime.Token);
+            if (refresh) { ThumbnailService.Shared.ClearMemory(); MediaThumbnail.Decoded.Clear(); }
             foreach (var old in _sourceItems) Navigation.MenuItems.Remove(old);
             _sourceItems.Clear();
             foreach (var source in _overview.Sources)
@@ -66,6 +78,7 @@ public sealed partial class MainPage : Page
             UpdateSourceIcons();
             LibrarySubtitle.Text = $"{_overview.Photos:N0} photos · {_overview.Videos:N0} videos · {_overview.Sources.Count:N0} local " + (_overview.Sources.Count == 1 ? "source" : "sources");
             await LoadPageAsync(reset: true);
+            _ = PrimeBufferAsync();
         }
         catch (OperationCanceledException) { }
         catch (Exception ex) { ShowError(ex); }
@@ -73,28 +86,41 @@ public sealed partial class MainPage : Page
     }
     private async Task LoadPageAsync(bool reset)
     {
-        if (_overview is null || (_loading && !reset)) return;
+        if (_overview is null) return;
         var generation = reset ? ++_generation : _generation;
-        if (reset) { _offset = 0; Items.Clear(); }
-        _loading = true;
-        SetBusy(true);
+        try { await _pagingGate.WaitAsync(_lifetime.Token); } catch (OperationCanceledException) { return; }
+        if (generation != _generation) { _pagingGate.Release(); return; }
+        if (!reset && !_hasMore) { _pagingGate.Release(); return; }
+        if (reset) {
+            _offset = 0; _highestVisible = 0; _thumbnailPrefetch?.Cancel();
+            _activeQuery = SearchBox.Text; _activeSource = _sourceId;
+            _activeMediaType = _mediaType; _activeAscending = _ascending;
+        }
+        if (reset) SetBusy(true);
         try
         {
             var page = await _bridge.CallAsync<MediaPage>(new {
-                command = "page", query = SearchBox.Text, sourceId = _sourceId,
-                mediaType = _mediaType, offset = _offset, limit = 120, ascending = _ascending,
+                command = "page", query = _activeQuery, sourceId = _activeSource,
+                mediaType = _activeMediaType, offset = _offset, limit = reset ? 120 : PerformanceProfile.Current.PageSize, ascending = _activeAscending,
             }, _lifetime.Token);
             if (generation != _generation) return;
-            foreach (var item in page.Items) Items.Add(item);
+            if (reset) Items.Clear();
+            var added = 0;
+            foreach (var item in page.Items) {
+                if (generation != _generation) return;
+                Items.Add(item);
+                if (++added % 64 == 0) await Task.Delay(1);
+            }
             _offset = page.NextOffset; _hasMore = page.HasMore;
             UpdateResults(page.Total);
-            StatusText.Text = _overview.Pending > 0
+            ScheduleThumbnailWarm();
+            if (!_importing) StatusText.Text = _overview.Pending > 0
                 ? $"Local originals · {_overview.Pending:N0} files awaiting content hashing · No paid enrichment started"
-                : "Local originals · Thumbnails load as you browse";
+                : $"Local originals · {Items.Count:N0} items buffered";
         }
         catch (OperationCanceledException) { }
         catch (Exception ex) { ShowError(ex); }
-        finally { if (generation == _generation) { _loading = false; SetBusy(false); } }
+        finally { _pagingGate.Release(); if (reset) SetBusy(false); }
     }
     private void UpdateResults(int total)
     {
@@ -106,7 +132,7 @@ public sealed partial class MainPage : Page
             : "Add a folder, or choose another source. Originals stay on your computer.";
         LoadMoreButton.Visibility = _hasMore ? Visibility.Visible : Visibility.Collapsed;
     }
-    private void SetBusy(bool value) => Busy.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
+    private void SetBusy(bool value) => Busy.Visibility = value || _importing ? Visibility.Visible : Visibility.Collapsed;
     private void ShowError(Exception error)
     {
         if (_lifetime.IsCancellationRequested) return;
@@ -120,19 +146,22 @@ public sealed partial class MainPage : Page
     private async void RefreshLibrary(object sender, RoutedEventArgs e) => await ReloadAsync(true);
     private async void RefreshKey(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) { args.Handled = true; await ReloadAsync(true); }
     private void FocusSearch(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) { SearchBox.Focus(FocusState.Keyboard); args.Handled = true; }
-    private void EscapeKey(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) { DetailsSplit.IsPaneOpen = false; args.Handled = true; }
+    private void EscapeKey(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) { if (Viewer.IsOpen) ReturnToGallery(); else DetailsSplit.IsPaneOpen = false; args.Handled = true; }
     private void CloseDetails(object sender, RoutedEventArgs e) => DetailsSplit.IsPaneOpen = false;
     private async void LoadMore(object sender, RoutedEventArgs e) => await LoadPageAsync(false);
     private async void GalleryContainerChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
     {
-        if (!args.InRecycleQueue && args.ItemIndex >= Items.Count - 18 && _hasMore && !_loading)
-            await LoadPageAsync(false);
+        if (args.InRecycleQueue || Viewer.IsOpen || !_ready) return;
+        if (Gallery.ItemsPanelRoot is ItemsWrapGrid panel) _highestVisible = Math.Max(0, panel.FirstVisibleIndex);
+        ScheduleThumbnailWarm();
+        if (_hasMore && Items.Count - _highestVisible < PerformanceProfile.Current.LowWater) await PrimeBufferAsync();
     }
     private async void ToggleSort(object sender, RoutedEventArgs e)
     {
         _ascending = !_ascending;
         SortButton.Content = _ascending ? "Oldest first ↑" : "Newest first ↓";
         await LoadPageAsync(true);
+        _ = PrimeBufferAsync();
     }
     private async void SearchChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
     {
@@ -143,14 +172,17 @@ public sealed partial class MainPage : Page
         try {
             await Task.Delay(300, search.Token);
             await LoadPageAsync(true);
+            _ = PrimeBufferAsync();
             if (sender.Text.Length > 0) StatusText.Text = "Local matches · Press Enter to search indexed descriptions and addresses";
         } catch (OperationCanceledException) { }
+        finally { if (ReferenceEquals(_search, search)) _search = null; search.Dispose(); }
     }
     private async void SearchSubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
         _search?.Cancel();
         if (string.IsNullOrWhiteSpace(sender.Text)) { await LoadPageAsync(true); return; }
         var generation = ++_generation;
+        _hasMore = false; _thumbnailPrefetch?.Cancel();
         SetBusy(true);
         try
         {
@@ -177,11 +209,13 @@ public sealed partial class MainPage : Page
         if (args.IsSettingsSelected) { await ShowSettingsAsync(); return; }
         if (args.SelectedItem is not NavigationViewItem item) return;
         var tag = item.Tag?.ToString() ?? "all";
+        ReturnToGallery();
         _mediaType = tag is "Photo" or "Video" ? tag : "";
         _sourceId = tag is "all" or "Photo" or "Video" ? "" : tag;
         LibraryHeading.Text = tag == "all" ? "Your moments, found." : item.Content.ToString();
         DetailsSplit.IsPaneOpen = false;
         await LoadPageAsync(true);
+        _ = PrimeBufferAsync();
     }
     private async void MediaClicked(object sender, ItemClickEventArgs args)
     {
@@ -247,61 +281,16 @@ public sealed partial class MainPage : Page
             Process.Start(info);
         } catch (Exception ex) { ShowError(ex); }
     }
-    private async void ViewMedia(object sender, RoutedEventArgs e)
+    private async void ViewMedia(object sender, RoutedEventArgs e) => await OpenCanvasAsync(false);
+    private async void GalleryDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
-        if (_dialog) return;
-        MediaPlayerElement? player = null;
-        try
-        {
-            var item = _selected;
-            if (item is null || await ResolveOriginalAsync() is not { } file) return;
-            FrameworkElement content;
-            if (item.MediaType == "Video") {
-                player = new MediaPlayerElement { AreTransportControlsEnabled = true, AutoPlay = false,
-                    Source = Windows.Media.Core.MediaSource.CreateFromStorageFile(file), Height = 540, Width = 920 };
-                content = player;
-            } else {
-                using var stream = await file.OpenReadAsync();
-                var bitmap = new BitmapImage { DecodePixelWidth = 1600 };
-                await bitmap.SetSourceAsync(stream);
-                content = new Image { Source = bitmap, Stretch = Stretch.Uniform, MaxHeight = Math.Max(260, ActualHeight - 160), Width = Math.Min(1000, ActualWidth - 100) };
-            }
-            await ShowDialogAsync(item.Name, content);
-        }
-        catch (Exception ex) { ShowError(ex); }
-        finally { player?.MediaPlayer?.Pause(); player?.MediaPlayer?.Dispose(); }
+        var element = e.OriginalSource as DependencyObject;
+        while (element is not null && element is not GridViewItem) element = VisualTreeHelper.GetParent(element);
+        if (element is GridViewItem container && container.Content is MediaItem item) _selected = item;
+        e.Handled = true;
+        await OpenCanvasAsync(false);
     }
-    private void GalleryDoubleTapped(object sender, DoubleTappedRoutedEventArgs e) => ViewMedia(sender, new RoutedEventArgs());
-    private async void AddFolder(object sender, RoutedEventArgs e)
-    {
-        if (_importing) return;
-        try
-        {
-            var picker = new FolderPicker();
-            picker.FileTypeFilter.Add("*");
-            WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindowInstance));
-            var folder = await picker.PickSingleFolderAsync();
-            if (folder is null) return;
-            var path = LibraryBridge.ToWslPath(folder.Path);
-            _importing = true;
-            AddFolderButton.IsEnabled = false;
-            StatusText.Text = "Registering " + folder.Name + "…";
-            var result = await _bridge.RunCliAsync(["source", "add", path, "--json"], _ => { }, _lifetime.Token);
-            using var registered = JsonDocument.Parse(result);
-            var sourceId = registered.RootElement.GetProperty("sourceId").GetString()!;
-            var timer = Stopwatch.StartNew();
-            await _bridge.RunCliAsync(["sync", sourceId, "--fast-add", "--no-input"], line => {
-                if (timer.ElapsedMilliseconds < 200) return;
-                timer.Restart();
-                DispatcherQueue.TryEnqueue(() => StatusText.Text = line);
-            }, _lifetime.Token);
-            await ReloadAsync(true);
-            StatusText.Text = "Folder added · Hashing and detailed extraction can continue with the CLI's normal sync";
-        }
-        catch (OperationCanceledException) { }
-        catch (Exception ex) { ShowError(ex); }
-        finally { _importing = false; AddFolderButton.IsEnabled = true; }
-    }
+    private async void AddFolder(object sender, RoutedEventArgs e) => await AddFolderAsync();
     private async void ShowActivity(object sender, RoutedEventArgs e)
     {
         if (_dialog) return;
@@ -323,7 +312,7 @@ public sealed partial class MainPage : Page
     private async Task ShowSettingsAsync()
     {
         await ShowDialogAsync("Nektron Moments", new TextBlock {
-            Text = "Windows preview · Brand v1.3\n\nThis build uses your existing Ubuntu CLI sign-in and account-scoped library cache through a local adapter. No passwords are copied to Windows.\n\nUse the Theme button for light/dark mode. Original media is never uploaded by browsing.\n\nCtrl+F  Search\nF5  Refresh library\nEsc  Close details\n\nStandalone sign-in, background watching and mobile clients follow in later milestones.",
+            Text = "Nektron Moments 0.1.2 · Brand v1.3\n\nProcess metadata reads available dates, GPS, dimensions and hashes, then updates the library. Paid descriptions and address resolution remain separate.\n\nDouble-click: open in canvas\nCtrl+F: search · F5: refresh\nEsc: return to library\nLeft / Right: previous / next\nSpace: pause / resume slideshow\nF11: full screen\n\nThumbnail size and enlargement preferences are remembered. The slideshow interval is in the viewer's overflow menu.\n\nThis preview reuses your existing Ubuntu CLI sign-in without copying passwords to Windows.",
             TextWrapping = TextWrapping.Wrap, MaxWidth = 520,
         });
     }
@@ -344,7 +333,7 @@ public sealed partial class MainPage : Page
             root.RequestedTheme = ActualTheme == ElementTheme.Dark ? ElementTheme.Light : ElementTheme.Dark;
             try { UserPreferences.Theme = root.RequestedTheme.ToString(); }
             catch (Exception) { StatusText.Text = "Theme changed for this session; the preference could not be saved."; }
-            UpdateSourceIcons();
+            UpdateThemeChrome();
         }
     }
     private void UpdateSourceIcons()
@@ -355,7 +344,9 @@ public sealed partial class MainPage : Page
     }
     private void PageResized(object sender, SizeChangedEventArgs e)
     {
-        SearchBox.Width = Math.Clamp(ActualWidth - 620, 180, 560);
+        SearchBox.Width = Math.Clamp(ActualWidth - 630, 140, 560);
+        ThumbnailSlider.Width = ActualWidth < 900 ? 84 : 148;
+        RibbonBar.MaxWidth = Math.Max(180, ActualWidth - ThumbnailSizePanel.ActualWidth - 32);
         DetailsSplit.DisplayMode = ActualWidth < 1180 ? SplitViewDisplayMode.Overlay : SplitViewDisplayMode.Inline;
         DetailsSplit.OpenPaneLength = Math.Min(320, Math.Max(260, ActualWidth - 70));
         ResizeGallery();
@@ -366,65 +357,12 @@ public sealed partial class MainPage : Page
         if (Gallery.ItemsPanelRoot is ItemsWrapGrid wrap) {
             var width = Gallery.ActualWidth;
             if (width > 0) {
-                var columns = Math.Max(1, (int)(width / 238));
-                wrap.ItemWidth = Math.Max(168, (width - 16) / columns);
-                wrap.ItemHeight = Math.Min(260, wrap.ItemWidth * .72 + 54);
+                var columns = Math.Max(1, (int)((width - 8) / _thumbnailSize));
+                wrap.ItemWidth = Math.Max(100, (width - 16) / columns);
+                wrap.ItemHeight = wrap.ItemWidth * .72 + 54;
+                wrap.CacheLength = _expandedViewportCache ? PerformanceProfile.Current.ViewportCache : 1;
             }
         }
     }
-#if DEBUG
-    private async Task VerifyUiAsync()
-    {
-        // Explicit opt-in, local-only diagnostic for development. No cloud queries
-        // or simulated uploads; captures the actual rendered gallery and its cache.
-        try
-        {
-            var output = Path.Combine(_bridge.Workspace, "build", "windows-verification");
-            Directory.CreateDirectory(output);
-            await Task.Delay(4000);
-            await CaptureAsync("library-light.png");
-            var sample = Items.FirstOrDefault(i => i.MediaType == "Photo" && !i.Name.Contains("regression"));
-            if (sample != null) {
-                _selected = sample;
-                FillDetails(sample, null, "Local cached metadata");
-                DetailsSplit.IsPaneOpen = true;
-            }
-            await Task.Delay(2000);
-            await CaptureAsync("details-light.png");
-            ChangeTheme(this, new RoutedEventArgs());
-            await Task.Delay(1000);
-            await CaptureAsync("details-dark.png");
-            App.MainWindowInstance!.AppWindow.Resize(new Windows.Graphics.SizeInt32(780, 820));
-            DetailsSplit.IsPaneOpen = false;
-            await Task.Delay(1000);
-            await CaptureAsync("compact-dark.png");
-            App.MainWindowInstance.AppWindow.Resize(new Windows.Graphics.SizeInt32(1480, 960));
-            ChangeTheme(this, new RoutedEventArgs());
-            DetailsSplit.IsPaneOpen = false;
-            await Task.Delay(800);
-            var metrics = new {
-                total = _overview?.Total, visibleItems = Items.Count,
-                galleryWidth = Gallery.ActualWidth, galleryHeight = Gallery.ActualHeight,
-                realizedContainers = Gallery.ItemsPanelRoot?.Children.Count,
-                libraryReadyMs = _libraryReadyMs,
-                errors = Notice.IsOpen ? Notice.Message : null,
-            };
-            await File.WriteAllTextAsync(Path.Combine(output, "verification.json"), JsonSerializer.Serialize(metrics));
-            async Task CaptureAsync(string name) {
-                var bitmap = new RenderTargetBitmap();
-                await bitmap.RenderAsync(Root);
-                var pixels = await bitmap.GetPixelsAsync();
-                var folder = await StorageFolder.GetFolderFromPathAsync(output);
-                var file = await folder.CreateFileAsync(name, CreationCollisionOption.ReplaceExisting);
-                using var stream = await file.OpenAsync(FileAccessMode.ReadWrite);
-                var encoder = await Windows.Graphics.Imaging.BitmapEncoder.CreateAsync(Windows.Graphics.Imaging.BitmapEncoder.PngEncoderId, stream);
-                using var reader = Windows.Storage.Streams.DataReader.FromBuffer(pixels);
-                var bytes = new byte[pixels.Length]; reader.ReadBytes(bytes);
-                encoder.SetPixelData(Windows.Graphics.Imaging.BitmapPixelFormat.Bgra8, Windows.Graphics.Imaging.BitmapAlphaMode.Premultiplied,
-                    (uint)bitmap.PixelWidth, (uint)bitmap.PixelHeight, 96, 96, bytes);
-                await encoder.FlushAsync();
-            }
-        } catch (Exception error) { DiagnosticLog.Write(error); }
-    }
-#endif
+
 }

@@ -1,0 +1,57 @@
+<UserControl x:Class="NektronMoments.Controls.CanvasViewer"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <Grid Background="{ThemeResource MomentsWindowBrush}" SizeChanged="ViewerResized">
+  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <CommandBar x:Name="ViewerBar" DefaultLabelPosition="Collapsed" Background="{ThemeResource MomentsSurfaceBrush}" Padding="8,4">
+   <CommandBar.Resources>
+    <ResourceDictionary Source="ms-appx:///Styles/Moments.CommandBar.xaml"/>
+   </CommandBar.Resources>
+   <CommandBar.Content>
+    <CheckBox x:Name="Upscale" Content="Enlarge beyond original size" Margin="12,0,16,0"
+     Checked="UpscaleChanged" Unchecked="UpscaleChanged" ToolTipService.ToolTip="When off, one original image pixel is never stretched beyond one screen pixel."/>
+   </CommandBar.Content>
+   <AppBarButton Label="Back to library" Click="BackClick" ToolTipService.ToolTip="Back to library (Esc)">
+    <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsGridImage}"/></AppBarButton.Icon>
+   </AppBarButton>
+   <AppBarSeparator/>
+   <AppBarButton Label="Previous" Click="PreviousClick" ToolTipService.ToolTip="Previous photo (Left)">
+    <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsPreviousImage}"/></AppBarButton.Icon>
+   </AppBarButton>
+   <AppBarButton Label="Next" Click="NextClick" ToolTipService.ToolTip="Next photo (Right)">
+    <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsNextImage}"/></AppBarButton.Icon>
+   </AppBarButton>
+   <AppBarButton x:Name="PlayButton" Label="Start slideshow" Click="PlayClick" ToolTipService.ToolTip="Start or pause slideshow (Space)">
+    <AppBarButton.Icon><ImageIcon Width="32" Height="32" x:Name="PlayIcon" Source="{ThemeResource MomentsPlayImage}"/></AppBarButton.Icon>
+   </AppBarButton>
+   <AppBarButton Label="Stop slideshow" Click="StopClick" ToolTipService.ToolTip="Stop slideshow">
+    <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsStopImage}"/></AppBarButton.Icon>
+   </AppBarButton>
+   <CommandBar.SecondaryCommands>
+    <AppBarButton Label="3-second interval" Tag="3" Click="IntervalClick"/>
+    <AppBarButton Label="5-second interval" Tag="5" Click="IntervalClick"/>
+    <AppBarButton Label="8-second interval" Tag="8" Click="IntervalClick"/>
+    <AppBarButton Label="10-second interval" Tag="10" Click="IntervalClick"/>
+   </CommandBar.SecondaryCommands>
+  </CommandBar>
+  <Grid x:Name="Viewport" Grid.Row="1" Margin="12" SizeChanged="ViewerResized" Background="{ThemeResource MomentsWindowBrush}">
+   <Image x:Name="Picture" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+   <MediaPlayerElement x:Name="Video" AreTransportControlsEnabled="True" AutoPlay="False" Visibility="Collapsed"
+     HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform"/>
+   <TextBlock x:Name="Unavailable" Visibility="Collapsed" TextWrapping="Wrap" MaxWidth="440"
+    HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
+    Foreground="{ThemeResource MomentsMutedBrush}"/>
+   <ProgressRing x:Name="LoadingIndicator" IsActive="False" Width="32" Height="32"
+    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="12"/>
+  </Grid>
+  <Grid Grid.Row="2" Padding="18,10" Background="{ThemeResource MomentsSurfaceBrush}">
+   <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <StackPanel Spacing="3">
+    <TextBlock x:Name="FileTitle" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+    <TextBlock x:Name="ImageInfo" FontSize="12" Foreground="{ThemeResource MomentsMutedBrush}"/>
+   </StackPanel>
+   <TextBlock x:Name="PlaybackStatus" Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center"
+    FontSize="12" Foreground="{ThemeResource MomentsMutedBrush}"/>
+  </Grid>
+ </Grid>
+</UserControl>

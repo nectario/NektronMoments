@@ -43,6 +43,8 @@ try {
         $wslRoot = '/mnt/' + $repo.Substring(0,1).ToLowerInvariant() + $repo.Substring(2).Replace('\','/')
         & wsl.exe -d Ubuntu --cd $wslRoot --exec bash scripts/test.sh
         if ($LASTEXITCODE -ne 0) { throw 'Repository validation failed. No installer published.' }
+        & dotnet run --project (Join-Path $repo 'apps/windows/Tests/ViewingTests.csproj') -c Release
+        if ($LASTEXITCODE -ne 0) { throw 'Native viewing/cache policy tests failed.' }
     }
     Write-Output "Publishing Nektron Moments $version with bundled Windows and .NET runtimes."
     & dotnet publish $project -c Release -p:Platform=x64 -p:PublishProfile=Installer -p:DebugType=None -p:DebugSymbols=false -o $payload -v:minimal

@@ -18,7 +18,8 @@ Signing profile. No private key, certificate password, Azure token, OpenAI key,
 or user credential is copied into this repository or into the installer.
 `signing-profile.json` contains only the existing endpoint/account/profile names.
 
-The build runs the full repository regression suite, publishes a self-contained
+The build runs the full repository regression suite and native viewing/cache
+policy assertions, publishes a self-contained
 untrimmed x64 application, checks required files and private-data exclusions, signs
 the app EXE/DLL, verifies direct launch, compiles/signs the setup and uninstaller,
 then tests a temporary install outside the checkout. It checks workspace reconnect,

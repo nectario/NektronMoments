@@ -155,3 +155,18 @@ def test_video_types_match_the_importer():
     from cli.nektron_moments_cli.media import VIDEO_EXTENSIONS as scanner_types
     from cli.nektron_moments_cli.desktop_bridge import VIDEO_EXTENSIONS
     assert VIDEO_EXTENSIONS == scanner_types
+
+
+def test_large_desktop_page_is_bounded_and_keeps_file_stamp(catalog):
+    page = catalog.page(limit=4096)
+    assert page["total"] == 3
+    assert page["items"][0]["modifiedNs"] is not None
+    with pytest.raises(ValueError):
+        catalog.page(limit=4097)
+
+
+def test_timeline_order_uses_its_index_without_temporary_sort(catalog):
+    plan = catalog.db.execute("EXPLAIN QUERY PLAN SELECT * FROM Media ORDER BY (Captured=''),Captured DESC,Key LIMIT 4096").fetchall()
+    detail = " ".join(str(row[3]) for row in plan)
+    assert "IX_Media_OrderDesc" in detail
+    assert "TEMP B-TREE" not in detail

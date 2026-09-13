@@ -1,5 +1,6 @@
 using Microsoft.Win32;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace NektronMoments.Services;
 
@@ -30,10 +31,37 @@ public static class UserPreferences
             Directory.CreateDirectory(DirectoryPath);
             var temporary = SettingsPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try {
-                File.WriteAllText(temporary, JsonSerializer.Serialize(new { theme = value == "Dark" ? "Dark" : "Light" }));
+                var preferences = Read();
+                preferences["theme"] = value == "Dark" ? "Dark" : "Light";
+                File.WriteAllText(temporary, preferences.ToJsonString());
                 File.Move(temporary, SettingsPath, overwrite: true);
             } finally { if (File.Exists(temporary)) File.Delete(temporary); }
         }
+    }
+
+    private static JsonObject Read()
+    {
+        try { return JsonNode.Parse(File.ReadAllText(SettingsPath)) as JsonObject ?? new(); }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException) { return new(); }
+    }
+    public static double Number(string key, double fallback)
+    {
+        try { return Read()[key]?.GetValue<double>() is { } value && double.IsFinite(value) ? value : fallback; }
+        catch (InvalidOperationException) { return fallback; }
+    }
+    public static bool Flag(string key, bool fallback = false)
+    {
+        try { return Read()[key]?.GetValue<bool>() ?? fallback; }
+        catch (InvalidOperationException) { return fallback; }
+    }
+    public static void Set<T>(string key, T value)
+    {
+        var preferences = Read();
+        preferences[key] = JsonSerializer.SerializeToNode(value);
+        Directory.CreateDirectory(DirectoryPath);
+        var temporary = SettingsPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+        try { File.WriteAllText(temporary, preferences.ToJsonString()); File.Move(temporary, SettingsPath, true); }
+        finally { if (File.Exists(temporary)) File.Delete(temporary); }
     }
 
     public static string? InstalledWorkspace

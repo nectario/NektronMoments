@@ -18,7 +18,7 @@ try {
     if ($Action -eq 'verify') {
         New-Item -ItemType Directory -Force -Path (Join-Path $repo 'build') | Out-Null
         New-Item -ItemType File -Force -Path (Join-Path $repo 'build/verify-windows-ui.flag') | Out-Null
-        Write-Output 'UI snapshots stay under ignored build/windows-verification. They may contain your photos; do not publish them.'
+        Write-Output 'UI snapshots stay under ignored build/windows-verification-013. They may contain your photos; do not publish them.'
     }
     dotnet run --no-build --no-launch-profile -p:Platform=x64
     if ($LASTEXITCODE -ne 0) { throw 'Windows app exited with an error.' }

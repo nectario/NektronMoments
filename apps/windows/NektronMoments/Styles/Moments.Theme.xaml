@@ -20,6 +20,18 @@
       <SvgImageSource x:Key="MomentsFolderImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/sources.svg"/>
       <SvgImageSource x:Key="MomentsActivityImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/processing.svg"/>
       <SvgImageSource x:Key="MomentsInfoImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/info.svg"/>
+      <SvgImageSource x:Key="MomentsMetadataImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/metadata.svg"/>
+      <SvgImageSource x:Key="MomentsOpenImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/file-open.svg"/>
+      <SvgImageSource x:Key="MomentsRevealImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/reveal-file.svg"/>
+      <SvgImageSource x:Key="MomentsCopyImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/copy.svg"/>
+      <SvgImageSource x:Key="MomentsGridImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/grid.svg"/>
+      <SvgImageSource x:Key="MomentsPlayImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/play.svg"/>
+      <SvgImageSource x:Key="MomentsPauseImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/pause.svg"/>
+      <SvgImageSource x:Key="MomentsStopImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/stop.svg"/>
+      <SvgImageSource x:Key="MomentsPreviousImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/previous.svg"/>
+      <SvgImageSource x:Key="MomentsNextImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/next.svg"/>
+      <SvgImageSource x:Key="MomentsFullscreenImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/fullscreen.svg"/>
+      <SvgImageSource x:Key="MomentsSettingsImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/settings.svg"/>
       <BitmapImage x:Key="MomentsMarkImage" UriSource="ms-appx:///Assets/Mark.light.png"/>
     </ResourceDictionary>
     <ResourceDictionary x:Key="Default">
@@ -35,13 +47,25 @@
       <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#163247"/>
       <SvgImageSource x:Key="MomentsAddImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/source-add.svg"/>
       <SvgImageSource x:Key="MomentsRefreshImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/refresh.svg"/>
-      <SvgImageSource x:Key="MomentsThemeImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/sun.svg"/>
+      <SvgImageSource x:Key="MomentsThemeImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/moon.svg"/>
       <SvgImageSource x:Key="MomentsLibraryImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/library.svg"/>
       <SvgImageSource x:Key="MomentsPhotosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/photos.svg"/>
       <SvgImageSource x:Key="MomentsVideosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/videos.svg"/>
       <SvgImageSource x:Key="MomentsFolderImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/sources.svg"/>
       <SvgImageSource x:Key="MomentsActivityImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/processing.svg"/>
       <SvgImageSource x:Key="MomentsInfoImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/info.svg"/>
+      <SvgImageSource x:Key="MomentsMetadataImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/metadata.svg"/>
+      <SvgImageSource x:Key="MomentsOpenImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/file-open.svg"/>
+      <SvgImageSource x:Key="MomentsRevealImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/reveal-file.svg"/>
+      <SvgImageSource x:Key="MomentsCopyImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/copy.svg"/>
+      <SvgImageSource x:Key="MomentsGridImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/grid.svg"/>
+      <SvgImageSource x:Key="MomentsPlayImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/play.svg"/>
+      <SvgImageSource x:Key="MomentsPauseImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/pause.svg"/>
+      <SvgImageSource x:Key="MomentsStopImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/stop.svg"/>
+      <SvgImageSource x:Key="MomentsPreviousImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/previous.svg"/>
+      <SvgImageSource x:Key="MomentsNextImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/next.svg"/>
+      <SvgImageSource x:Key="MomentsFullscreenImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/fullscreen.svg"/>
+      <SvgImageSource x:Key="MomentsSettingsImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/settings.svg"/>
       <BitmapImage x:Key="MomentsMarkImage" UriSource="ms-appx:///Assets/Mark.dark.png"/>
     </ResourceDictionary>
     <ResourceDictionary x:Key="HighContrast">
@@ -63,6 +87,18 @@
       <SvgImageSource x:Key="MomentsFolderImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/sources.svg"/>
       <SvgImageSource x:Key="MomentsActivityImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/processing.svg"/>
       <SvgImageSource x:Key="MomentsInfoImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/info.svg"/>
+      <SvgImageSource x:Key="MomentsMetadataImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/metadata.svg"/>
+      <SvgImageSource x:Key="MomentsOpenImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/file-open.svg"/>
+      <SvgImageSource x:Key="MomentsRevealImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/reveal-file.svg"/>
+      <SvgImageSource x:Key="MomentsCopyImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/copy.svg"/>
+      <SvgImageSource x:Key="MomentsGridImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/grid.svg"/>
+      <SvgImageSource x:Key="MomentsPlayImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/play.svg"/>
+      <SvgImageSource x:Key="MomentsPauseImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/pause.svg"/>
+      <SvgImageSource x:Key="MomentsStopImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/stop.svg"/>
+      <SvgImageSource x:Key="MomentsPreviousImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/previous.svg"/>
+      <SvgImageSource x:Key="MomentsNextImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/next.svg"/>
+      <SvgImageSource x:Key="MomentsFullscreenImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/fullscreen.svg"/>
+      <SvgImageSource x:Key="MomentsSettingsImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/settings.svg"/>
       <BitmapImage x:Key="MomentsMarkImage" UriSource="ms-appx:///Assets/Mark.dark.png"/>
     </ResourceDictionary>
   </ResourceDictionary.ThemeDictionaries>

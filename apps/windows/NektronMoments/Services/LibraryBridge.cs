@@ -66,11 +66,13 @@ public sealed class LibraryBridge : IDisposable
             await _process.StandardInput.FlushAsync();
             var line = await _process.StandardOutput.ReadLineAsync().WaitAsync(TimeSpan.FromSeconds(75));
             if (line is null) throw new InvalidOperationException("The CLI library connection closed. Check Ubuntu and your saved CLI sign-in, then refresh.");
-            using var document = JsonDocument.Parse(line);
-            if (!document.RootElement.GetProperty("ok").GetBoolean())
-                throw new InvalidOperationException(document.RootElement.GetProperty("error").GetString());
-            cancellation.ThrowIfCancellationRequested();
-            return document.RootElement.GetProperty("result").Deserialize<T>(Json)!;
+            return await Task.Run(() => {
+                using var document = JsonDocument.Parse(line);
+                if (!document.RootElement.GetProperty("ok").GetBoolean())
+                    throw new InvalidOperationException(document.RootElement.GetProperty("error").GetString());
+                cancellation.ThrowIfCancellationRequested();
+                return document.RootElement.GetProperty("result").Deserialize<T>(Json)!;
+            }, cancellation);
         }
         catch (TimeoutException)
         {
@@ -81,19 +83,24 @@ public sealed class LibraryBridge : IDisposable
     }
     public async Task<string> RunCliAsync(string[] args, Action<string> progress, CancellationToken cancellation)
     {
-        using var process = Process.Start(StartInfo(["-m", "cli.nektron_moments_cli", ..args]))
+        using var process = Process.Start(StartInfo(["-m", "cli.nektron_moments_cli.desktop_job", ..args]))
             ?? throw new InvalidOperationException("Could not start the CLI.");
         var errors = process.StandardError.ReadToEndAsync();
         using var registration = cancellation.Register(() => {
-            try { if (!process.HasExited) process.Kill(entireProcessTree: true); } catch (InvalidOperationException) { }
+            try { process.StandardInput.WriteLine("cancel"); process.StandardInput.Flush(); } catch (Exception) { }
         });
         var output = new StringBuilder();
-        while (await process.StandardOutput.ReadLineAsync(cancellation) is { } line)
-        {
-            if (output.Length < 65536) output.AppendLine(line);
-            progress(line);
+        try {
+            while (await process.StandardOutput.ReadLineAsync(cancellation) is { } line) {
+                if (output.Length < 65536) output.AppendLine(line);
+                progress(line);
+            }
+            await process.WaitForExitAsync(cancellation);
+        } catch (OperationCanceledException) {
+            try { await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(15)); }
+            catch (TimeoutException) { try { process.Kill(entireProcessTree: true); } catch (InvalidOperationException) { } }
+            throw;
         }
-        await process.WaitForExitAsync(cancellation);
         await errors;
         if (process.ExitCode != 0)
             throw new InvalidOperationException("The CLI could not complete this operation. Saved sync progress is retained; check ./scripts/cli.sh status.");

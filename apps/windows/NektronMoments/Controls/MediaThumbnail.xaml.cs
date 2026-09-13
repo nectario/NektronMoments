@@ -9,49 +9,60 @@ namespace NektronMoments.Controls;
 
 public sealed partial class MediaThumbnail : UserControl
 {
-    private static readonly ThumbnailService Thumbnails = new();
+    public static readonly WeightedCache<BitmapImage> Decoded = new(PerformanceProfile.Current.DecodedBytes);
     private CancellationTokenSource? _loading;
+    private string _displayedKey = "";
+    public static uint TargetPixels { get; set; } = 512;
+    public static event Action? ResolutionChanged;
+    public static void SetResolution(uint pixels) { TargetPixels = pixels; ResolutionChanged?.Invoke(); }
     public static readonly DependencyProperty ItemProperty = DependencyProperty.Register(
         nameof(Item), typeof(MediaItem), typeof(MediaThumbnail), new PropertyMetadata(null, ItemChanged));
     public MediaItem? Item { get => (MediaItem?)GetValue(ItemProperty); set => SetValue(ItemProperty, value); }
     public MediaThumbnail()
     {
         InitializeComponent();
-        Loaded += (_, _) => Load();
-        Unloaded += (_, _) => { _loading?.Cancel(); Picture.Source = null; };
+        Loaded += (_, _) => { ResolutionChanged += Load; Load(); };
+        Unloaded += (_, _) => { ResolutionChanged -= Load; _loading?.Cancel(); Picture.Source = null; _displayedKey = ""; };
     }
     private static void ItemChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
     {
         var control = (MediaThumbnail)sender;
-        control.Picture.Source = null;
+        control._loading?.Cancel();
+        control.Picture.Source = null; control._displayedKey = "";
         if (control.IsLoaded) control.Load();
     }
     private async void Load()
     {
-        _loading?.Cancel();
-        var loading = new CancellationTokenSource();
-        _loading = loading;
         var item = Item;
         if (item is null) return;
-        Picture.Source = null;
-        Placeholder.Visibility = Visibility.Visible;
+        var key = ThumbnailService.Shared.Key(item, TargetPixels);
+        if (_displayedKey == key) return;
+        _loading?.Cancel();
+        if (Decoded.TryGet(key, out var ready)) {
+            Picture.Source = ready; Placeholder.Visibility = Visibility.Collapsed; _displayedKey = key;
+            return;
+        }
+        var loading = new CancellationTokenSource();
+        _loading = loading;
+        Placeholder.Visibility = Picture.Source is null ? Visibility.Visible : Visibility.Collapsed;
         try
         {
-            var bytes = await Thumbnails.LoadAsync(item, 400, loading.Token);
+            var bytes = await ThumbnailService.Shared.LoadAsync(item, TargetPixels, loading.Token);
             if (bytes is null || loading.IsCancellationRequested) return;
             using var stream = new InMemoryRandomAccessStream();
             using (var writer = new DataWriter(stream)) {
                 writer.WriteBytes(bytes); await writer.StoreAsync(); writer.DetachStream();
             }
             stream.Seek(0);
-            var bitmap = new BitmapImage();
+            var bitmap = new BitmapImage { DecodePixelWidth = (int)TargetPixels };
             await bitmap.SetSourceAsync(stream);
             if (loading.IsCancellationRequested || !ReferenceEquals(Item, item)) return;
-            Picture.Source = bitmap;
+            Decoded.Put(key, bitmap, Math.Max(1L, (long)bitmap.PixelWidth * bitmap.PixelHeight * 4));
+            Picture.Source = bitmap; _displayedKey = key;
             Placeholder.Visibility = Visibility.Collapsed;
         }
         catch (OperationCanceledException) { }
-        catch (Exception) { /* Unsupported/missing media is represented by the type icon. */ }
-        finally { loading.Dispose(); if (ReferenceEquals(_loading, loading)) _loading = null; }
+        catch (Exception) { /* Missing/unsupported files retain a labeled placeholder. */ }
+        finally { if (ReferenceEquals(_loading, loading)) _loading = null; loading.Dispose(); }
     }
 }

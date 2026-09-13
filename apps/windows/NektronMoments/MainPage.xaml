@@ -8,33 +8,113 @@
         <Grid.KeyboardAccelerators>
             <KeyboardAccelerator Key="F" Modifiers="Control" Invoked="FocusSearch"/>
             <KeyboardAccelerator Key="F5" Invoked="RefreshKey"/>
+            <KeyboardAccelerator Key="Left" Invoked="ViewerPreviousKey"/>
+            <KeyboardAccelerator Key="Right" Invoked="ViewerNextKey"/>
+            <KeyboardAccelerator Key="Space" Invoked="ViewerPlayKey"/>
+            <KeyboardAccelerator Key="F11" Invoked="FullScreenKey"/>
             <KeyboardAccelerator Key="Escape" Invoked="EscapeKey"/>
         </Grid.KeyboardAccelerators>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <CommandBar Background="{ThemeResource MomentsSurfaceBrush}" DefaultLabelPosition="Right" Padding="16,6">
-            <CommandBar.Content>
-                <AutoSuggestBox x:Name="SearchBox" Width="460" Margin="0,0,24,0"
+        <Grid Background="{ThemeResource MomentsTitlebarBrush}" Padding="8,0,16,0">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <MenuBar>
+                <MenuBarItem Title="File">
+                    <MenuFlyoutItem Text="Add folder…" Tag="add" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsAddImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Open original" Tag="open" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsOpenImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Show in folder" Tag="reveal" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsRevealImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutSeparator/>
+                    <MenuFlyoutItem Text="Exit" Tag="exit" Click="MenuAction"/>
+                </MenuBarItem>
+                <MenuBarItem Title="Edit">
+                    <MenuFlyoutItem Text="Copy file path" Tag="copy-path" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsCopyImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Copy filename" Tag="copy-name" Click="MenuAction"/>
+                </MenuBarItem>
+                <MenuBarItem Title="Library">
+                    <MenuFlyoutItem Text="Process metadata" Tag="process" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsMetadataImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Stop processing" Tag="cancel" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsStopImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutSeparator/>
+                    <MenuFlyoutItem Text="Refresh library" Tag="refresh" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsRefreshImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Processing activity" Tag="activity" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsActivityImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                </MenuBarItem>
+                <MenuBarItem Title="View">
+                    <MenuFlyoutItem Text="Library canvas" Tag="gallery" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsGridImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem Text="View selected photo" Tag="view" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsPhotosImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Show / hide details" Tag="details" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsInfoImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutSubItem Text="Thumbnail size">
+                        <MenuFlyoutItem Text="Small" Tag="size:144" Click="MenuAction"/>
+                        <MenuFlyoutItem Text="Medium" Tag="size:240" Click="MenuAction"/>
+                        <MenuFlyoutItem Text="Large" Tag="size:336" Click="MenuAction"/>
+                        <MenuFlyoutItem Text="X-large" Tag="size:432" Click="MenuAction"/>
+                    </MenuFlyoutSubItem>
+                    <MenuFlyoutSeparator/>
+                    <MenuFlyoutItem x:Name="ThemeMenu" Text="Switch to dark theme" Tag="theme" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsThemeImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Full screen (F11)" Tag="fullscreen" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsFullscreenImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                </MenuBarItem>
+                <MenuBarItem Title="Playback">
+                    <MenuFlyoutItem Text="Start slideshow" Tag="slideshow" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsPlayImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Pause / resume slideshow" Tag="pause" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsPauseImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Stop slideshow" Tag="stop-slideshow" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsStopImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                </MenuBarItem>
+                <MenuBarItem Title="Help">
+                    <MenuFlyoutItem Text="Keyboard shortcuts and settings" Tag="settings" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsSettingsImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Performance profile" Tag="performance" Click="MenuAction"/>
+                    <MenuFlyoutItem Text="About Nektron Moments" Tag="about" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsInfoImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                </MenuBarItem>
+            </MenuBar>
+                <AutoSuggestBox x:Name="SearchBox" Grid.Column="1" Width="460" Margin="8,4,0,4"
                     PlaceholderText="Search your photos" QueryIcon="Find"
                     TextChanged="SearchChanged" QuerySubmitted="SearchSubmitted"
                     AutomationProperties.Name="Search filenames; press Enter to search indexed descriptions and addresses"/>
-            </CommandBar.Content>
-            <AppBarButton x:Name="AddFolderButton" Label="Add folder" Click="AddFolder">
-                <AppBarButton.Icon><ImageIcon Source="{ThemeResource MomentsAddImage}"/></AppBarButton.Icon>
+        </Grid>
+        <Grid Grid.Row="1" Background="{ThemeResource MomentsSurfaceBrush}" Padding="8,6,16,6">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <CommandBar x:Name="RibbonBar" Background="{ThemeResource MomentsSurfaceBrush}" DefaultLabelPosition="Right" HorizontalAlignment="Left">
+            <CommandBar.Resources>
+                <ResourceDictionary Source="Styles/Moments.CommandBar.xaml"/>
+            </CommandBar.Resources>
+            <AppBarButton x:Name="AddFolderButton" Label="Add folder" LabelPosition="Default" Click="AddFolder" ToolTipService.ToolTip="Add a local folder">
+                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsAddImage}"/></AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton Label="Refresh" Click="RefreshLibrary" ToolTipService.ToolTip="Refresh library (F5)">
-                <AppBarButton.Icon><ImageIcon Source="{ThemeResource MomentsRefreshImage}"/></AppBarButton.Icon>
+            <AppBarButton x:Name="ProcessButton" Label="Process metadata" Click="ProcessMetadata" ToolTipService.ToolTip="Read hashes, dates, GPS and dimensions, then sync metadata. Does not start paid AI enrichment.">
+                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsMetadataImage}"/></AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton Label="Refresh" Click="RefreshLibrary" ToolTipService.ToolTip="Refresh library (F5)" LabelPosition="Collapsed">
+                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsRefreshImage}"/></AppBarButton.Icon>
             </AppBarButton>
             <AppBarSeparator/>
-            <AppBarButton Label="Theme" Click="ChangeTheme" ToolTipService.ToolTip="Switch light / dark theme">
-                <AppBarButton.Icon><ImageIcon Source="{ThemeResource MomentsThemeImage}"/></AppBarButton.Icon>
+            <AppBarButton Label="View photo" Click="ViewMedia" ToolTipService.ToolTip="View selected photo in the canvas" LabelPosition="Collapsed">
+                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsPhotosImage}"/></AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton Label="Activity" Click="ShowActivity">
-                <AppBarButton.Icon><ImageIcon Source="{ThemeResource MomentsActivityImage}"/></AppBarButton.Icon>
+            <AppBarButton Label="Slideshow" Click="StartSlideshow" ToolTipService.ToolTip="Start a photo slideshow in the canvas" LabelPosition="Collapsed">
+                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsPlayImage}"/></AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton Label="Open original" Click="OpenOriginal" ToolTipService.ToolTip="Open with the default application" LabelPosition="Collapsed">
+                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsOpenImage}"/></AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton Label="Details" Click="ToggleDetails" ToolTipService.ToolTip="Show or hide photo details" LabelPosition="Collapsed">
+                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsInfoImage}"/></AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarSeparator/>
+            <AppBarButton x:Name="ThemeButton" Label="Light theme" Click="ChangeTheme" ToolTipService.ToolTip="Switch to dark theme" LabelPosition="Collapsed">
+                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsThemeImage}"/></AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton Label="Activity" Click="ShowActivity" LabelPosition="Collapsed">
+                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsActivityImage}"/></AppBarButton.Icon>
             </AppBarButton>
         </CommandBar>
-        <NavigationView x:Name="Navigation" Grid.Row="1" PaneDisplayMode="Auto"
+        <StackPanel x:Name="ThumbnailSizePanel" Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <ComboBox x:Name="SizePreset" Width="105" SelectionChanged="SizePresetChanged" AutomationProperties.Name="Thumbnail size preset">
+                <ComboBoxItem Content="Small" Tag="144"/><ComboBoxItem Content="Medium" Tag="240"/>
+                <ComboBoxItem Content="Large" Tag="336"/><ComboBoxItem Content="X-large" Tag="432"/>
+                <ComboBoxItem Content="Custom" Tag="0"/>
+            </ComboBox>
+            <Slider x:Name="ThumbnailSlider" Width="148" Minimum="112" Maximum="480" Value="240" StepFrequency="8"
+                    ValueChanged="ThumbnailSizeChanged" AutomationProperties.Name="Thumbnail size" ToolTipService.ToolTip="Adjust thumbnail size"/>
+        </StackPanel>
+        </Grid>
+        <NavigationView x:Name="Navigation" Grid.Row="2" PaneDisplayMode="Auto"
             Background="{ThemeResource MomentsSecondaryBrush}"
             IsBackButtonVisible="Collapsed" IsSettingsVisible="True"
             OpenPaneLength="216" CompactPaneLength="48" ExpandedModeThresholdWidth="1000"
@@ -42,13 +122,13 @@
             <NavigationView.MenuItems>
                 <NavigationViewItemHeader Content="YOUR LIBRARY"/>
                 <NavigationViewItem x:Name="LibraryNav" Content="Library" Tag="all" IsSelected="True">
-                    <NavigationViewItem.Icon><ImageIcon Source="{ThemeResource MomentsLibraryImage}"/></NavigationViewItem.Icon>
+                    <NavigationViewItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsLibraryImage}"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="Photos" Tag="Photo">
-                    <NavigationViewItem.Icon><ImageIcon Source="{ThemeResource MomentsPhotosImage}"/></NavigationViewItem.Icon>
+                    <NavigationViewItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsPhotosImage}"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="Videos" Tag="Video">
-                    <NavigationViewItem.Icon><ImageIcon Source="{ThemeResource MomentsVideosImage}"/></NavigationViewItem.Icon>
+                    <NavigationViewItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsVideosImage}"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItemSeparator/>
                 <NavigationViewItemHeader Content="LOCAL SOURCES"/>
@@ -83,7 +163,8 @@
                         </StackPanel>
                     </ScrollViewer>
                 </SplitView.Pane>
-                <Grid Padding="28,24,24,12" Background="{ThemeResource MomentsWindowBrush}">
+                <Grid>
+                <Grid x:Name="LibraryCanvas" Padding="24,20,20,12" Background="{ThemeResource MomentsWindowBrush}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
@@ -103,7 +184,7 @@
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                         ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="0,0,8,8">
                         <GridView.ItemsPanel>
-                            <ItemsPanelTemplate><ItemsWrapGrid x:Name="MediaWrap" Orientation="Horizontal" ItemWidth="242" ItemHeight="224"/></ItemsPanelTemplate>
+                            <ItemsPanelTemplate><ItemsWrapGrid x:Name="MediaWrap" Orientation="Horizontal" ItemWidth="242" ItemHeight="224" CacheLength="3"/></ItemsPanelTemplate>
                         </GridView.ItemsPanel>
                         <GridView.ItemContainerStyle>
                             <Style TargetType="GridViewItem">
@@ -136,13 +217,16 @@
                         <TextBlock x:Name="EmptyMessage" Text="Originals stay on your computer. Thumbnails load as you browse." TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource MomentsMutedBrush}"/>
                     </StackPanel>
                 </Grid>
+                <controls:CanvasViewer x:Name="Viewer" Visibility="Collapsed"/>
+                </Grid>
             </SplitView>
         </NavigationView>
-        <Grid Grid.Row="2" Background="{ThemeResource MomentsTitlebarBrush}" Padding="18,8">
-            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <Grid Grid.Row="3" Background="{ThemeResource MomentsTitlebarBrush}" Padding="18,8">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
             <TextBlock x:Name="StatusText" FontSize="12" Text="Opening local library…" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource MomentsMutedBrush}"/>
-            <TextBlock Grid.Column="1" Text="Nektron Moments · Windows preview" FontSize="11" Margin="16,0,0,0" Foreground="{ThemeResource MomentsMutedBrush}"/>
+            <Button x:Name="CancelProcessingButton" Grid.Column="1" Content="Stop processing" Click="CancelProcessing" Visibility="Collapsed" Padding="12,3"/>
+            <TextBlock x:Name="PerformanceLabel" Grid.Column="2" Text="Nektron Moments · Windows preview" FontSize="11" Margin="16,0,0,0" VerticalAlignment="Center" Foreground="{ThemeResource MomentsMutedBrush}"/>
         </Grid>
-        <ProgressBar x:Name="Busy" Grid.Row="1" VerticalAlignment="Top" IsIndeterminate="True" Height="2" Visibility="Collapsed"/>
+        <ProgressBar x:Name="Busy" Grid.Row="2" VerticalAlignment="Top" IsIndeterminate="True" Height="2" Visibility="Collapsed"/>
     </Grid>
 </Page>

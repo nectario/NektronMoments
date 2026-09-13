@@ -16,6 +16,7 @@ public sealed class MediaItem
     public string DateSource { get; set; } = "";
     public string MediaType { get; set; } = "";
     public long? ByteSize { get; set; }
+    public long? ModifiedNs { get; set; }
     public JsonElement Metadata { get; set; }
     public string Description { get; set; } = "";
     public string Address { get; set; } = "";

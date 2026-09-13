@@ -25,13 +25,50 @@ registration, Nektron Moments is also available through Windows Start.
 
 - Existing CLI library/session reuse without a second sign-in or re-import.
 - Virtualized, incrementally paged photo/video gallery and source filters.
-- Native thumbnails with eight concurrent workers and a 512 MiB disk-cache limit.
+- Memory-adaptive metadata and thumbnail look-ahead; separate foreground and
+  prefetch workers, bounded decoded/encoded LRU caches and exact-size thumbnails.
 - Filename filtering as you type; Enter searches indexed descriptions/addresses.
 - Exact-hash deduplication with preserved source occurrences.
-- Details, embedded image/video viewing, open original, and reveal in Explorer.
-- Add folder delegates to existing Local-mode CLI registration and metadata-only
-  fast sync. Normal CLI sync is still needed for newly added files' full hashing/EXIF.
-- Saved queue activity, remembered light/dark theme, compact layouts, Ctrl+F/F5/Esc.
+- Double-click opens the selected photo/video in the entire gallery canvas.
+  Images fit on resize and never exceed original physical pixels unless the
+  enlargement checkbox is checked. EXIF orientation is respected.
+- Slideshow with pause/stop and 3/5/8/10-second intervals; it uses the same
+  enlargement preference and skips videos. Missing/unsupported media stops with
+  a readable message instead of silently skipping errors.
+- Add folder performs fast discovery followed by full metadata processing in the
+  background. The **Process metadata** button runs full sync for the selected
+  source, or all local sources when no source filter is active.
+- **Stop processing** sends a cooperative interrupt to the CLI job host so saved
+  batches survive. No paid scene-description or geocode work is started.
+- v1.3 icon-rich ribbon with 32-DIP icons / 56-DIP command targets and
+  File/Edit/Library/View/Playback/Help menus. Sun denotes
+  light mode; Moon denotes dark mode.
+- Remembered thumbnail slider and Small/Medium/Large/X-large presets.
+- Ctrl+F search, F5 refresh, Esc return, Left/Right navigation, Space slideshow
+  pause/resume, F11 fullscreen, and clipboard/reveal-original commands.
+
+### Adaptive budgets in 0.1.2
+
+These are ceilings and look-ahead targets, not upfront allocations:
+
+| Profile | RAM | Metadata buffer | Thumbnails ahead | Encoded / decoded cache | Disk cache |
+| --- | --- | ---: | ---: | --- | --- |
+| Balanced | Below 24 GiB | 2,048 | 96 | 64 / 192 MiB | 1 GiB |
+| Enhanced | 24–95 GiB | 8,192 | 512 | 256 / 768 MiB | 4 GiB |
+| Workstation | 96 GiB+ | 24,576 | 1,536 | 768 MiB / 2 GiB | 8 GiB |
+
+The grid stays virtualized. Background appends yield in small chunks and never
+reset the existing collection. Catalog indexes match timeline ordering. Old
+oversized derived thumbnail cache entries are replaced; original files are untouched.
+
+Native sizing/cache tests: from `apps/windows`, run
+`dotnet run --project Tests/ViewingTests.csproj -c Release`. They run automatically in the signed
+installer pipeline. Current app-rendered checks live in ignored
+`build/windows-verification-013/` (previous 0.1.2 evidence remains in `windows-verification-012`).
+
+Processing metadata reads **available file metadata**; it cannot invent missing
+EXIF, descriptions or addresses. Existing indexed descriptions/addresses are
+retrieved separately. Paid enrichment remains a separate controlled workflow.
 
 ## Deliberate preview boundary
 
