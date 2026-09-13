@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "NektronMoments (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "NektronMoments (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

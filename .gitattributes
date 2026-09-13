@@ -1,1 +1,4 @@
 *.sh text eol=lf
+# Supplied runtime brand files must keep their verified source bytes on checkout.
+apps/windows/NektronMoments/Assets/** -text
+apps/windows/NektronMoments/Styles/Moments.Icons.xaml -text

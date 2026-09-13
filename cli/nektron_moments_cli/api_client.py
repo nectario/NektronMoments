@@ -608,11 +608,18 @@ class ApiClient:
         device_id: str,
         *,
         limit: int = 50,
+        source_id: str | None = None,
+        media_type: str | None = None,
     ) -> list[Mapping[str, Any]]:
+        params: dict[str, Any] = {"q": query, "limit": limit}
+        if source_id:
+            params["sourceId"] = source_id
+        if media_type:
+            params["mediaType"] = media_type
         page = self.request(
             "GET",
             "/v1/media/search",
-            params={"q": query, "limit": limit},
+            params=params,
             headers={"X-ImageTracker-Device-Id": device_id},
         )
         return [item for item in page.get("items", []) if isinstance(item, Mapping)]

@@ -1,0 +1,81 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+      <SolidColorBrush x:Key="MomentsWindowBrush" Color="#F7FAFC"/>
+      <SolidColorBrush x:Key="MomentsTitlebarBrush" Color="#F8FBFD"/>
+      <SolidColorBrush x:Key="MomentsSurfaceBrush" Color="#FFFFFF"/>
+      <SolidColorBrush x:Key="MomentsSecondaryBrush" Color="#EFF6FC"/>
+      <SolidColorBrush x:Key="MomentsBorderBrush" Color="#D7E5EF"/>
+      <SolidColorBrush x:Key="MomentsTextBrush" Color="#102739"/>
+      <SolidColorBrush x:Key="MomentsMutedBrush" Color="#4D6B80"/>
+      <SolidColorBrush x:Key="MomentsAccentBrush" Color="#147DB5"/>
+      <SolidColorBrush x:Key="MomentsSelectionBrush" Color="#DEF1FC"/>
+      <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#EFF6FC"/>
+      <SvgImageSource x:Key="MomentsAddImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/source-add.svg"/>
+      <SvgImageSource x:Key="MomentsRefreshImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/refresh.svg"/>
+      <SvgImageSource x:Key="MomentsThemeImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/sun.svg"/>
+      <SvgImageSource x:Key="MomentsLibraryImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/library.svg"/>
+      <SvgImageSource x:Key="MomentsPhotosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/photos.svg"/>
+      <SvgImageSource x:Key="MomentsVideosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/videos.svg"/>
+      <SvgImageSource x:Key="MomentsFolderImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/sources.svg"/>
+      <SvgImageSource x:Key="MomentsActivityImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/processing.svg"/>
+      <SvgImageSource x:Key="MomentsInfoImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/info.svg"/>
+      <BitmapImage x:Key="MomentsMarkImage" UriSource="ms-appx:///Assets/Mark.light.png"/>
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="Default">
+      <SolidColorBrush x:Key="MomentsWindowBrush" Color="#081723"/>
+      <SolidColorBrush x:Key="MomentsTitlebarBrush" Color="#0A1B29"/>
+      <SolidColorBrush x:Key="MomentsSurfaceBrush" Color="#102333"/>
+      <SolidColorBrush x:Key="MomentsSecondaryBrush" Color="#163247"/>
+      <SolidColorBrush x:Key="MomentsBorderBrush" Color="#29465D"/>
+      <SolidColorBrush x:Key="MomentsTextBrush" Color="#E6F1F8"/>
+      <SolidColorBrush x:Key="MomentsMutedBrush" Color="#ABC4D5"/>
+      <SolidColorBrush x:Key="MomentsAccentBrush" Color="#74D0EE"/>
+      <SolidColorBrush x:Key="MomentsSelectionBrush" Color="#1C4763"/>
+      <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#163247"/>
+      <SvgImageSource x:Key="MomentsAddImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/source-add.svg"/>
+      <SvgImageSource x:Key="MomentsRefreshImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/refresh.svg"/>
+      <SvgImageSource x:Key="MomentsThemeImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/sun.svg"/>
+      <SvgImageSource x:Key="MomentsLibraryImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/library.svg"/>
+      <SvgImageSource x:Key="MomentsPhotosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/photos.svg"/>
+      <SvgImageSource x:Key="MomentsVideosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/videos.svg"/>
+      <SvgImageSource x:Key="MomentsFolderImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/sources.svg"/>
+      <SvgImageSource x:Key="MomentsActivityImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/processing.svg"/>
+      <SvgImageSource x:Key="MomentsInfoImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/info.svg"/>
+      <BitmapImage x:Key="MomentsMarkImage" UriSource="ms-appx:///Assets/Mark.dark.png"/>
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="HighContrast">
+      <SolidColorBrush x:Key="MomentsWindowBrush" Color="{ThemeResource SystemColorWindowColor}"/>
+      <SolidColorBrush x:Key="MomentsTitlebarBrush" Color="{ThemeResource SystemColorWindowColor}"/>
+      <SolidColorBrush x:Key="MomentsSurfaceBrush" Color="{ThemeResource SystemColorWindowColor}"/>
+      <SolidColorBrush x:Key="MomentsSecondaryBrush" Color="{ThemeResource SystemColorWindowColor}"/>
+      <SolidColorBrush x:Key="MomentsBorderBrush" Color="{ThemeResource SystemColorWindowTextColor}"/>
+      <SolidColorBrush x:Key="MomentsTextBrush" Color="{ThemeResource SystemColorWindowTextColor}"/>
+      <SolidColorBrush x:Key="MomentsMutedBrush" Color="{ThemeResource SystemColorWindowTextColor}"/>
+      <SolidColorBrush x:Key="MomentsAccentBrush" Color="{ThemeResource SystemColorWindowTextColor}"/>
+      <SolidColorBrush x:Key="MomentsSelectionBrush" Color="{ThemeResource SystemColorHighlightColor}"/>
+      <SvgImageSource x:Key="MomentsAddImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/source-add.svg"/>
+      <SvgImageSource x:Key="MomentsRefreshImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/refresh.svg"/>
+      <SvgImageSource x:Key="MomentsThemeImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/sun.svg"/>
+      <SvgImageSource x:Key="MomentsLibraryImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/library.svg"/>
+      <SvgImageSource x:Key="MomentsPhotosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/photos.svg"/>
+      <SvgImageSource x:Key="MomentsVideosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/videos.svg"/>
+      <SvgImageSource x:Key="MomentsFolderImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/sources.svg"/>
+      <SvgImageSource x:Key="MomentsActivityImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/processing.svg"/>
+      <SvgImageSource x:Key="MomentsInfoImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/info.svg"/>
+      <BitmapImage x:Key="MomentsMarkImage" UriSource="ms-appx:///Assets/Mark.dark.png"/>
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+  <Style x:Key="DetailLabel" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="11"/>
+    <Setter Property="CharacterSpacing" Value="60"/>
+    <Setter Property="Foreground" Value="{ThemeResource MomentsMutedBrush}"/>
+    <Setter Property="Margin" Value="0,14,0,5"/>
+  </Style>
+  <Style x:Key="DetailValue" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="14"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+    <Setter Property="IsTextSelectionEnabled" Value="True"/>
+    <Setter Property="Foreground" Value="{ThemeResource MomentsTextBrush}"/>
+  </Style>
+</ResourceDictionary>

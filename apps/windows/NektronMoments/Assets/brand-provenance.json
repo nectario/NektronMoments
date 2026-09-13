@@ -1,0 +1,3700 @@
+{
+  "files": [
+    {
+      "source": "brand/app/NektronMoments.ico",
+      "destination": "Assets/AppIcon.ico",
+      "sha256": "09764f3d19888114dee478d3f79aafb5f93b03cc9addbca7a260e78ef295be41"
+    },
+    {
+      "source": "brand/window/NektronMoments.Window.ico",
+      "destination": "Assets/Window.ico",
+      "sha256": "2171e6840fa2c535f664fc8af5f51fb895a01663ce9a18c28fd7161c8afd4b40"
+    },
+    {
+      "source": "brand/mark/light/png/24.png",
+      "destination": "Assets/Mark.light.png",
+      "sha256": "b716d677405fde88688b55829ec51f8d8be7ac63c63149b7af481aa1e257f1cf"
+    },
+    {
+      "source": "brand/mark/dark/png/24.png",
+      "destination": "Assets/Mark.dark.png",
+      "sha256": "cf461819aa68eae53cfbbaeafd4c6b14c28617f81fee39c815d8987e5f4b62e0"
+    },
+    {
+      "source": "integration/winui3/Moments.Icons.xaml",
+      "destination": "Styles/Moments.Icons.xaml",
+      "sha256": "42c6655095ec6f0c8441e97a17bb2e1e14f59e3284a7d7eec431732704880744"
+    },
+    {
+      "source": "LICENSE_AND_PROVENANCE.md",
+      "destination": "Assets/LICENSE_AND_PROVENANCE.md",
+      "sha256": "1544196059813e6cac4cdaee1a2bea04ac1782c0c202cea368182f01b892787d"
+    },
+    {
+      "source": "icons/ui/svg/dark/account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/account.svg",
+      "sha256": "b9a096768cc55eaf915b4320d303642fa4921ad56a8f22008bd4f97bf41c1398"
+    },
+    {
+      "source": "icons/ui/svg/dark/add-account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/add-account.svg",
+      "sha256": "1665715bafa332efc8ed09a49ffb849e0b5731156a4ffb6c88a2c4d6312cc131"
+    },
+    {
+      "source": "icons/ui/svg/dark/albums.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/albums.svg",
+      "sha256": "752e1630c5db908e759d2d45c69708e2716a942083ee3df449835f60ee1bab93"
+    },
+    {
+      "source": "icons/ui/svg/dark/check.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/check.svg",
+      "sha256": "4d88a28d407bfbde5ab03261f84fa79da65bfd95531b2015d0b2d8a5ac18c5a4"
+    },
+    {
+      "source": "icons/ui/svg/dark/close.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/close.svg",
+      "sha256": "748e92b854efbe1a84cf9481c99ec31e54beaeadd99207d0b979b59e4a9d2b4e"
+    },
+    {
+      "source": "icons/ui/svg/dark/copy-path.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/copy-path.svg",
+      "sha256": "b39e6d16c110e5993bdc0c5b80b5929bc5d41c5d387d1406e6b9ca21a449a170"
+    },
+    {
+      "source": "icons/ui/svg/dark/copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/copy.svg",
+      "sha256": "c5c8dee61fb57b36e07a91709d73bfa2465c727f6d44f7c50553867ad290b54e"
+    },
+    {
+      "source": "icons/ui/svg/dark/date.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/date.svg",
+      "sha256": "c775a9e474666a8bcb7ce1f06346910974833c2044234b50e5575487ab43cbc8"
+    },
+    {
+      "source": "icons/ui/svg/dark/device-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/device-add.svg",
+      "sha256": "f2a950d5d24cb4a6bc891e64e1f8a19f288a1d94d0359bfd86cd1d45daa29712"
+    },
+    {
+      "source": "icons/ui/svg/dark/device.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/device.svg",
+      "sha256": "9196afde148e28a11666569e47e00966f6b95e9d5e516dd20037008335947253"
+    },
+    {
+      "source": "icons/ui/svg/dark/devices.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/devices.svg",
+      "sha256": "58eff3baae395560b84b6183718134ec05ab3373f42a4dd009e1d88d41c4c663"
+    },
+    {
+      "source": "icons/ui/svg/dark/download-copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/download-copy.svg",
+      "sha256": "5bdc15789e119435e4b2d990df10697db03bede5956edbce459c6c7c0221afc6"
+    },
+    {
+      "source": "icons/ui/svg/dark/duplicates.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/duplicates.svg",
+      "sha256": "5b94bbc4b8802a5ea824137fe48d4da8b684893254712710d6390d606cedd1a2"
+    },
+    {
+      "source": "icons/ui/svg/dark/duration.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/duration.svg",
+      "sha256": "4d4fded02f61038200e90fa509791914cd136a17a0eecfcf506275539e0a35d8"
+    },
+    {
+      "source": "icons/ui/svg/dark/error.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/error.svg",
+      "sha256": "810e1d62f8b0e6a7b4f6383795f403cf1a49e6c3ac3a9f8be06741e0ca0c3e4a"
+    },
+    {
+      "source": "icons/ui/svg/dark/favorites.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/favorites.svg",
+      "sha256": "539b1f476081690fa645dc08d3a87041d183727263203e0bf775f9f8a434b5cd"
+    },
+    {
+      "source": "icons/ui/svg/dark/file-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/file-open.svg",
+      "sha256": "d8fd810bfe93d8d67598862dbd596cdbcb491679bb60da68cf18a560a53cf443"
+    },
+    {
+      "source": "icons/ui/svg/dark/filter.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/filter.svg",
+      "sha256": "6b839b36923a66335df75b0a54d1447fa94fb59dd8162e2c9e1b2e7421c60689"
+    },
+    {
+      "source": "icons/ui/svg/dark/fit.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/fit.svg",
+      "sha256": "de02a9ab2e2e887056916bd34793e0f60d393dba52a90307edf6932802155d0d"
+    },
+    {
+      "source": "icons/ui/svg/dark/folder-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/folder-open.svg",
+      "sha256": "1144257b3ab4f1e0aab057d4951cedb6b3eac7d4f1209267202ca8e3936cb69c"
+    },
+    {
+      "source": "icons/ui/svg/dark/fullscreen.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/fullscreen.svg",
+      "sha256": "ae92945db861f0fcefdf529b4617d238cfca8a335f924e166470c0d569a5edb5"
+    },
+    {
+      "source": "icons/ui/svg/dark/grid.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/grid.svg",
+      "sha256": "54781de739795d053d2c21de602011e5e03eba8744f067bc833db744ea75bc47"
+    },
+    {
+      "source": "icons/ui/svg/dark/hash.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/hash.svg",
+      "sha256": "c53d5ee03632f7b593c0477f1dc645cf2cc354631adc7c91df4f5845e2fe98ff"
+    },
+    {
+      "source": "icons/ui/svg/dark/help.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/help.svg",
+      "sha256": "a0a29038cb00942f85a1e60db265b14a5028123fcb847062ea8864d6e4551a91"
+    },
+    {
+      "source": "icons/ui/svg/dark/home.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/home.svg",
+      "sha256": "750c9a1d1cc9299a9b12c853d73525d703f9cd6b2fffd667076b888f1bbbc895"
+    },
+    {
+      "source": "icons/ui/svg/dark/image-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/image-file.svg",
+      "sha256": "e6e20fe9837490e71f75f882ddce86c9c754a7fde8c8fd7fe3370d94c23c9000"
+    },
+    {
+      "source": "icons/ui/svg/dark/info.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/info.svg",
+      "sha256": "6146ea1e3cb70cbf04d712bf19eb7abf1a4debc9e6acc41c49d3452c10c055c1"
+    },
+    {
+      "source": "icons/ui/svg/dark/library.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/library.svg",
+      "sha256": "466ddeddc87d82c61633ea8a7834beada9adef6425a1c625e1898861fd28aca1"
+    },
+    {
+      "source": "icons/ui/svg/dark/link.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/link.svg",
+      "sha256": "978370586d1077d1272f080b11b37090350039d722fbe4aebc1bd903e5ab4041"
+    },
+    {
+      "source": "icons/ui/svg/dark/list.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/list.svg",
+      "sha256": "18b832ced5bb15dd88f281eb2334a0b3922fa1316151875bc0702a212b048504"
+    },
+    {
+      "source": "icons/ui/svg/dark/local-only.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/local-only.svg",
+      "sha256": "4f68bdb56e4a7442a08fbd12833ca4d2901874574fd76a205833626049b132fb"
+    },
+    {
+      "source": "icons/ui/svg/dark/location.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/location.svg",
+      "sha256": "48c606aee25212c39d8f6adffb8111c91eafb27adb5c6b2a2395f3dae7617a2b"
+    },
+    {
+      "source": "icons/ui/svg/dark/map.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/map.svg",
+      "sha256": "0c0f271edfcb8dfc1fa4b8f6cfe0cef7bda40ef808e9de8ee477eb7b6a045ffe"
+    },
+    {
+      "source": "icons/ui/svg/dark/menu.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/menu.svg",
+      "sha256": "99741a48dbdcf9f915a3c283fa0524b816cdaa89fd4576201201adefcc6f86b9"
+    },
+    {
+      "source": "icons/ui/svg/dark/metadata.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/metadata.svg",
+      "sha256": "e90c005ae70aad3289060b20c7009b6cda0c86f232c561ee8675dde7ef01c11c"
+    },
+    {
+      "source": "icons/ui/svg/dark/moon.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/moon.svg",
+      "sha256": "31ab9b299aabe8168a4db0b940181847e69cd48a02eb5919aa160e05f58c2049"
+    },
+    {
+      "source": "icons/ui/svg/dark/more.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/more.svg",
+      "sha256": "d0c44968d93c27f6dfbada690f1b92d0ac56f8f9d05501d54c0cff429a952ac2"
+    },
+    {
+      "source": "icons/ui/svg/dark/mute.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/mute.svg",
+      "sha256": "f57347943fa1416cfca8de96b50f96e4e1c67254e8c033f4eb9cd9439be263a5"
+    },
+    {
+      "source": "icons/ui/svg/dark/next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/next.svg",
+      "sha256": "214b99527eb0c0421e3e6d74ab7aa14c6684ef89c908ddef81bac9b8ca6ad056"
+    },
+    {
+      "source": "icons/ui/svg/dark/notifications.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/notifications.svg",
+      "sha256": "f2acc56a3b681aad65b5c62cadc5178667fd4071252874e8a3ca36b622d69658"
+    },
+    {
+      "source": "icons/ui/svg/dark/occurrences.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/occurrences.svg",
+      "sha256": "0dbe92eee35bc6a7d0d48d14b9446e19c29f46fbaf97979106361ffc1ea8fc7c"
+    },
+    {
+      "source": "icons/ui/svg/dark/offline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/offline.svg",
+      "sha256": "2193a2241569cfa782c7204deedf03192bdfbcdf393ba4da7cf86aae8b0de146"
+    },
+    {
+      "source": "icons/ui/svg/dark/online.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/online.svg",
+      "sha256": "e401995c2d6200e6ae0480616592ec3e3436392d7b6e64db81dda9f3b4973850"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/account.svg",
+      "sha256": "ea6041e148efdc0388e8b270382304c581305570a12956b41b6c74bbb99a5b84"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/add-account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/add-account.svg",
+      "sha256": "0a088dad7a445d6be2614e920573939d3a9a1503a9eb4713e8755829a1e723a2"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/albums.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/albums.svg",
+      "sha256": "91916df6abb22d2deff6238685b8a511f9c790bf6b9aabcb21aadd45cb4d3121"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/check.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/check.svg",
+      "sha256": "fa72d9bdcaa228b05de23d1f8a94df6a9ab8d87cf314015672dd20df1942d8e9"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/close.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/close.svg",
+      "sha256": "d50a91a88e35c5e36861ee499bc49d692cda982daba84e7b4a737dd3ccda2bb8"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/copy-path.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/copy-path.svg",
+      "sha256": "f01aece76353186ef5da9758afeb7002583f9d4f75da35a26b4b9cd5fc49747e"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/copy.svg",
+      "sha256": "fe5f3ec71bf6339d9194943e2f6bb6d84752c4002372398293110332e6164e1b"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/date.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/date.svg",
+      "sha256": "6cceabb074001f5eaef7f4c5cc9151a557c2ef38c0f8a635d3efe4addcd120ba"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/device-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/device-add.svg",
+      "sha256": "3e0ef9fbbe4608f08be9307c787173cd64b0949416f9a92b9d5162028414af9e"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/device.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/device.svg",
+      "sha256": "4c7902ecde6d756c95fcad0019289b6341c2a4f651a67524a2c4ffa369b2c302"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/devices.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/devices.svg",
+      "sha256": "01a8181553623872e7f39496d01de21578ece622c26e063ab68f5744c23ca437"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/download-copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/download-copy.svg",
+      "sha256": "38146e99908b34e691e5113f9a0de3b43f53fc13295df0ff5faaf1a41b0b390a"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/duplicates.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/duplicates.svg",
+      "sha256": "442d072d203a9c426fbb8911953919bf8b050ea5dfa53bf81d996a5b193c4972"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/duration.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/duration.svg",
+      "sha256": "61c3d1f49d4dba37cd5d469e97d4b7242591f96ac6149101d6f84bb2c11361c3"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/error.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/error.svg",
+      "sha256": "b6b0f1ad0f78c32282093d68ddc22251af100eee889f280f4bcaf7443919c039"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/favorites.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/favorites.svg",
+      "sha256": "7a0608884065fdeae7abfdf9120bb796425a8099cd1f30d9ea602dd17906b7ee"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/file-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/file-open.svg",
+      "sha256": "f1c9547c1df8c645790a749b20ae3c281c112cd8c6bc0440ab8e10a2b120f8fd"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/filter.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/filter.svg",
+      "sha256": "5449af98712bb3352db92cd7e42da06a43b2b8830a10481a724b6a10a5b0557d"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/fit.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/fit.svg",
+      "sha256": "849319c85fef360d1e202aaa1131d53952e3693c29441c8ede1fb07e06c2871f"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/folder-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/folder-open.svg",
+      "sha256": "30d12520a44a9568196977512fbc2f26bbfa1c2e6bb5b6cbb14dffd9d6946792"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/fullscreen.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/fullscreen.svg",
+      "sha256": "2d176fe9ddb7b50302d5774b88a80329d34acd2cd14fe11351d367634c6d295d"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/grid.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/grid.svg",
+      "sha256": "47344ee2c66261dedf161a6cc3c7e2c5c81872cc0b9c723f6e4fe7c8006e33ea"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/hash.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/hash.svg",
+      "sha256": "ebe2f95fda347834c6d7c80e8df95a59db1fad1b6841e29b8c2d4128aee466d4"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/help.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/help.svg",
+      "sha256": "b1eb44a7b025aec0242a4ac2a1e8a315a61bbb93792cfb79b6edcd43cd055829"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/home.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/home.svg",
+      "sha256": "f38a151bc2db7426a93676a265c7118ee8a2e1c5e88e88ea2a36afd887021ad6"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/image-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/image-file.svg",
+      "sha256": "7f2b9c1e7aa2dcc26f302073d3eaa194cf8638316973eaec977ad2ea315e05a4"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/info.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/info.svg",
+      "sha256": "a2d102e4b3492d90202719846d8fc0d051613a848d74016eaf54259f5ff9d661"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/library.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/library.svg",
+      "sha256": "0abb9217870002187e1e66980f9b7bb85a855be09545f571287ed9e591377e9d"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/link.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/link.svg",
+      "sha256": "8a4341513ec9868a65fd039f058a836b47f3e68e2599b931a8fcb94af9a80cc0"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/list.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/list.svg",
+      "sha256": "fef8a647dd7011c9825b1d77d1667b1b8044db685930f33f88375eb6dd4fd6a9"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/local-only.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/local-only.svg",
+      "sha256": "84345c91b7b5e7c719f33483821323ad0db6361696882da84b76ff0c212415fc"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/location.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/location.svg",
+      "sha256": "919ebd85240281ff02a9cdb52bd94e4525ecbc78a6e9d42e9ecc180e57653179"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/map.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/map.svg",
+      "sha256": "0b8e23b24e33082139da6fbe061d5cd38f4d097c9ab4badd85bff8940a5c114d"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/menu.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/menu.svg",
+      "sha256": "7b85988fcbb4fb85911d17fb0e5b26f90328e38965de1714302ec0f01388710a"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/metadata.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/metadata.svg",
+      "sha256": "113fd779f849fd3ee74cd7f664a1f1b14d98e7ae17553771a80bfac74c6cb9dd"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/moon.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/moon.svg",
+      "sha256": "ed1dea9361b241bd2f99a8e6676c1dcae08b6029168ac26ce051936de45c1309"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/more.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/more.svg",
+      "sha256": "2d3f4bbc4582c9a472ed5642819e9ddbff25f373a47b2e7748a691fcec38d63e"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/mute.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/mute.svg",
+      "sha256": "a43916179e5f3e962c282c55137d591f9bad731ee05fccd4d03597911e36ead8"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/next.svg",
+      "sha256": "b9abdb981aaeabfbe7758d8eef0f044dd8a0323ab9291e041ae5656f1a8a8fb8"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/notifications.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/notifications.svg",
+      "sha256": "41498c8e0bb4db3e18a8a5d02434cd8151a15cb09c2fd2e53d97412c16bcf3a4"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/occurrences.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/occurrences.svg",
+      "sha256": "01983dfec620b0db8ed9307c1c4db8461dc1ed4e7108ac70f50079f625404517"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/offline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/offline.svg",
+      "sha256": "f0bd56514da3d0e9fae963e1bb36d4919a181665cc87f87cac9007337116b4fb"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/online.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/online.svg",
+      "sha256": "2fb3d40075306a5c8fc22ae5714405cb4901fe7f16a7a0e0a677e4a678b58d86"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/outbox.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/outbox.svg",
+      "sha256": "c610dfe2bc1ffba91fb212238969f1dff42ac48c47d94d682fb1302a0add471b"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/pause.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/pause.svg",
+      "sha256": "51e9c75be875fa8d6a543d7fdb6717f46c268f55ee23c760bf7ba2d05cfbe31d"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/photos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/photos.svg",
+      "sha256": "e1b0503277dfef5e464c8f43b3fea7e15bbf97405a7f67e0b2c692f9a70ffce7"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/pin.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/pin.svg",
+      "sha256": "c860981957802439a6a1b0c9c84f2ce63651feaeb2a413a15d829bbdf2ba445c"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/play.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/play.svg",
+      "sha256": "c336f28b6618f95e9095acb5573a93211062a3009c6e02eb82306b3bdb812c16"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/previous.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/previous.svg",
+      "sha256": "0ae34f98315e862f09bc8e1f229574fa51c571d7be46e64dbd7c6dcb4c02d4e4"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/processing.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/processing.svg",
+      "sha256": "948d4e0c1c0ee8b84fb2d25e4d6538a315994f2fc83bf50b1e77d7683bfeca7f"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/queued.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/queued.svg",
+      "sha256": "4ea69c481439bf2aa6a35223ca1a984a30b0a543205aec68791cfc5c55976600"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/quota-wait.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/quota-wait.svg",
+      "sha256": "65634284827d1f215969797943a5cbcbfe0fda086de70db666441490dc336f05"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/recent.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/recent.svg",
+      "sha256": "a7502c8073c7ee950b12b608cf3f299536ee8d4b4cc7b162134ed122b2b31e04"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/refresh.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/refresh.svg",
+      "sha256": "89d6ebd6c0497736972781a603c4dbea147391fccee875185b8d025e338766a5"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/reset.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/reset.svg",
+      "sha256": "3e275e86838d22e89b8025a66376e8ae54ec1e187f5b0738864d2db992ed8fa6"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/retry.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/retry.svg",
+      "sha256": "28ee9fd303a668a53133c8d515a8c9621b058575124941a9a7b5102d180738c2"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/reveal-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/reveal-file.svg",
+      "sha256": "0dfc97ebf8483a4e046ce34c69b0530820a9fb8149db3b6928af5071c54c69ba"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/scene-description.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/scene-description.svg",
+      "sha256": "ce51141c10f01b10a49c89e43c004b14833df9bc60688cba369f6edbddb147f2"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/scene-search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/scene-search.svg",
+      "sha256": "2e5861d33e6056226104c70ebf9083a74946ba5be82d3227c2a6b3eff699bc9e"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/search.svg",
+      "sha256": "b6c78bed52de0738332ec508b4143b2727bc5d0b55be66b98f12547fa171d3ed"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/select.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/select.svg",
+      "sha256": "26a222657aca8f1dfa92665d2ff517987b0e8861050f4aa2296bae666c994b93"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/settings.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/settings.svg",
+      "sha256": "09558835aca21abbd3f931ea9fb2464f7de8a35833bb6985d2ae2948530719bf"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/sidebar.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/sidebar.svg",
+      "sha256": "002344101341fc94a8102f299c8734db3d33b3ee1799b4b323c08093c505502e"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/sign-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/sign-out.svg",
+      "sha256": "110385062ec0f1818d80c4bb259997d0c1ac595e53c6ced2aaa8861f4121bdff"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/skip-next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/skip-next.svg",
+      "sha256": "7d48d96853cdf17087834a36fe6434cac5947016b1f40b73775fbd5786565421"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/sort.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/sort.svg",
+      "sha256": "640437db2cfa94086533c9c0b56435d0c5133ac504a547d9ca878f3a9e8cf03f"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/source-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/source-add.svg",
+      "sha256": "54ee1325ce7091e78b78c8750f1aa8fb8b070eb144722b661f34f31399a7d6df"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/source-remove.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/source-remove.svg",
+      "sha256": "c7f952e50ebf25c3757702b281be4f16c6be1495498c4a93562dfac08d16a218"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/sources.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/sources.svg",
+      "sha256": "d605fd56cf1302ba5c16f4df0f0b00213f9431cf08869ed8baeec25300ba2685"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/stop.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/stop.svg",
+      "sha256": "05649ef0472658c7b18e4d386a69d59fe0fc29c1f1b8f4726d201417f001b7bd"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/sun.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/sun.svg",
+      "sha256": "d6c057a4c7fea6bea4c90adaac04d5dd5446c4ae5b8bd1559901cfb1b9530fed"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/sync.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/sync.svg",
+      "sha256": "997f69b500ecba0eb9e40b44785508bb0fe7d3f37ad8e9e6d9d7b0d1257c1372"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/tags.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/tags.svg",
+      "sha256": "1ad720b0b86a6f93383b466faef10fe488d29a3fa6e3d73c6fe695563bf3c6be"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/temporary-preview.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/temporary-preview.svg",
+      "sha256": "f4f575bc12e09108e38b7032dee26c02c0f23c7f542e020395172cf90eaaf231"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/time.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/time.svg",
+      "sha256": "821f35f5399b5802dfcde0622d29b7d012ee6b3398408ef25850063bdac6334f"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/timeline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/timeline.svg",
+      "sha256": "fcaa8030c4e2dc36528976bf4786208526128a36b51087401a0a6663c8de2113"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/video-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/video-file.svg",
+      "sha256": "9ab248228c94f9fca79638c275be405d3b31d43101e6f9b3282e8f5e088b8be9"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/videos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/videos.svg",
+      "sha256": "54dcfd8bbe111f224d434bab081a8391884d4a91199827208eb9be4f89b3e783"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/volume.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/volume.svg",
+      "sha256": "f991560a0fb7badf4c9bc862c663d8ec56b3f8f08f42b38dd3b21b27fd4378fc"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/warning.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/warning.svg",
+      "sha256": "fb5917fe9c56f920d4caa6324e57e3d9afed48e8c14e53a6083ed129192d0bad"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/zoom-in.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/zoom-in.svg",
+      "sha256": "ebf5019997e5cb13a7f3be5eba89a7c6be2df34d1e07862afeef5e1592a06ef3"
+    },
+    {
+      "source": "icons/ui/svg/dark/optical-16/zoom-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/optical-16/zoom-out.svg",
+      "sha256": "e41de7233e07b8cf11ff8fb8c41cfcdf339f65bbeab0863c5a3ac8ca81914271"
+    },
+    {
+      "source": "icons/ui/svg/dark/outbox.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/outbox.svg",
+      "sha256": "f8f9006e9c397e51125a496916fedc4936cfbcaec5da7dccb59155e891b7a6d4"
+    },
+    {
+      "source": "icons/ui/svg/dark/pause.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/pause.svg",
+      "sha256": "bda2e36956abc7fe46a1a3d05c7825acb2f03d38122ce3759db7872101efb6c9"
+    },
+    {
+      "source": "icons/ui/svg/dark/photos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/photos.svg",
+      "sha256": "e227ea04314ff48b3953a01443f618cdd2b017c6a0831ab91b211ecab7332260"
+    },
+    {
+      "source": "icons/ui/svg/dark/pin.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/pin.svg",
+      "sha256": "0c77368c915065797160be9c07f67000f8a63653ae092c510910b55a6ac0a6eb"
+    },
+    {
+      "source": "icons/ui/svg/dark/play.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/play.svg",
+      "sha256": "6db9c2242cb5f359e11d3da320e12aa1166a217fc904d6dab9e5290ebe8ff182"
+    },
+    {
+      "source": "icons/ui/svg/dark/previous.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/previous.svg",
+      "sha256": "5baeadb94a45e8560abd2da82eb3caa21c55238c8b387261571dd3efc25c2750"
+    },
+    {
+      "source": "icons/ui/svg/dark/processing.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/processing.svg",
+      "sha256": "5c3fcc67030ef78302948bb7dd6e25278104ec98ab19c8787eec2c4cdc96c57e"
+    },
+    {
+      "source": "icons/ui/svg/dark/queued.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/queued.svg",
+      "sha256": "44696f420c363ea92e3812a3192c60965891c9643ce3f53a4abd9cd8e336ee66"
+    },
+    {
+      "source": "icons/ui/svg/dark/quota-wait.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/quota-wait.svg",
+      "sha256": "822a396120427e23e6c0c3a8aceaffdbc4509436ba75b09a1247a1a0ab219421"
+    },
+    {
+      "source": "icons/ui/svg/dark/recent.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/recent.svg",
+      "sha256": "413c997d42f90d5aac70114fa8e1aa8419d5f5d4e4c7cedbec0453bf852006a0"
+    },
+    {
+      "source": "icons/ui/svg/dark/refresh.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/refresh.svg",
+      "sha256": "9fe5af10ad63bb03b1d0aa571ab96663b712f57f2ef2d958164525f068d3bf7c"
+    },
+    {
+      "source": "icons/ui/svg/dark/reset.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/reset.svg",
+      "sha256": "7e8f4075c360f71c33e4e720b6069e0d8858033b5ce13eeb1d774db4b5ac35d6"
+    },
+    {
+      "source": "icons/ui/svg/dark/retry.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/retry.svg",
+      "sha256": "daa9922f5271b36cf162822e542ded71906efc988b7b78a3c00fe44431835f11"
+    },
+    {
+      "source": "icons/ui/svg/dark/reveal-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/reveal-file.svg",
+      "sha256": "9ea89b3ed1fea3030abf7cb8b97806462ada745164f39a64fc04ec1df14297c8"
+    },
+    {
+      "source": "icons/ui/svg/dark/scene-description.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/scene-description.svg",
+      "sha256": "44b7dd1c78a97e78e93029c09f18e0784bb9dab8896aa8fc687dfc3c05433a65"
+    },
+    {
+      "source": "icons/ui/svg/dark/scene-search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/scene-search.svg",
+      "sha256": "3445d0e71a604abb40798cb9c7ac407364b5e718b50792af580c1c52473ef1b8"
+    },
+    {
+      "source": "icons/ui/svg/dark/search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/search.svg",
+      "sha256": "5b17c18cb5c03607689b5f083fb686d902ddc6dcd076fe8bab873d720474640e"
+    },
+    {
+      "source": "icons/ui/svg/dark/select.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/select.svg",
+      "sha256": "6397cd0c3879a081394e9073a1d0b5ec5713f627c0673bb1f3b429af8c017d6e"
+    },
+    {
+      "source": "icons/ui/svg/dark/settings.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/settings.svg",
+      "sha256": "bcaaf956a614acc76813bca3e9162ded4ab884a9d4b1853df13fbc8891e85daf"
+    },
+    {
+      "source": "icons/ui/svg/dark/sidebar.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/sidebar.svg",
+      "sha256": "dfba4b3472c6dd3d5f3ab476fd6c22e2882c76ca224a49ab0285cb0a516fc7d3"
+    },
+    {
+      "source": "icons/ui/svg/dark/sign-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/sign-out.svg",
+      "sha256": "e6b3eb7729a0a21b783b1c37986d331edce956812b5639cf6d14600c8c6e6c1e"
+    },
+    {
+      "source": "icons/ui/svg/dark/skip-next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/skip-next.svg",
+      "sha256": "0b38b919e599e5d9f684b4aff4cbcef71b23f235b0e024f5d0a40e7486619f30"
+    },
+    {
+      "source": "icons/ui/svg/dark/sort.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/sort.svg",
+      "sha256": "6ae8bfaff669cd7c427b6a7d0049ad77c1c71355dc1aec7bfef928036d30812a"
+    },
+    {
+      "source": "icons/ui/svg/dark/source-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/source-add.svg",
+      "sha256": "3072673f1274f8b94549bb55f6ae9ac5689e25a9a11a9e92ffae7db15aba8d6a"
+    },
+    {
+      "source": "icons/ui/svg/dark/source-remove.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/source-remove.svg",
+      "sha256": "ad4a32f0f0628e4a7e39e43e30c1d83fc8548be340547444e865f4b67481069d"
+    },
+    {
+      "source": "icons/ui/svg/dark/sources.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/sources.svg",
+      "sha256": "d4332fa8874b0baae7d2edb49ca4e192437f9d9f96a4574f7c8706b503c1c0df"
+    },
+    {
+      "source": "icons/ui/svg/dark/stop.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/stop.svg",
+      "sha256": "e971d8d9657c9987f31e2cc917569c332036a2ec267feb12c63b42976f578df1"
+    },
+    {
+      "source": "icons/ui/svg/dark/sun.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/sun.svg",
+      "sha256": "54bc94f8d8752e24740d7508aa65b1f143bfb17e12d95198beed02f74cf35ed0"
+    },
+    {
+      "source": "icons/ui/svg/dark/sync.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/sync.svg",
+      "sha256": "29671d5f168953174deb6557b572e3cbc297961da88093ad3edab1b3ef9dbb84"
+    },
+    {
+      "source": "icons/ui/svg/dark/tags.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/tags.svg",
+      "sha256": "c193cdb3840738d19fa040cb32ee17c4ea7aa566aec2825570e26bf8fedd332d"
+    },
+    {
+      "source": "icons/ui/svg/dark/temporary-preview.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/temporary-preview.svg",
+      "sha256": "c35cd408de5ee5479dcd1f7dbf26249d1f460586c2948f526be5a0addfe60f43"
+    },
+    {
+      "source": "icons/ui/svg/dark/time.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/time.svg",
+      "sha256": "0ff5c111ae6f317cca56f528bc55d33c58715ee76caa5c6448aa98509734a8b1"
+    },
+    {
+      "source": "icons/ui/svg/dark/timeline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/timeline.svg",
+      "sha256": "359aeff79bd684014134d2b0c0fcb84075588caae254834b550a0fcda79c0773"
+    },
+    {
+      "source": "icons/ui/svg/dark/video-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/video-file.svg",
+      "sha256": "9f617dbf6246862a8b88b69b8a7a85288ada867361e2d9da532cf034e8678c28"
+    },
+    {
+      "source": "icons/ui/svg/dark/videos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/videos.svg",
+      "sha256": "93d4259b407f0317e2072ed935e79cc2d9f77df7d7b28e3274160358663ce002"
+    },
+    {
+      "source": "icons/ui/svg/dark/volume.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/volume.svg",
+      "sha256": "ed93563dda46d9a7234d8ce8c4007c7efcb52a7ddb848f5d2ace5f25c36091fa"
+    },
+    {
+      "source": "icons/ui/svg/dark/warning.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/warning.svg",
+      "sha256": "462b105a5cb76a61602d6362f5196136720937bad9caa0db01666e7bd80546d7"
+    },
+    {
+      "source": "icons/ui/svg/dark/zoom-in.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/zoom-in.svg",
+      "sha256": "15d35f756dfc73e3ab9967c9bb1f827b78f85ab126172099372c8dad2395af92"
+    },
+    {
+      "source": "icons/ui/svg/dark/zoom-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/dark/zoom-out.svg",
+      "sha256": "32263b665559ca6688af8da7424e3a6de883dca84f2b542dbbddcac1fa742de8"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/account.svg",
+      "sha256": "0e356e233dcb1149646af1003b0d945390127483a896aa5d9369ad76d1fe5a06"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/add-account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/add-account.svg",
+      "sha256": "22324147e299f6b824093d404a753ef025a203317d326458ac68e5800c2f0599"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/albums.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/albums.svg",
+      "sha256": "4c3863086c4f496a8ac1efc5c82a3b8d594afad719a5247767b3e25e74574c3b"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/check.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/check.svg",
+      "sha256": "2fa8d7c549ab0121946d435557d32818d07699292f2a5ea7fe55e6ae95c1ba1f"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/close.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/close.svg",
+      "sha256": "7782f6f5bf636538e6fc2c21b57118f5b9ee3caf9732139817f358b83d6ab26b"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/copy-path.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/copy-path.svg",
+      "sha256": "4a0f3c63d406e84e511114b17112cd9f317bdd78f59f1d4c58707d16d4278af8"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/copy.svg",
+      "sha256": "ed5a2d4df555b4a3615ae8d8ed9cc80200ae381c8c38791c623c49fa45b628f3"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/date.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/date.svg",
+      "sha256": "052d879132fd1dfbf4d1c8c9c801d577c5305e653e3b9002b207d5ca705973a6"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/device-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/device-add.svg",
+      "sha256": "04ac19fca1d58a94e1e2456d888848932c3e9e1b4fde509d90038f4eefd2633c"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/device.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/device.svg",
+      "sha256": "8452268b0424779b18b522d1e414c700375a938f33c2b3557f7423cd9dd23a31"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/devices.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/devices.svg",
+      "sha256": "89a1ffd5f188008d90d514ca3a4cdd99dcce5ab86af49c1174ce8a2a28074661"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/download-copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/download-copy.svg",
+      "sha256": "1c407a56aa3b6f90ee3f1f6124228faa99faf7abca213877b5c252f4250e8a81"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/duplicates.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/duplicates.svg",
+      "sha256": "b0662eac61dd745f0d8b551785223d5720ad19d7c78f1d38022cd8156435df3c"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/duration.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/duration.svg",
+      "sha256": "40e4cf59c0994b76e6e17ad01a7cc63b9f050627f1b528fbe695da56580a71f6"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/error.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/error.svg",
+      "sha256": "9e196a1118ffb83c2c8f3d14282f0ef07dfde98d541dd86cf18ce0eff31573d3"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/favorites.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/favorites.svg",
+      "sha256": "e16500d38a83afc147133fb5614533fa9ee226ae7e98f5dd2f4cc0188c3ad4a8"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/file-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/file-open.svg",
+      "sha256": "7db27773c3472bf4ab91f20bcf4677e1ee322530c2ec920f29fae8d83f6b7982"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/filter.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/filter.svg",
+      "sha256": "b8ea29f74bd35d574476fb897df5d2b490af4bb762658fafb0c9144ce92757f6"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/fit.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/fit.svg",
+      "sha256": "d0be68cc1f89f238389e960189b68ba2bf54e15e167f09abcf0bdac1ec5175ac"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/folder-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/folder-open.svg",
+      "sha256": "f85ee3cd7ccd73f4e0bc8920074ca0078af33afd793ddd25f2b7c54193c840ad"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/fullscreen.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/fullscreen.svg",
+      "sha256": "a30a99c43c57abb576ad703cd51ee68e2d1b881831f0e77bc8b42513ff8cdd01"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/grid.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/grid.svg",
+      "sha256": "3f745a3cc24bf0d69820053ac3310ae668bf9151b43b7fbbf8d416d9f80b991e"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/hash.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/hash.svg",
+      "sha256": "22303123a73f08f053ceea9a7221af709ed177db834e19bb3882e77d0c626e23"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/help.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/help.svg",
+      "sha256": "2ed586a8bef21506a4a7976418afa15bb7a1a0c1ca7e3e5d70a1ded495c49446"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/home.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/home.svg",
+      "sha256": "411044398d085a5b68aa80a9fdcb6b5144781cfadec0946c747b75e3ea995733"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/image-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/image-file.svg",
+      "sha256": "a49c194f4d07db0a922c6944d7642c1a092722429e3e075cd62e038459357830"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/info.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/info.svg",
+      "sha256": "786b08f569f8f82e4d17803e88a52c7cb2954b002115b5948c875dc9e8a24eaf"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/library.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/library.svg",
+      "sha256": "32de1c76e7cd72d0323a0526e94a83dda49d72ad4467b80bb76b9f903fefe222"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/link.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/link.svg",
+      "sha256": "b8e224d597145733241e56fe6ead7c446e22fb650bd6e8a632ae6bae07ab1b07"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/list.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/list.svg",
+      "sha256": "f6fd8e6bf2bde659d3e0fcfc927567e58a1b6eb6b83c1880918b9fb35ea6843a"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/local-only.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/local-only.svg",
+      "sha256": "52a7401eacc87cd4129595e20a3e0ad7f8fc6d74fee249735348fc621fa63c00"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/location.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/location.svg",
+      "sha256": "ac3c60343591eb59a4b97a4df12b7b1728f26c2194f80ed618209e32f2ea97fb"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/map.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/map.svg",
+      "sha256": "369fe4f0fff9e5e998116728aa4895ab42fb61756e95dc05d324acfd7cca132e"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/menu.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/menu.svg",
+      "sha256": "0736675d2c05354eea47e3731e3ebeed5fc8d505c3ae4398a89686f6ca3ceae8"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/metadata.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/metadata.svg",
+      "sha256": "c731349517b5db8620bf895c88663b78cf52cff604ccf98aeda7fcdda1ddcd69"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/moon.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/moon.svg",
+      "sha256": "df4a87766b533b613356d77ed4d4e6582da4935002d5697b50e79d077765aa51"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/more.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/more.svg",
+      "sha256": "5142438df97438bc2a1c6bd94c8595da9668898b9972a5cdd8b9b9702d7f3f63"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/mute.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/mute.svg",
+      "sha256": "0c021af9be69278be239c430f249f0189addfae4345ca489d6498d8fe9614e29"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/next.svg",
+      "sha256": "3340d96d57f0c7dfc1aa91a074a4c19562cc3533803b8137c7835fa1a116758b"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/notifications.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/notifications.svg",
+      "sha256": "c12c46a5b20531584348b3eae4fd927a92de829d53190c997311fa0d45170ffa"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/occurrences.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/occurrences.svg",
+      "sha256": "632569d921d4cc02ba4c052aa299a80ea775add0a3444a3bc0da3b7425b75eb7"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/offline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/offline.svg",
+      "sha256": "51472026b0255ca0a93ff91f7094324a28448a882562409f6204c4813a79c76f"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/online.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/online.svg",
+      "sha256": "fc826fe43062cf9d5c6bc32c378af3b3351d1b6bd26b4990c03e5eef1e9b9a6c"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/outbox.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/outbox.svg",
+      "sha256": "daf7c8e6c05670ac35d5f65170401065ce71b82dc3fadd5211e0483208440342"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/pause.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/pause.svg",
+      "sha256": "3ae3f459f77ab45b8a6f0152fdba86facf7333b6d58089566ba3e4ffdf18852c"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/photos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/photos.svg",
+      "sha256": "5a1f8d5bae80c395304350e4d7d2a13b6ecc5ac53e2c4e05704c0c7ae1242b19"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/pin.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/pin.svg",
+      "sha256": "948e13b964ffab2f0169b65cac2cb70e987ce6f81cbc5956e56962d9ecfbfcd6"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/play.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/play.svg",
+      "sha256": "6e2f892ab8aca03ee84d6fb7eec89d2e5ff8b1d8913ab2f918adced9bde1c4c9"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/previous.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/previous.svg",
+      "sha256": "6518467af9949a3faedc9c1c8b1c666a5817d5e83693c7002c93fce4a46ca4ef"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/processing.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/processing.svg",
+      "sha256": "c9ab81367da39459c46a19acc7b85e776b1854000f54f19ac23d11da33c3728b"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/queued.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/queued.svg",
+      "sha256": "01c739eef57f92716f8a9f2e528045705e4d9ef0fb14b5eaca3175a7b1b053f0"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/quota-wait.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/quota-wait.svg",
+      "sha256": "0a0df1ce67a934bf08826980d7368b635260fbe41b7406eff96c2c01febf0583"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/recent.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/recent.svg",
+      "sha256": "7cf3a2cc8d50a3ed7f02b243a1117bd699680ddfe4fc6365cdfbdd66a0721dab"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/refresh.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/refresh.svg",
+      "sha256": "e5f938744f2e17fd7cf321fb853abad81e366fb4928861691d6c9dd76dd7be3a"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/reset.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/reset.svg",
+      "sha256": "b8b4aad4ce02eaa6cdaa9acdf3235ab54a5c3b8f20ea77cdd9bd33cf50fbb285"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/retry.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/retry.svg",
+      "sha256": "66b8efac6f49e091e1906bd0d03f973d2a4d3aa4be858ed40cfd526ea436d188"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/reveal-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/reveal-file.svg",
+      "sha256": "783a659f79b61818d7bce0b24248462930f1d2d2e2515a29c34652c951d2ff0d"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/scene-description.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/scene-description.svg",
+      "sha256": "95e2f66bcbcd12a62bd17ea161782ac31e2289ccb36cef350e6c2734b43737d0"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/scene-search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/scene-search.svg",
+      "sha256": "f858bceeb6e4223552e121ec73540f8d8c322ec995afe60e84e6070ed7c917ff"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/search.svg",
+      "sha256": "b003ebac719a375e207936302db5bd023e43dda5dbf792bfa3f0fd2604955ff3"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/select.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/select.svg",
+      "sha256": "db029a69e4ba4e829daaec87bf4df4fd3238bc5ca69677464d305878575c3133"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/settings.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/settings.svg",
+      "sha256": "bb4ab12320147b4fcd3e84a7af5fdc07c11cfd908fbc2555085a4a6eaf8cec63"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/sidebar.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/sidebar.svg",
+      "sha256": "058642760f0535871294849abbc2b84052488e5138285b484ce1f7c08d6ebd51"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/sign-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/sign-out.svg",
+      "sha256": "8c25cc0c0832c5793b72f4da3d9ef50f191ce93cfb9480d3424b5d3fe6b28a6d"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/skip-next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/skip-next.svg",
+      "sha256": "cdcd0a5a4bfdb79a54ff582bc7398393e338296480ffb1552c0a1bcf11722a94"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/sort.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/sort.svg",
+      "sha256": "271a9ef142d33f596d5dac8247ed0b8d7e102846b2461c9b399fe135f84132ed"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/source-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/source-add.svg",
+      "sha256": "e1ab0b6241dca73e19304f520d72e013fe4f3f42f559bc021383be5373076546"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/source-remove.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/source-remove.svg",
+      "sha256": "b02e3037e8f74df14e0c012a3677fa43e43b5f1ccec7b68b2e42d19855b87aec"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/sources.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/sources.svg",
+      "sha256": "3d2f926189dda1e731d0952a90ea800a9915878d0ac0e9ec25367baba2d7d2b5"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/stop.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/stop.svg",
+      "sha256": "4c3d0b64636945914670161b7bdab6cecfbcc3a2c1115bea88c746d7052ead3c"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/sun.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/sun.svg",
+      "sha256": "b805830bb048b3a736ed49fdc927aaa1663fdf9029feeceafb08a35d87c3b7bb"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/sync.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/sync.svg",
+      "sha256": "e65a4dadf5971702995169c799988f3776b34f35bbe4c779c3c83800f24a4776"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/tags.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/tags.svg",
+      "sha256": "da49dc7d1c00381b8304208dae22dfc71608573e77e078121219c06ab9a5d9f6"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/temporary-preview.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/temporary-preview.svg",
+      "sha256": "0453b2ad76bcf7dfb1b1db02a3b4b9fe8e482d74b7327b4e4be8c278316b3c1b"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/time.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/time.svg",
+      "sha256": "e51c255a159fd355aa3fc3b296166260f35b91aed50c2cf2581d3b5a883498c2"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/timeline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/timeline.svg",
+      "sha256": "40609afe43fa07178b8228d02d047e9bc3871dea27c7c2e27e4c82cd5e7f0e96"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/video-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/video-file.svg",
+      "sha256": "3bdd9cee4863f78f9babd8b4296201f6fb6bb0f987f4287e00773a182d44eb02"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/videos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/videos.svg",
+      "sha256": "f53e2accf4c2a8668f2a7d002093bbd85c9e5aebc65adeda5dd337d5decb72d2"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/volume.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/volume.svg",
+      "sha256": "1772be57de31a551081c7599a1d4ee5070834e68f060c9a15eb1d7cdbaf7c124"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/warning.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/warning.svg",
+      "sha256": "45103e4e337f307172c4cddbe7e5f1b6310e60bed5d9cd581937f35837efa286"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/zoom-in.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/zoom-in.svg",
+      "sha256": "ac00a9d865837c87250f2f7a2c509549c6039c9765e086c3900db79562e40a74"
+    },
+    {
+      "source": "icons/ui/svg/disabled-dark/zoom-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-dark/zoom-out.svg",
+      "sha256": "423bc8f6ea1e67ec14de7f68a06a9df87bcc56ee36cb81901891a039e1574ed5"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/account.svg",
+      "sha256": "4dbfa8a7bbdfd73f1997854cdea72921ffea579e1e868d99ae2ea74078a6ef3d"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/add-account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/add-account.svg",
+      "sha256": "bc47a8cb6285af6db27358ab64e055a236b7c7e79810f05f3d816f43eae2698d"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/albums.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/albums.svg",
+      "sha256": "45c7afb25d2da73d5703500d0d5d4a88e1e8bc8671d4654392d89e7fbc188033"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/check.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/check.svg",
+      "sha256": "2ccd772a8952f9ae92cf78a773c367c568046f24f40604ffd64e2320cc97a937"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/close.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/close.svg",
+      "sha256": "310955d79e9cebf8a6200b67ca1aa4e06482e805650b723a08180dadc444d2d0"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/copy-path.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/copy-path.svg",
+      "sha256": "e7b6eaeae8a4c901dcdb61362d1464fb0c739602ede99a422c7d1b31c0996588"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/copy.svg",
+      "sha256": "63ce672bc3e583b88a0e8c6392e47ce6e74ce01d0340f7df8c850a5eebe667c4"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/date.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/date.svg",
+      "sha256": "b7b045a95626dc9783d05f5a505e5eb15e499228e90b5c6cc8aa37729164d2a1"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/device-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/device-add.svg",
+      "sha256": "bc18ca62fa7018f3c0e054107782172cfce85bac7592bcabb979384d3d27e759"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/device.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/device.svg",
+      "sha256": "46802542b5a3a2ad963c61c1304119963a0b2e6ad3d54ce1af6bd0706e0a9dfa"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/devices.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/devices.svg",
+      "sha256": "7d79222726c6f0386d3bba41b3dd3d7d4a48e011a989260760b5ae74bf9d2a8a"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/download-copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/download-copy.svg",
+      "sha256": "b6e3cf22750eddcb0f987565f1b0af5ae77524619a2ad5ffb628c63d62af1cd5"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/duplicates.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/duplicates.svg",
+      "sha256": "83d25c4935e44bbc5a468da27a094d41de6709895b71067df4021e5bd2a7b27a"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/duration.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/duration.svg",
+      "sha256": "ad79c896027093ee3e20f6d070cfebc9bf1f19e4a29f31834a40955cde210590"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/error.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/error.svg",
+      "sha256": "fcecf15f11c1b6d787edea4aa2f2af8f3c03d30d22bc7ffd1b84afa194147acc"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/favorites.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/favorites.svg",
+      "sha256": "0cff76ab21a4d164ec24cae4622d73f42ee30e29bcd57351efa188e4efc8ddf6"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/file-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/file-open.svg",
+      "sha256": "1c787f3c45f2ee6e728961ef06b98471904633bc8eecf3b5bc14e767ed1cdb33"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/filter.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/filter.svg",
+      "sha256": "2387023ae5acb6bbf655c37ca607c9bc64dde71637a2aeafe5b159a019a04848"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/fit.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/fit.svg",
+      "sha256": "e10bc94b1aa2c71dd130b5b7a883c5ab08272bc8d99aaa559454d6ee3c387140"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/folder-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/folder-open.svg",
+      "sha256": "f6998caaa84c00e6d65f3b742d3b8bb90da2acba24f7f620e2e93e541599d2cc"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/fullscreen.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/fullscreen.svg",
+      "sha256": "b91d017e760c0a625f32bd2de66a568fd2d04924df04fd5f19b0aca4f7657365"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/grid.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/grid.svg",
+      "sha256": "a3193d92c31b4c04255dd98e52e4a49182308f9c0ae18a46cdc78d99af498283"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/hash.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/hash.svg",
+      "sha256": "6fa493c0305369f7db1942ec582584f0a727b18d2e7502e07ac79a2d55d939e3"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/help.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/help.svg",
+      "sha256": "2ad6a06d0a1c2d1a7afbf62d8add6d44bad106d0e288148497ba104f409bb307"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/home.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/home.svg",
+      "sha256": "ece5a629b9fd3c22f94b9bb4618c932fb0734b05178416eb49c9f0e05260f5aa"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/image-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/image-file.svg",
+      "sha256": "206b30d31371179c1510d5d661cf659029b994a0750e21cc707c6014b2668aec"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/info.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/info.svg",
+      "sha256": "a62dfad1a24988bd4c0d7be33df8992699cb1a6805bd6ede63a0d37ea80da25d"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/library.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/library.svg",
+      "sha256": "8ac0a4ec96d24a2ee4d9750fcda09af3a848e2d39a99aab36dbfc2c92686a2c6"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/link.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/link.svg",
+      "sha256": "2f563151a99d5f62922f436f91debb466d2ac747a76c6072a355fd1cc036565a"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/list.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/list.svg",
+      "sha256": "ae7d6766a5d293786292001ac9d1c265fc9e706e0c0f3e03848068695e23918d"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/local-only.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/local-only.svg",
+      "sha256": "d53323e62bdd031c818ec98ffccc416cf4bcd7111c1b55e0ed64864bd891da4f"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/location.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/location.svg",
+      "sha256": "b65f4701d0fe78a2f91faa55f2c5b02145656a86f2eeb3b645d3fc868cea3624"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/map.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/map.svg",
+      "sha256": "e79376fd71be6ec76d402a85e9b10f1a287e71edf014d3d8fb4f9190ad53b8ab"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/menu.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/menu.svg",
+      "sha256": "c5f23e505794103aa2c42fcd6846ca861e563ee4e6689c97f44cc219d4c5ee52"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/metadata.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/metadata.svg",
+      "sha256": "bd982a4c5c8d042308f5236f3f9d54d232aab2fd32f2a62d6ecb821470d5e0a8"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/moon.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/moon.svg",
+      "sha256": "0e7ef3f911f96fedbe0047ce9a38d50d9fb3e6977b9a7f861717f05331edbbc0"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/more.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/more.svg",
+      "sha256": "7c71c4ea6ee0fa39a0f5e3f85347867ff91ecfa552f79c5f55944ad140fd4821"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/mute.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/mute.svg",
+      "sha256": "28e94b0b16febbae9982a9b6a00d88cb555f37d03db8b55c37b4aa4deee914b8"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/next.svg",
+      "sha256": "10d9b7a1025f8f9702f77c243dae829990507befe51e1fc0a3d2209f62750be6"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/notifications.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/notifications.svg",
+      "sha256": "5d72c6aa84b82b22277da60e3f5c56be63fa74612519235d2eeed1a65fddc0a6"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/occurrences.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/occurrences.svg",
+      "sha256": "113535663d981e45a70f960556ee80cc6d0b9daa26ef358502243343e0fea11f"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/offline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/offline.svg",
+      "sha256": "07333eceaad8782f37b21aa9f810dbe6bbfd1bc577361e45bd5e6d3b7d1d7c6a"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/online.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/online.svg",
+      "sha256": "303305c5d3411756a592936142d31e831471b5e6bb76600355479bad29adec63"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/outbox.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/outbox.svg",
+      "sha256": "473196fb853adb776bf20209fd5c35b4ecf5a0f528ed6eee0d1ed6f64f016820"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/pause.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/pause.svg",
+      "sha256": "17c7683a9e1d03de8296a200ae2bbf28527358100b36bc26a0ddef69c882805f"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/photos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/photos.svg",
+      "sha256": "547f1e3d9d6bbaa9aa3a37f3cff324af9c9f410e0cc309c820102e287802daab"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/pin.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/pin.svg",
+      "sha256": "849520726edfc7349df420a69be297d9f61c589111801f304d49ff0977fc38a7"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/play.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/play.svg",
+      "sha256": "b3796d21e89e129a8748810143ca2106f856dcedd4e67e40afbbbe28a0cbb2f6"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/previous.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/previous.svg",
+      "sha256": "ee518aae57db4a88de150418c462d8f06d9ea249747e502afeb57252a70139f5"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/processing.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/processing.svg",
+      "sha256": "3d3407d0b52af09dca99c0d5ec5d5a04319f68801a2c19c62916409b81847622"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/queued.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/queued.svg",
+      "sha256": "4600f8c509773b41837f45e9c5fad09b77029ae9863eb95593e90d84a3364c0f"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/quota-wait.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/quota-wait.svg",
+      "sha256": "d97d5214a9a6c763db103330d7dffbe92b5829049ebccc359dad6c04ae4724e9"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/recent.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/recent.svg",
+      "sha256": "32b25410b61358dfbfff8bc7571545325311611971475f66e579de2d54c03db6"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/refresh.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/refresh.svg",
+      "sha256": "8d8646fca7f01b39c1fb7817d73a7c5f6f64bacdb1bc59956b94401d7f9fc4f6"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/reset.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/reset.svg",
+      "sha256": "4f00b86f8191e3cbc698d6a6889f893491eb1c00dc5629df2f9ee1a9134bec46"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/retry.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/retry.svg",
+      "sha256": "6567cfcf337c76d29bd051da418d4e378405814d6b10dc080ea24012ce4b6041"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/reveal-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/reveal-file.svg",
+      "sha256": "235fd729da101dd67de8e42934207f4cca910f2164b2a20ef3db826c3a653844"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/scene-description.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/scene-description.svg",
+      "sha256": "704218c532d783be90f76c94499decbc81977c147791d91ac7e2895812d36578"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/scene-search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/scene-search.svg",
+      "sha256": "cc80d4a3092b05c7429bad7db07a8af6695e3fea9b955a9ee792e4ea2b482ba7"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/search.svg",
+      "sha256": "8dfff7ce2c615dabd9a24f4588bcd93c8ac3400c77104c495e9d76219de091c8"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/select.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/select.svg",
+      "sha256": "1effeadcc8e959e1f659130db17e1842b9e35d242145ba2b7e530b5fab773924"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/settings.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/settings.svg",
+      "sha256": "e01158c8b6a9e03fe06a66dede4e764d437e0c7dcf4d92491b574b3bf6fb3a9b"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/sidebar.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/sidebar.svg",
+      "sha256": "e60808d26943ce199401634eb0eaaf64cfdd582c87a5338b04d52bc75a340d08"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/sign-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/sign-out.svg",
+      "sha256": "db7eaa6976132d595e90b70595b66dfce2973ed0ca9c4ab177b4670c3e150fb7"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/skip-next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/skip-next.svg",
+      "sha256": "8075fff86ec20464f7dca36cd2bc71b6ba314766bc412db5f80269484708c54f"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/sort.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/sort.svg",
+      "sha256": "679ca63382317635b0cbbc93e6efadfbde10d60f2c108901e3d1e07b502cbc77"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/source-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/source-add.svg",
+      "sha256": "af705b6dfa0e36e02b3f98b3ef4a62ee1a3d26d988e8ee0debe0fa536932c40d"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/source-remove.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/source-remove.svg",
+      "sha256": "8180c9f350291564134732f44b1c93a1cd010cee1daf921d096ae6b9b76367c3"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/sources.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/sources.svg",
+      "sha256": "1939f0ed54b3e06efef63d812f547d2d872677664526428dccd020a2fc07b6eb"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/stop.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/stop.svg",
+      "sha256": "4433b8a75588c527334bb8d0aff08c6bd943b6dee668f3460017817631d2fcab"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/sun.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/sun.svg",
+      "sha256": "17c517f533c0f9a8de1a34a3e8b4ed347d99ad884ce72ca9fcf12232b0be4ac7"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/sync.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/sync.svg",
+      "sha256": "af547dc88585fe147d2cf2946c999ca210dde362b19d8a51e015037abce29190"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/tags.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/tags.svg",
+      "sha256": "dd069c589229b9da84aba0381f2357f3c898637fe229b82b07133782955cc971"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/temporary-preview.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/temporary-preview.svg",
+      "sha256": "6fd681badeb8e0cb80e6f278280efd6921494a22f186b0b779eb029de74f9516"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/time.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/time.svg",
+      "sha256": "39ada140c2c359a6580cb4bc2b3f0fd32efe8d533380643dc8b3d3dfb9409cd2"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/timeline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/timeline.svg",
+      "sha256": "28ad45e6ff833bbdc15db9196bb062d12d13fc56e9a75600d4d302aba5e55241"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/video-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/video-file.svg",
+      "sha256": "299b0314ed6ef3b41eea326cdb3f23b7ba14b78f4851a4316589fc657a35152f"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/videos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/videos.svg",
+      "sha256": "f54daee5c9943855756a6e3260295c9e05a0d4667a8ceaa448979110692c5783"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/volume.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/volume.svg",
+      "sha256": "83ecc454cc4d13c66ad395742d1a8129131da501b606a3c7c5ecfa3d5497cfe0"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/warning.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/warning.svg",
+      "sha256": "b9b3cef09076a01fefeb618fe136e10044813c56c71cfa0dd58b62a60751fdf8"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/zoom-in.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/zoom-in.svg",
+      "sha256": "fdc17d4327979e0acdfcf88d963c578f700ee0c05fae09020b6fb9c1d55abc0d"
+    },
+    {
+      "source": "icons/ui/svg/disabled-light/zoom-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/disabled-light/zoom-out.svg",
+      "sha256": "b6181a521827378ab872724f45079d723a8aa4ba905d7d75a5f10b2b04a95372"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/account.svg",
+      "sha256": "53256fd6ea1034bbe6d17c7a5563d8e881ee68a0162b4d193767e73917107269"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/add-account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/add-account.svg",
+      "sha256": "8e0b1fcabc6ca11fd3eaf37601a9578bd8df173859bce6516993e1039da19f7c"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/albums.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/albums.svg",
+      "sha256": "5df921989c3a289fe31d8e93196381e7629e498f1f673507742403154bb021e3"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/check.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/check.svg",
+      "sha256": "6d9965110b232b0982461d97a35d207e1bf683bac8c80a6eff092e3030471102"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/close.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/close.svg",
+      "sha256": "25b8d5b7a626fd851d3399295df0849403134962e46758e260ffc719a6459ab1"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/copy-path.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/copy-path.svg",
+      "sha256": "368311d44e33075e560e4b9dc7c94c46e9da8f8f89c4220ce2d8dd6ffb136f51"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/copy.svg",
+      "sha256": "cc1b4aab88cf8c913be6ab58cd8640b6ea6901e6e318b9b202b5ac6b398479ea"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/date.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/date.svg",
+      "sha256": "56f04c194042171b46b535e1875ca5ed97e489af8871aa9216703c1a0ebde153"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/device-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/device-add.svg",
+      "sha256": "49873d9cf1c73f51d0a7d3b2d5e26d6545899a1e25ea24524f2fd491e6e00fc1"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/device.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/device.svg",
+      "sha256": "8853f420636a1b587c455ebb6753a88420a9a1c9bfa9dcb46c35996acbb9e663"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/devices.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/devices.svg",
+      "sha256": "d119007742562d56e8e5538e8e8b430b638979c12f1ec927ddb80920e2cbadf0"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/download-copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/download-copy.svg",
+      "sha256": "cfe2062759d958513c5c13ee8d0dac3b03b0bae5ba80347801ba722a7b4d86de"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/duplicates.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/duplicates.svg",
+      "sha256": "eb79d3527e0a8132b050cabb7cc54305f95527dbb3011f10d1acd4e21b673b40"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/duration.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/duration.svg",
+      "sha256": "6de161fb6882ab42ac2b94e24dd5f6bc0df2fe6b176fb2703ba3928124f0f2c8"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/error.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/error.svg",
+      "sha256": "ad6ea427ff8d216dd018d6324d8d535755f1c1cdfd336f25d0957798820b6fb4"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/favorites.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/favorites.svg",
+      "sha256": "45db315167c4d6a73ad080f07abbc9d28296137763fe15115b00b073f7a08939"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/file-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/file-open.svg",
+      "sha256": "b55fe924c51d37f93270e620a4ca796b8fd18f4fdf27e44be0c015851d00ad22"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/filter.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/filter.svg",
+      "sha256": "970ae25def8eb4c992fe20f1b516f22c86fa633ab90ad801a133435fe86c5722"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/fit.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/fit.svg",
+      "sha256": "b88dd4a89ec0e46ab6d00fb82c583b0aec36a81912ae0bfe457a901e4e6fb180"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/folder-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/folder-open.svg",
+      "sha256": "4c7617639632310f79d7d0b49d9957c46df69f5b265dc2850050dc9186578d74"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/fullscreen.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/fullscreen.svg",
+      "sha256": "583b3228f5c7af380150b075a19cc810f9b4bbfcb23267e0e6e2cd9d1c46fd96"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/grid.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/grid.svg",
+      "sha256": "fb60ead3963d4eb8accebc7d46f5beaa7f9ae059c257b54b7bafa6083c28dccf"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/hash.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/hash.svg",
+      "sha256": "73d1eb5524f6fc9bb56a9fba6524946a35f869adaa9bebd0aff429571bce4d90"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/help.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/help.svg",
+      "sha256": "e78038c51b4cfa129180e61d935d8f573da28f0918772d0ee71650f4ea6f05be"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/home.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/home.svg",
+      "sha256": "3de65ac0a536f18cc40d4974377084e8bdd5af55a61c91f4c80f872a1c918c91"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/image-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/image-file.svg",
+      "sha256": "7f7316a0e7da078a97befffa0442a26c65ca09fc983bceebe2fe1b38100f3108"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/info.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/info.svg",
+      "sha256": "086d18bb22eba55c1e3dee59b331bbfa9e9bfdba553cd0d3ead00541558af339"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/library.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/library.svg",
+      "sha256": "962135ab56f593e12fe7fbf84b5a2987c814c62f7d8b874b33237d936c3af68e"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/link.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/link.svg",
+      "sha256": "5e0a3016e6236b35d3e3dc032c44ef5a3fe35436e5b944996f0b9188f080ab7a"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/list.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/list.svg",
+      "sha256": "c5bcc7b06e182dd90cb1be54ce778003dfef5235727437967d198f2bbaeee661"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/local-only.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/local-only.svg",
+      "sha256": "bd14f2cbc522396362d8f1d02f6f4fa889575dad6bf4d9409bbf05714873011e"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/location.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/location.svg",
+      "sha256": "1d7c649e93f71bf71d23ece045f8165d8c84935ddb8a1cc641c13dc8388da6b0"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/map.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/map.svg",
+      "sha256": "2266feaeaeb5b7cd7e19901324c4cc7f6304646959898812783af37a6f66924c"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/menu.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/menu.svg",
+      "sha256": "5b1a4939f7682a8d524f94253c94552c5c29ea76ee1ee44b9a996a04724b594a"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/metadata.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/metadata.svg",
+      "sha256": "30fa2ac7a5cf906c8808d537764efee5ad91537a4bbe1cec8898f4294c687e03"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/moon.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/moon.svg",
+      "sha256": "d30d4906e127ca98e664d6ad953e201c2f7322b263cf814cb8fa0c57ebaf5a6e"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/more.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/more.svg",
+      "sha256": "457f02657510bd19c5406285e870b367e24861d03818216f11c9a500abceceaa"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/mute.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/mute.svg",
+      "sha256": "3765cdd43d89e96c9f263e0ab44d671e84114232c68ae77fc72147219bacac82"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/next.svg",
+      "sha256": "6e2e7e550fdd418327f739136d0ddecb19085a1be27896cb47508fcbf07d686e"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/notifications.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/notifications.svg",
+      "sha256": "ea12a83e2fb518baa6f6a55f242b7d0f38dab62c6b22832bec501eebb813de65"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/occurrences.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/occurrences.svg",
+      "sha256": "782df26996ba11c4271c1badd9c323a87fdc443160fd28a1459f7e0a66640141"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/offline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/offline.svg",
+      "sha256": "52ef53efb8843f3a754fd490e727a55b0ff49017f21e9b131ccbee7b5563a4bb"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/online.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/online.svg",
+      "sha256": "eef2ea62802d6b79b4f69b6dac8263b5d0b31ab7e52bf9efbb1979b45530a4d3"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/outbox.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/outbox.svg",
+      "sha256": "9a2fd517d3e9e6734c86d5e7d0f7d94747149235bb54bccebb958cd72a19b83e"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/pause.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/pause.svg",
+      "sha256": "5a9998842b0c284327e751b5b5fa5a4931d521490f3fca515d0aa17aab31c128"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/photos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/photos.svg",
+      "sha256": "9b88b724c1c65248d7a7ce4025547bbc160f46860b4ecadb1cf3b1b33b17d2b6"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/pin.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/pin.svg",
+      "sha256": "2b71bce3ef636a3b9be44da140bdf8f051cadb75f1e71382533ffdfcb84957e9"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/play.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/play.svg",
+      "sha256": "1fa540156dfc83e3d7c957c0842609adc264d68fac75a92197b6f2947a857199"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/previous.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/previous.svg",
+      "sha256": "f9e7052619ce7a92d86514d4b8adf80859db783d34288a2895e8d1155cae456b"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/processing.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/processing.svg",
+      "sha256": "0cb184f8851749d4315ddbac5767c00645bf347f85422c2419d0a91f15c41138"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/queued.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/queued.svg",
+      "sha256": "6cd1f5c99e9b66ccbb5b652c1545aad304300eb67c38e8aeb2d2d7974efe3360"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/quota-wait.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/quota-wait.svg",
+      "sha256": "a88d41353c3c4a455008a18d1e620be073bea60af1bf17377165ed11b3b009f4"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/recent.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/recent.svg",
+      "sha256": "cc36db2bd820737125dd68eabc8560d4dcb1f8955ba50aa95e1404644bef19b5"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/refresh.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/refresh.svg",
+      "sha256": "4da12a683d56208e162624cf032e17ecc05f93d63a7d18c736c0764bf3ab67f4"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/reset.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/reset.svg",
+      "sha256": "f20186c296de2e3909561f6d4aae7d29815865e86051070299d2f2a5374ed388"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/retry.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/retry.svg",
+      "sha256": "25c417dfe5e81385873a04a291d192c0b73d6938bb7a63a247ac3a968b8ae4c1"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/reveal-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/reveal-file.svg",
+      "sha256": "3e7f9ea68f85e3c888cf8ad8c2210d4b5de3189625a3d4e04218947b6d28c94a"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/scene-description.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/scene-description.svg",
+      "sha256": "67ed8c5cd9f8763649329c06f8ac3d5f399b0c570b9db304af5295f936f413ca"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/scene-search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/scene-search.svg",
+      "sha256": "f85d09de122888ab58aaeb4cd97070ff153102ddbf086ac6d4f63717b56399f9"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/search.svg",
+      "sha256": "13b34fe9558c94350e0f07d5ce45a50f96e1d4a1b45f33b2a3e156836ec66abc"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/select.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/select.svg",
+      "sha256": "33aa7a954f4650a59a19e19832e5ddc569be1186f71f68d6aaad4c95cdf04da9"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/settings.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/settings.svg",
+      "sha256": "63ecf4e1f744f53a91ab6d73468fc4c87266b9102bd7664d98fdcfd05b355cf9"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/sidebar.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/sidebar.svg",
+      "sha256": "cf496dfef837dc1639d69b6098a26f4762e28656997ac9a8d1a673d64b0219aa"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/sign-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/sign-out.svg",
+      "sha256": "41b37ef639fadd6356a567e447625ac17fa68953b8fbac2402f2f642f773f75f"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/skip-next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/skip-next.svg",
+      "sha256": "c955c4fc8df364a118ba73d3bd097299680c7f2b60b58fb8938003b99cced71e"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/sort.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/sort.svg",
+      "sha256": "0a1953dd1523b507a0f64f0d09a4ce034a53624a5d937ad51ae81c235e5bbed3"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/source-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/source-add.svg",
+      "sha256": "cfcb86648f3bae26d44d8dc08b6b39473247aa2f48ce862d62bec418eebd69c4"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/source-remove.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/source-remove.svg",
+      "sha256": "7e0f3573d08351cd54937f5de4f52607666a1988e98926ab8534daa63125b6f0"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/sources.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/sources.svg",
+      "sha256": "89e6f58aa9a1b0e97f90ec01d66428b73690d16ceb47b4599c1e3af95db5678d"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/stop.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/stop.svg",
+      "sha256": "bd2bf1c8a1237ecf935230de1d143db8bc0fd2e5c17b9bf3f524eccaf5a1542c"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/sun.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/sun.svg",
+      "sha256": "0bd1b9b625296ac95f3a95d9cb5a1338dc623d810899d89a0d276dfbfd8e5625"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/sync.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/sync.svg",
+      "sha256": "c8bb41c73e1cec8422dde42e3d452e4b4d4b96a0d37087afeb54f3ead937ac2a"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/tags.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/tags.svg",
+      "sha256": "b243504b50ae279ca2f0987f921a1e7e48d20bb7d08b82cfd3bb91a4a6738cc3"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/temporary-preview.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/temporary-preview.svg",
+      "sha256": "2517699408ac4be4f7efc45e915f23d79d2760cb55d341f2de6cc5b9629550f6"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/time.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/time.svg",
+      "sha256": "fb79fb7a64a4d7218a0d994084306687ae6deaca034c4922c05a05bbefefbd02"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/timeline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/timeline.svg",
+      "sha256": "ae0205bc7d7fc64a700061e7e927780a2558541fdd7eea554683b5c50ad13281"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/video-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/video-file.svg",
+      "sha256": "62a24e6ef3f03ce1930bbd1a94608cabc3c21af3ea44d27be8a3a7af09055016"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/videos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/videos.svg",
+      "sha256": "5153228883e5a08d2ab4aa1af4fc3b40ce16be40d14b629ef990fd430b08f914"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/volume.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/volume.svg",
+      "sha256": "d8c76b5cd285f72ea1dd5450255019bfd31629fe40b819d3a5f587aea81833a5"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/warning.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/warning.svg",
+      "sha256": "e5b04fcd4ab1da3368c611b6a644ac1655cb7f2669a85e5488da90e65355878a"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/zoom-in.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/zoom-in.svg",
+      "sha256": "d500e06d18dec51f8cd431441a01f7dc5b0d081c22a84fee1c1c1a2dff7f474d"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-dark/zoom-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-dark/zoom-out.svg",
+      "sha256": "328c6eb3094ed220b847106a276690dbfea42cc9bf1c326271d9ef56f3938de3"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/account.svg",
+      "sha256": "4a4a4ee028d980915e19e3f2c68b5919cb87c8998c03b2abed2b922632492d8d"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/add-account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/add-account.svg",
+      "sha256": "68d08a85b25441224fcecefc57faf40fa89338d0e93c8466034757edce333605"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/albums.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/albums.svg",
+      "sha256": "309d5988ddfa1501bccb1c75e258d599fda87b7672213377169e6b640b981ad7"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/check.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/check.svg",
+      "sha256": "a83542965d3962897fe99db37c2c98e401d55b9c7d12b846abbefecafa6a2c6f"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/close.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/close.svg",
+      "sha256": "a6698765187a16d665357f7de9de769785c55242a770d33ac2f520e3deeac267"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/copy-path.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/copy-path.svg",
+      "sha256": "9e9b62bbb53081c64dd45c606f2c371937e7f04db9b3bcba29c06fbe2b3a34ea"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/copy.svg",
+      "sha256": "10241c33c704c713ae78e04b29968bb6bcc92d103fa78003a284277abd5ba87a"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/date.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/date.svg",
+      "sha256": "4360cfe6cb0a49a355f375ab32d47245aaf826d68a25cdfc71424d3d0a894759"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/device-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/device-add.svg",
+      "sha256": "384a92b14b9fe2f40afbfa652f45e6840e88f88ac224768bd796dc7bf9598b4a"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/device.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/device.svg",
+      "sha256": "58e7c66b9d748567f000547108b0aa58dbb48a70b8959ce7a6cade9df3ecf8c7"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/devices.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/devices.svg",
+      "sha256": "269b4fb8509924a822f4e9812d41282e42e312bd157435000f799f028469a0f5"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/download-copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/download-copy.svg",
+      "sha256": "3af22050871ac55dfee36c2ef63ada44f7507d3b6ffb5047566c71754f5d27f8"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/duplicates.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/duplicates.svg",
+      "sha256": "f08f666f5e113fe1a48a43438bbc62a22ef6ee1db5420dce8a08f1d7a2eb1d94"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/duration.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/duration.svg",
+      "sha256": "8b3a74702610ae0bc1764a7ef2fefee0330325e50f40ec4a0c9419367b90d461"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/error.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/error.svg",
+      "sha256": "388fe1ea33ef231d0e66b46aa7bcf39d6f7f5749d4bf20ea451193d170e6aa07"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/favorites.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/favorites.svg",
+      "sha256": "3fd7cc3115ec30252560fd99f406d75c5b5fc25cfe8046c4f5c0e01a8b99b639"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/file-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/file-open.svg",
+      "sha256": "861f757c6409292abba8816e9c780f9c6cd7070aec3bc58bb6b02883d1bf2a06"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/filter.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/filter.svg",
+      "sha256": "f14b9c64879ef3d0f4fb539e7122cc35ff3e32d0186502ee835c6fb23d323107"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/fit.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/fit.svg",
+      "sha256": "f96419e6e256e131442b38a02060e273d8e702793c15909ef98190579335ecd5"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/folder-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/folder-open.svg",
+      "sha256": "513aeba9030adebaa0052ceb50281e1349a38082ffcd4f8bb693c909d3f1b9ad"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/fullscreen.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/fullscreen.svg",
+      "sha256": "abddc37a483b1f4c4d1ea4bff32401f5e132e0851c811add688f637141caff8c"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/grid.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/grid.svg",
+      "sha256": "c45ba42d41ba0f5e2f92b4650863d2e46ca0426cf1ae10f353f4ac84e52aa0e5"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/hash.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/hash.svg",
+      "sha256": "584173048cc72314c642af60bdfbbbab12e79592c211fcbc27ea39ebe048b811"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/help.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/help.svg",
+      "sha256": "51112fc5f8429b0e93cea948175f41299057dcbbbf321ea0e48a78a1eaa0ffe9"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/home.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/home.svg",
+      "sha256": "f30bb344c2732577b132bd2e179eb855393f2564a99e8c94a30c368298a37f03"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/image-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/image-file.svg",
+      "sha256": "b281835d6a993cdc5fa7d7ddbf08c12835b4971e0dc842954001dc1694ed3795"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/info.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/info.svg",
+      "sha256": "3b3923d55e8b295eadddd1441413568f3ffd9a377d26178c51b6bf6234e86cb7"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/library.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/library.svg",
+      "sha256": "b0d1084225723d004fbc83283ce77fb777b37088bb29e7f2273ee8b82956d4cc"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/link.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/link.svg",
+      "sha256": "986cd6c41fdf184a30a7db84b02aba27dd57f3513a843fa8542f30388c5dbac8"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/list.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/list.svg",
+      "sha256": "1d5d3c27bc4a735bf354a80a50014dd2fe08e2f32e16398e481df2869fb1a264"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/local-only.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/local-only.svg",
+      "sha256": "7d1235aebbb1be7c6e3286f195b4cf992e164dafa0ec269ce8150715ce0ad046"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/location.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/location.svg",
+      "sha256": "c9fcbf723b8716cce140250978da999d15c699fdeb4df72b13a65477cfd11ca2"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/map.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/map.svg",
+      "sha256": "0b4cb7931a747a94246ef444baacf6d2d7a209a78290ff136eaa5f8d0f109066"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/menu.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/menu.svg",
+      "sha256": "9076efc8055d19a0d6b690a4a0f660fd986b22f78e5be6cffc6b3b224af252c5"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/metadata.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/metadata.svg",
+      "sha256": "f66880de208b888ae4870be807a657d0d9157081f9f7a6b83961c97c827f4a38"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/moon.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/moon.svg",
+      "sha256": "12add0ce3f834a2ed19e2a48e7dd2d3ec300c27cd6e36f286acab65ec39959f9"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/more.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/more.svg",
+      "sha256": "e761089a96dfecb74157177bbf5dbf0321ca803972afe7adcaa2cd993102c99e"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/mute.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/mute.svg",
+      "sha256": "c645798c8df95c8dffc01e3e8c77a4684abd8c27e661ce4af6bf397049367aa2"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/next.svg",
+      "sha256": "80fcbb0284d4ad5b01ee6b9a2fa6570bd56919b106579f5e812b41f000aac5fd"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/notifications.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/notifications.svg",
+      "sha256": "1e30dcb0fc26af118b2833829ba2fec0f9bef143caab31d1b2e60f20f22ee173"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/occurrences.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/occurrences.svg",
+      "sha256": "591c2d899a33650f13c8d3403a00f50e8232e06d044f5997334ab5e9fa7adad6"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/offline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/offline.svg",
+      "sha256": "b4b2ac68e96c0ae3677e9a718b8acf389a50f802aa176416fb427f8ec17fa9b7"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/online.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/online.svg",
+      "sha256": "90a5f629ca23619a70495087fa537440b19f6d4baaf35a8b8d2fc721568b3e72"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/outbox.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/outbox.svg",
+      "sha256": "85c8df39b8797efbdf8406192ab928a5a812bba03888728933a5bee2aed0468d"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/pause.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/pause.svg",
+      "sha256": "efd713bb93d94e64f3afe70f0710bd86292d337bf6dfc609a95d25eab81e12d4"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/photos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/photos.svg",
+      "sha256": "b934cf74593a32b47f03ff59b321234d3783ade0153094131bb389ccd947b9e7"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/pin.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/pin.svg",
+      "sha256": "196fdc03ec8e8fa50c4970508580e064bc4ce6d0008b079a73d1dba9b2575c36"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/play.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/play.svg",
+      "sha256": "8508ede9519680037196ef26f633d97142a0da2a417821e7901a43164628aa1b"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/previous.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/previous.svg",
+      "sha256": "1cf0d3bca1a989cceff17ba6e8403a1c7991c05086fcf68c2de7dbfc343749db"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/processing.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/processing.svg",
+      "sha256": "543e1ce7d24c5e0e1b517a6fdf7920db9c23859361dfa915a274585d2a2d2f7d"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/queued.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/queued.svg",
+      "sha256": "33199de36f5e3ff94e645835557d14568637a50ee55c731a5a8b02d08ef906c7"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/quota-wait.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/quota-wait.svg",
+      "sha256": "b116f718d3ed942bac77fa6c357f760b638350d372217dc60efda196264b0abd"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/recent.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/recent.svg",
+      "sha256": "5c5664a7caf528c3ddb7f04f8fdd5558c3ca582093e60d8f1f6fba670aaba650"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/refresh.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/refresh.svg",
+      "sha256": "76f4c411ee810885f34867159f8391d49948e5f5b504d7d394be55de700bd35c"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/reset.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/reset.svg",
+      "sha256": "08dd5aa459c702c15e674e7caebd7e52d4d775a3e0492fe3648cb0ec9a0bb00e"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/retry.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/retry.svg",
+      "sha256": "8e3f3df1bd6ee6740da4699f93c859036169666554a391fa0066087bd884de54"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/reveal-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/reveal-file.svg",
+      "sha256": "ad975b87f73a64b449df55de31b26fefb210cf8952d97a80fc5945c4d7f1584b"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/scene-description.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/scene-description.svg",
+      "sha256": "52bdf58ac948e885fc34cedead3cc5f08e84136398539a93185e0b6ed6ace61a"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/scene-search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/scene-search.svg",
+      "sha256": "6e5721d48008e9d688e09a79cabf27bb75f94cc030debd62e3fa1d6c4f815016"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/search.svg",
+      "sha256": "469400ae455665ee99cad310f1432a5241caad5a9fa3daa31dbc34bbf446277c"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/select.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/select.svg",
+      "sha256": "67e59ffb82a58d03ec0b0a568c6c7255eedc4851b6e1a82d3e6d45a3f129331f"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/settings.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/settings.svg",
+      "sha256": "26949b5ea44428dac73e1ab51cdf93963837fd5aa7bcb2b4e01f756b53ecf48f"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/sidebar.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/sidebar.svg",
+      "sha256": "156acda87744f057ee0ec83faf33be4625daa27d21c205c5b049e6888fd0a12d"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/sign-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/sign-out.svg",
+      "sha256": "9c01ad093ec011838ab158e2b8c6077575172a17a626c208fcff35a9ba23f58f"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/skip-next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/skip-next.svg",
+      "sha256": "f60c2f754fe407bbc48004b9a28568e11a4c39e302cca8ed421d30926c69bffc"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/sort.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/sort.svg",
+      "sha256": "7c24ef5002b59de2a428307e6d59adc9ae4c147d009cdb924d7d5e51ad7b497d"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/source-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/source-add.svg",
+      "sha256": "00aa55ad3b5a4ac062afe305f027758fc2d24be04624be71ebfd257e4517f0a4"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/source-remove.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/source-remove.svg",
+      "sha256": "dec1d0cf2c0b3c8c0ed5f0684cfcf54594228b9d56326b040852e9379cac5a63"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/sources.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/sources.svg",
+      "sha256": "17695802e597074e11761f359a50b15d14a2274fd6c6d990bd218638f6709d17"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/stop.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/stop.svg",
+      "sha256": "4ea037cf8fc9c5ba028121dadd21450d0acb0006914fcc24a7d228e8bf43e7da"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/sun.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/sun.svg",
+      "sha256": "45d81ee65931a501b4f092e31087ecd9872e5544b2126d70a977008a3cadfaa5"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/sync.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/sync.svg",
+      "sha256": "fa613d2461cff2e4760b3a4ae5645f0204868379341654fc160c7abc184bb253"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/tags.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/tags.svg",
+      "sha256": "1ed56c2b80f8820502739c0ff29bf5f4292b35fff92cca0a7ac5453604e73ae6"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/temporary-preview.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/temporary-preview.svg",
+      "sha256": "0315c54eae92bc7576b2efa4c7b665836c00c9a05f32a0e65bec8fc57d60fa22"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/time.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/time.svg",
+      "sha256": "4f90d0dae9fcf54d320e4712ab56dfcf30b903718bcc614fed2834d8bf335f48"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/timeline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/timeline.svg",
+      "sha256": "d31a0d685410c94a07296a9a6aa30cccfaa30bc88bdfb8843f490d433e4328bf"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/video-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/video-file.svg",
+      "sha256": "4661f8a73a761f4bf4781264a1574e20e403ecd58731605e359808990a6bbab3"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/videos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/videos.svg",
+      "sha256": "87eac173a39683706c2697deb3665d8df159157929f9bf8141801f94b5cc8998"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/volume.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/volume.svg",
+      "sha256": "43f341de763ecfffc28b805dd5a0a5069e0959b93d8dc429ad6e67323e9528d0"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/warning.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/warning.svg",
+      "sha256": "e40334a0933d3948829f63341052cd5f4cf069ad932f98781355f6953f0aadc4"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/zoom-in.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/zoom-in.svg",
+      "sha256": "89455b400dd9be7153ea4316cd324da19fcae01062661c88bd9b811bea7a1ef6"
+    },
+    {
+      "source": "icons/ui/svg/high-contrast-light/zoom-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/high-contrast-light/zoom-out.svg",
+      "sha256": "74f5eb86bdfca2fbeec16a4e18744940d147d1b2d6bf4bbb2bb7e74a3b0152cb"
+    },
+    {
+      "source": "icons/ui/svg/light/account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/account.svg",
+      "sha256": "017ef5333c0bdfd9df395b31dd23e0aaf281dbcdf98406382406d19eb9aaaded"
+    },
+    {
+      "source": "icons/ui/svg/light/add-account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/add-account.svg",
+      "sha256": "8e12a5b6fe5985a026703c692c7fe75f6891eb42a0929e8416446179b9ef5e36"
+    },
+    {
+      "source": "icons/ui/svg/light/albums.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/albums.svg",
+      "sha256": "5d9300007d929f3935eb623c254c42af3785aff234ae02909ebedd24fb4516c3"
+    },
+    {
+      "source": "icons/ui/svg/light/check.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/check.svg",
+      "sha256": "f61a8adb00a75befe2969a25b59579b3a419b74e3e972bbe6f672a9145d9c334"
+    },
+    {
+      "source": "icons/ui/svg/light/close.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/close.svg",
+      "sha256": "bf19ccd35fd5ca97e792657b8365ffd35a762cb5364fd5004ea185d859097a8a"
+    },
+    {
+      "source": "icons/ui/svg/light/copy-path.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/copy-path.svg",
+      "sha256": "4d4a4ac0eea6d1d5714af8e7a61cadaacfd8afbce808664299bb1f62d7788cbd"
+    },
+    {
+      "source": "icons/ui/svg/light/copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/copy.svg",
+      "sha256": "a0148694e615b4311deca0b1268fe06c3c478c94721e5ab6f85fc9208c19599f"
+    },
+    {
+      "source": "icons/ui/svg/light/date.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/date.svg",
+      "sha256": "d68caf609936e2fb24d886543347bfb5fd7a8e758e64238394a53711a6773789"
+    },
+    {
+      "source": "icons/ui/svg/light/device-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/device-add.svg",
+      "sha256": "cea4296c8b5db45d6ffd7df874ae670a9bd7a95ad5e893e99906f41affac9fdd"
+    },
+    {
+      "source": "icons/ui/svg/light/device.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/device.svg",
+      "sha256": "52784d72eb5f5cd9fd332a4924b1b48916d50ff83cdfcf32a46895614f4e173f"
+    },
+    {
+      "source": "icons/ui/svg/light/devices.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/devices.svg",
+      "sha256": "539efc4e33ea835a5b085326b91e9e6959b5a9e6b0d33f6f673990d7ceeea029"
+    },
+    {
+      "source": "icons/ui/svg/light/download-copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/download-copy.svg",
+      "sha256": "8a81a0530cc1aea31a7bb45d64fe7632f3215645bab0b1db2f7f359e3028aa1a"
+    },
+    {
+      "source": "icons/ui/svg/light/duplicates.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/duplicates.svg",
+      "sha256": "02036710abac00554e51617c09019d6ef97f86f4c1cb559061c7133218e70db8"
+    },
+    {
+      "source": "icons/ui/svg/light/duration.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/duration.svg",
+      "sha256": "a2b5b1454c978b196dee8cf264bac052e7b56d9fd56e7dce6ced130ecdb72836"
+    },
+    {
+      "source": "icons/ui/svg/light/error.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/error.svg",
+      "sha256": "f2f3ae4dfb756deed049199459054e8294244b0a4f957727e13217d13438b1ce"
+    },
+    {
+      "source": "icons/ui/svg/light/favorites.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/favorites.svg",
+      "sha256": "97fd2d7a8c1a34d55aac2eea266c981708180b1d2f285977aa764cd19b339934"
+    },
+    {
+      "source": "icons/ui/svg/light/file-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/file-open.svg",
+      "sha256": "9f3fabc524849c06da78efd0fd693329dee12c72f656f175c36864e749cc3eb9"
+    },
+    {
+      "source": "icons/ui/svg/light/filter.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/filter.svg",
+      "sha256": "616f0672337bb21c9024b84ff5fce7d9b84d1171dee9b7469e57bd457457afbd"
+    },
+    {
+      "source": "icons/ui/svg/light/fit.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/fit.svg",
+      "sha256": "177da62193203a0296b29b5c9a1e1a3edbb74df7bd14ae53583483de4c16409b"
+    },
+    {
+      "source": "icons/ui/svg/light/folder-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/folder-open.svg",
+      "sha256": "907409e0a87ab5ef82f364f3bc0134007c82181feec41dbf08833e89443166dd"
+    },
+    {
+      "source": "icons/ui/svg/light/fullscreen.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/fullscreen.svg",
+      "sha256": "7ed98e34ac62ed384f2604d78b9abc2f2697d8e78736cb23dc11b94977ea5eb2"
+    },
+    {
+      "source": "icons/ui/svg/light/grid.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/grid.svg",
+      "sha256": "1344879a8c533588d43308f9e7067266d40843facc1f9c62260e70db6498b8e6"
+    },
+    {
+      "source": "icons/ui/svg/light/hash.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/hash.svg",
+      "sha256": "ec63818fb20910b4fb0850d8b35796a5f1bbd9e542db61779f52ae388cfeb2ed"
+    },
+    {
+      "source": "icons/ui/svg/light/help.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/help.svg",
+      "sha256": "ffa5c4e38dbdf34d14b60483689b8189c6e1c7b4c758ef4595f96bc02665da98"
+    },
+    {
+      "source": "icons/ui/svg/light/home.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/home.svg",
+      "sha256": "69bd9b7d7a82934eb36a2aa24165b820d57b2f0f054f1d53068fb8a829c4283d"
+    },
+    {
+      "source": "icons/ui/svg/light/image-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/image-file.svg",
+      "sha256": "e180e1cae95751c3ec28f58cda56330b9f98467d54da640de543ac72bb1dd2cb"
+    },
+    {
+      "source": "icons/ui/svg/light/info.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/info.svg",
+      "sha256": "acf936653b251c84eced06e909ff23c03f337d21029122bc688b2e3d188c9de4"
+    },
+    {
+      "source": "icons/ui/svg/light/library.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/library.svg",
+      "sha256": "37451c23b937e7084344fc4e9a112b08e7c87147da765d416b7f730426e44b15"
+    },
+    {
+      "source": "icons/ui/svg/light/link.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/link.svg",
+      "sha256": "4436c01e18332472925731dc25579303df5bf34ab134e613eb904a041b2e103f"
+    },
+    {
+      "source": "icons/ui/svg/light/list.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/list.svg",
+      "sha256": "3709ff500a9d3a3107e04863297f1411c02e562a8c515ccd716e84c67a9435af"
+    },
+    {
+      "source": "icons/ui/svg/light/local-only.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/local-only.svg",
+      "sha256": "1a65889a23d0f95235ff3a7848641bdbf1e9add2a6f01345d284972e4f86fb81"
+    },
+    {
+      "source": "icons/ui/svg/light/location.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/location.svg",
+      "sha256": "1e6c03137c0d7094323ec6d6b51718ce7099fa0dab67d6a0e9d4a99e4fc27c08"
+    },
+    {
+      "source": "icons/ui/svg/light/map.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/map.svg",
+      "sha256": "8bf55247b93d316fee865ad65f19eca927f593e54275d0932b8f40cbb3807a8b"
+    },
+    {
+      "source": "icons/ui/svg/light/menu.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/menu.svg",
+      "sha256": "a8bd4f53af5b0452bfe822db8eff1c58c9b55e2a056a40b47b1f17744691610e"
+    },
+    {
+      "source": "icons/ui/svg/light/metadata.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/metadata.svg",
+      "sha256": "9c1be16f7ab261dbd20c3e2a53d79eb767668e01debabd01370779a077fdc0a0"
+    },
+    {
+      "source": "icons/ui/svg/light/moon.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/moon.svg",
+      "sha256": "8e1d36f3b0534e45d15dff824ece4597a06c1280ff8d6be5d3a093e16926e4fc"
+    },
+    {
+      "source": "icons/ui/svg/light/more.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/more.svg",
+      "sha256": "da7f4b8f561d37c9be035e796b929ceb1f36e745285d2048d2861586a7133f8a"
+    },
+    {
+      "source": "icons/ui/svg/light/mute.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/mute.svg",
+      "sha256": "9b77a90082b397cdfd09e6e75f0772f72dc1b78ae0390773ef583b055424247e"
+    },
+    {
+      "source": "icons/ui/svg/light/next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/next.svg",
+      "sha256": "59c0709b89935948ce47f51eb523a21e0cd06d947cc2d9b042c7225451e20dfb"
+    },
+    {
+      "source": "icons/ui/svg/light/notifications.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/notifications.svg",
+      "sha256": "245970afd263aaf9d9e8865456f07eca445b4635d4b745006548f06adc85bdb3"
+    },
+    {
+      "source": "icons/ui/svg/light/occurrences.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/occurrences.svg",
+      "sha256": "d775186bc108e236606ae75c9c9d7fcd13a463d9696c53fd15ad32e28fe22f6b"
+    },
+    {
+      "source": "icons/ui/svg/light/offline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/offline.svg",
+      "sha256": "5d4a5ed11200e2c43072e07920c29cfb1076fee230b5fb7850da214138660dab"
+    },
+    {
+      "source": "icons/ui/svg/light/online.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/online.svg",
+      "sha256": "19242c0402d464a8ce54aec7f18c1947af63c756145f9062b48df089fa13710c"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/account.svg",
+      "sha256": "1d5dcf4634faf56f0ad22e105cba15304c4f9f5dddaac347bb9b3cba8a15878f"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/add-account.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/add-account.svg",
+      "sha256": "e69395f5dafcf7eb9fd25243524d4a24930d48583a16870cf13155f4dc92cb68"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/albums.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/albums.svg",
+      "sha256": "c3121e2dde0d9f45b0a95ff2dd83b39fdf396679bc57760cb1d4cf98e0e372b1"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/check.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/check.svg",
+      "sha256": "8729b25d2ddfeb7f02412a7ed7b805c3e30dd6e0d7845d57ea97cbfb25ace7ef"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/close.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/close.svg",
+      "sha256": "b3a7f1c367566b694d0e6b6f1941478b00fe25d3e1b41599b859da05800c49f3"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/copy-path.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/copy-path.svg",
+      "sha256": "2bfc45c03857770ee3408d08a92f03a4dc31c90c203a57123d8f6cbdc1badf85"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/copy.svg",
+      "sha256": "cf2fd22f35d498b5172fa9807cd95e76b973228e1ba43cc792ed897f6f95b481"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/date.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/date.svg",
+      "sha256": "2f050343acea1b9c259ec31b49456163c3f53d4cd3f7e26d5e7e4e4694d57101"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/device-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/device-add.svg",
+      "sha256": "fcf49d2a8cd84dd96e16111cfa14e0570181095ff26142553806ac38b2104c44"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/device.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/device.svg",
+      "sha256": "26b31df9b6fd52287015fccb08458c80cdad8eb36a751a19f4692a83a9c5b4a6"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/devices.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/devices.svg",
+      "sha256": "0a310002669de2d054f44a9a5f5e743a0ba7d8e7d288599d110523fdc7c09a05"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/download-copy.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/download-copy.svg",
+      "sha256": "eccaf038af939982e80212694c0a4659e7fc527426cce4da15d5c33264f52d22"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/duplicates.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/duplicates.svg",
+      "sha256": "f270df08c789b800d3c7e93753cbc6b59071511fb56141bf971b4c8366fb4b75"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/duration.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/duration.svg",
+      "sha256": "952a74034d3ed9d6407925cfea8b26eb7af0ff2f5bdb64f9c53b9d200d0b5293"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/error.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/error.svg",
+      "sha256": "2ad6c01aa8dcf5012fcc3978ce12bf0c82fee00f16592655dea4ff5f28c10aca"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/favorites.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/favorites.svg",
+      "sha256": "ee275c1486ed050142e4bcfda41e69817c5d33a8b79e34f3eecee3864bde11b9"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/file-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/file-open.svg",
+      "sha256": "2dbd3e9075159876a54910f916cec3a668283aba93ed9f3b954a1497ef75f2c6"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/filter.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/filter.svg",
+      "sha256": "f4d2a8ce4b1aa6458ca31caa3d4b66ff35eb414764203df80a6d5ccb4d9e30ee"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/fit.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/fit.svg",
+      "sha256": "fac7faaa845111644d3e5a172c19bf08b4d0db3d06427a9924ab9b14d34691fc"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/folder-open.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/folder-open.svg",
+      "sha256": "f4b3a676b774efbeb97d1464911dad0bfe8d47b73102516b148ea34611d2ab7c"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/fullscreen.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/fullscreen.svg",
+      "sha256": "68843663de5939987ce28e0350fd9f0a4f383c06fef219c6aa6d89912aaf0d8a"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/grid.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/grid.svg",
+      "sha256": "294c8a97ac0d5712ff234ccdab863ef087b4018c0383df7a6abc90a23f61ec94"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/hash.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/hash.svg",
+      "sha256": "76cf1b9335201a1749860f3e0dd6e7c8891318b2a9cf27f97ce2b74d89a66ebc"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/help.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/help.svg",
+      "sha256": "24ca53945dd0a680ba387a72832cef9f7695d168bde010185f2068e5af92f7bd"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/home.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/home.svg",
+      "sha256": "9119c729285661b4e2902c74db14c52709411efb2b0831515f294da5ce3031c9"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/image-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/image-file.svg",
+      "sha256": "6d03da566f2d1d58cb0c17dc5020c2e52769a04d005aed9995d6d54c8c749938"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/info.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/info.svg",
+      "sha256": "4086328bf014e4adf89ebcca8546d1b35a7a98644c2a6ae8afd408e0612f357e"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/library.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/library.svg",
+      "sha256": "7cb4774cb9996dd4446ee500a80367e320bced5ba5a2fb997806e92e098df779"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/link.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/link.svg",
+      "sha256": "e5842ce9d7ced6f3ca24727b34d03f673d2392c013e834faf36a1aa68ec70276"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/list.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/list.svg",
+      "sha256": "ee1af08eb7dd9acc061574ab7378d9588a2973d9b62d32034f010727bb141b32"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/local-only.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/local-only.svg",
+      "sha256": "5ac979b16cadc1b31eea84331ac628ebb067a1580a980041ad96de7c43784b25"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/location.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/location.svg",
+      "sha256": "12f5f41e8704b16cd4af925419c6412ad6310b8882d7988f9ca8041bf4eab2ca"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/map.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/map.svg",
+      "sha256": "e37b1c36a029ef05e9b338595b167cb46402e695fbc143896f861313b3bad37a"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/menu.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/menu.svg",
+      "sha256": "b186c0f78d54cf560cba87038fc1cabc9ab128dafcb7e157247d8fa91e8e435a"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/metadata.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/metadata.svg",
+      "sha256": "553d50079ddc3d253dbfb19300793f19a2802b2b1be1630c18091e9935ea137b"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/moon.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/moon.svg",
+      "sha256": "6d14d59cb216038ee9dcb9855eeaf1c1f3d0721dfcc70eed6ef37eee1520791d"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/more.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/more.svg",
+      "sha256": "79f0b02f21d5dd9fb27a6b0b84ba6330ae7d502fffc5d31f6570fce398714526"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/mute.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/mute.svg",
+      "sha256": "1432ad35f485ffbedf96ef3530cddbbf08ecbdce94bdd38a5cce2c9c493b05f6"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/next.svg",
+      "sha256": "912bf6266bc249f0aaf3fe518ff1bd729da15dd12c96f823ce21659d394b00d2"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/notifications.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/notifications.svg",
+      "sha256": "570dd2b908c4186450a4278b0a825f4bda0d1ff86127b0d23ead7ae8bda428a8"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/occurrences.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/occurrences.svg",
+      "sha256": "4c312a0dd0d4b8eb25d846f86b3484c64c27357844f3221b89bf7c08ee531015"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/offline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/offline.svg",
+      "sha256": "0734069177e89a50a6e9bf1ae51da1bb7ae09d7740e90c97b487128be8129bd6"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/online.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/online.svg",
+      "sha256": "bda7cd2032fb425cd5a6b38dea5db5b9da72a52acc2142fa94ba12e39e0169d8"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/outbox.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/outbox.svg",
+      "sha256": "20f68f249eb7520bb202c78b91a07dbae448222aa525ed05668612572b7813d0"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/pause.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/pause.svg",
+      "sha256": "19ad0326a0ee49d028279274cefaac6a123bdfa0b37ef2b0d5fb0fe5fa753b4e"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/photos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/photos.svg",
+      "sha256": "649ac15ac3b3c2d994114a4f995752e12939f94164007e4c9cd82084c53f6c1f"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/pin.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/pin.svg",
+      "sha256": "28b4e281b163635514d14656ca2a3815de5156bf139e279e3ba6e74dcb924599"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/play.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/play.svg",
+      "sha256": "0437b1a16f10a87bede2091050033d9fe848877362f424267e2e8433f752dab6"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/previous.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/previous.svg",
+      "sha256": "7dcf497df597a6505b11d1384628ec67603610def8d9529a0702bec5caf10717"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/processing.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/processing.svg",
+      "sha256": "cbdef3ac221cb263eb61eb99bf57b9bd4d42ab4d11f1c85c2ccdb1cab1171133"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/queued.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/queued.svg",
+      "sha256": "5ee7f4b5d6cb91294c4a8e9abd2c05ea9071944b5e4f8dea879b0205e6339c36"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/quota-wait.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/quota-wait.svg",
+      "sha256": "000e5d827b636460e0e5aed530c6098444e020fcc7aa47de3cbaf53d5069ecd7"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/recent.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/recent.svg",
+      "sha256": "6b67d95bb51028f73ab4673a1fb74367aa9942867ac6d87a0797f2929dd05eac"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/refresh.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/refresh.svg",
+      "sha256": "01c6b128ef53e1ac7bf12df17c4c4791c9180cd79708fc8bdfa30efdd74f6b56"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/reset.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/reset.svg",
+      "sha256": "f6b3211abb28ba7cd284474f427a15aa8cf7a1636576542613546cba8aff2513"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/retry.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/retry.svg",
+      "sha256": "0e3a8d96bb395ec3bdf5d642fbbf6472f10891b525c20fec6620a8984273a028"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/reveal-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/reveal-file.svg",
+      "sha256": "727f456bd39f5107a2ccee9ad50752d3ea129afed62a8a79de93f69b66036478"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/scene-description.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/scene-description.svg",
+      "sha256": "f07deb79ff95027ac96efcb61b7970aacecbceb1d110debe01fb7bec6c9e2d0c"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/scene-search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/scene-search.svg",
+      "sha256": "9ff591463edecc3d08812aff237c625c5af69aa43e1461f4f7d1ac0391402785"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/search.svg",
+      "sha256": "89e32b0aa70cb42a101d162c4e264c56158aa622ece2cdcdf2abd8152298e68e"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/select.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/select.svg",
+      "sha256": "bc2aa89598326a64930a5f8ae7bfca88a4aff37f6a8aa499ad0ee3ad041ba6a9"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/settings.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/settings.svg",
+      "sha256": "95570c0606e28712bd3b0c5a301333f76edb4f0041a810941324a2b2df282324"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/sidebar.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/sidebar.svg",
+      "sha256": "9012df191ba5319f09d33c586344ce5b56e6ebce784a595a83ef891e5190800e"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/sign-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/sign-out.svg",
+      "sha256": "b8c3c7537bf081cb811db282a65360c1dc5f3a5fe9d948d06ced6872cdc6998a"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/skip-next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/skip-next.svg",
+      "sha256": "8f00ab160bb86ad645ff48db371be647d24e26a05ec27319cd2fbfed95ef62ca"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/sort.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/sort.svg",
+      "sha256": "c6f8e748a601e321ffaf2eea0a2b01b4397df9c0695f231510e1d201d091b3ee"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/source-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/source-add.svg",
+      "sha256": "cfcb0b39651276373cf007376676e0e9add913589b3575ee4e9ce860ad65641e"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/source-remove.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/source-remove.svg",
+      "sha256": "c1db85e5d261a82fcd0a5bb4fdf20da8b49319509e3af378d1c1110e53d0f990"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/sources.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/sources.svg",
+      "sha256": "a4bc9b37381f10a3ebf463cf44b8139d7dcb6bb0acbc73e33df7ae2f5755cb01"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/stop.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/stop.svg",
+      "sha256": "335d2656e3ba1f0be67cbe4e4f608e91353d403e6aabea09109ba7466069b8f9"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/sun.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/sun.svg",
+      "sha256": "aa1445ee903d69aae3180ed67fa237073dfc4fefa3712b960b31698e1458e599"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/sync.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/sync.svg",
+      "sha256": "f9459706991ddc00b3a160ddd99e42d6bc4fb9a60715556ed9b5b13458ebaad5"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/tags.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/tags.svg",
+      "sha256": "eaca1d5acc4090a157873ede16fe210c804f70fd9ab6c45291fdbfc809b16cb9"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/temporary-preview.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/temporary-preview.svg",
+      "sha256": "162babdc2b074190296d18a9ccbd2c1c6fedccb7d5f38dba48f3b0e05b58bb21"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/time.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/time.svg",
+      "sha256": "832ac282f277023e45180edf0813c0d97a1e77aed8854e0071411dbe7bad70fe"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/timeline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/timeline.svg",
+      "sha256": "fe0cbc95fcd7127e5a9965bf9c8fc828e11154b65bc17080f6084c4d192766b8"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/video-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/video-file.svg",
+      "sha256": "4ab72e981d2032be40ffbf00129859a58e463291e47e84ea5284d95597a4c327"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/videos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/videos.svg",
+      "sha256": "506bbf852dff3ad2fdcc9b8716fd5d7d103887164ab61af5ce524886fcc0c83c"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/volume.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/volume.svg",
+      "sha256": "ec654f975cc27ff2d1052dbf1222f0dca9c0f9021923b5b9cabc4701bcf0dd85"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/warning.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/warning.svg",
+      "sha256": "48dd02277f72ecf7739f9d07c7cbfa0ad58d9f0ea405ad4a7f88ad062c09d25e"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/zoom-in.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/zoom-in.svg",
+      "sha256": "02e025b079b123531ef0012d35e9bcf016b2dd957a7caefa51d86f84d60784eb"
+    },
+    {
+      "source": "icons/ui/svg/light/optical-16/zoom-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/optical-16/zoom-out.svg",
+      "sha256": "b7b932f33259077e58bf692b685dc29bb0c93281415176d387561993abc0d90e"
+    },
+    {
+      "source": "icons/ui/svg/light/outbox.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/outbox.svg",
+      "sha256": "537c4e01849048de2fe03e0337a15c8ebe5ea63fdddd87c53e1c41f140c3707c"
+    },
+    {
+      "source": "icons/ui/svg/light/pause.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/pause.svg",
+      "sha256": "a59d176b1e61420af832866100db691b4f1c1635c81e8f1613e46a980e3d2b31"
+    },
+    {
+      "source": "icons/ui/svg/light/photos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/photos.svg",
+      "sha256": "8fbca4e4d3d2eae7ca776331861dd30cb40b34f29c17788b4391255e747cbcc7"
+    },
+    {
+      "source": "icons/ui/svg/light/pin.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/pin.svg",
+      "sha256": "e851b35018300983deebb5f6c6478ba898100d6644aa5236ca9133d8af577b1d"
+    },
+    {
+      "source": "icons/ui/svg/light/play.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/play.svg",
+      "sha256": "f6f043e0dafb1add5589352e60169e9feb23bee89a16ad89a159a012ca4d2ba3"
+    },
+    {
+      "source": "icons/ui/svg/light/previous.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/previous.svg",
+      "sha256": "14045b46e88c369784b57a9da4095309ca39feef0aa4fe4b28cbfba6c6ee7397"
+    },
+    {
+      "source": "icons/ui/svg/light/processing.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/processing.svg",
+      "sha256": "e95c6a6517d0bfc7383813890a749f45962a9c00cd7ee25691bce7c9f463b0b5"
+    },
+    {
+      "source": "icons/ui/svg/light/queued.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/queued.svg",
+      "sha256": "175460a490da31935e089caa4fc8afd405ea5ee362563cfeb5a8839ad1b3c65c"
+    },
+    {
+      "source": "icons/ui/svg/light/quota-wait.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/quota-wait.svg",
+      "sha256": "804162a17b11caa0953607f8f68ca40cae7b97d5b248f444e2b945885e16510f"
+    },
+    {
+      "source": "icons/ui/svg/light/recent.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/recent.svg",
+      "sha256": "10cfa9ba391a8e7c91b3e08923aa8c02ba5a887b205630170f51b1eb1fe24603"
+    },
+    {
+      "source": "icons/ui/svg/light/refresh.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/refresh.svg",
+      "sha256": "a33648e73f70f48a17190b28693b03ef4c738de71e77919b1b82ba2686fed042"
+    },
+    {
+      "source": "icons/ui/svg/light/reset.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/reset.svg",
+      "sha256": "c94f9ce40535ceb7eced777e6997f68f15eaa03fce1c0a49342a36501d24eaeb"
+    },
+    {
+      "source": "icons/ui/svg/light/retry.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/retry.svg",
+      "sha256": "ce699f1b182b52f8d337acdd112f1efe64b6200e30056a63eeaf40a9776a32ab"
+    },
+    {
+      "source": "icons/ui/svg/light/reveal-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/reveal-file.svg",
+      "sha256": "9750ca230f8303225804d71ac4ac1e38cb583ecf9cb997d0db5712d180397e94"
+    },
+    {
+      "source": "icons/ui/svg/light/scene-description.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/scene-description.svg",
+      "sha256": "414adf6510b05c7307395b2ca4aab92e89c6b94b5bbd9e70eb04e42855aeede9"
+    },
+    {
+      "source": "icons/ui/svg/light/scene-search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/scene-search.svg",
+      "sha256": "559d37fd5a2faf3c3e64c30b697aea93e3ad6114368d4dad190267fc3ccf25a0"
+    },
+    {
+      "source": "icons/ui/svg/light/search.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/search.svg",
+      "sha256": "7d2188e983cb457fb6da3bbcfe3e5d8ef64d103bf1b9b2d21f6ffc874537fe7d"
+    },
+    {
+      "source": "icons/ui/svg/light/select.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/select.svg",
+      "sha256": "1e45a5a33f675b63946b30f5cce3f70e04f5c0dd9386ada50faedb7b485c96ff"
+    },
+    {
+      "source": "icons/ui/svg/light/settings.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/settings.svg",
+      "sha256": "3a8263f7cb6b82547b155506970b0efdd301365f0208b0d158787314b6471afa"
+    },
+    {
+      "source": "icons/ui/svg/light/sidebar.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/sidebar.svg",
+      "sha256": "b013e86c71daf8822cc845d0cf455b0ee6b2c2a88a0dbf00ed8707f588f1deb1"
+    },
+    {
+      "source": "icons/ui/svg/light/sign-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/sign-out.svg",
+      "sha256": "311ee8aeeaaa516b3037597fab21f0414d16dae6361c15c0dd5c1f03049db30d"
+    },
+    {
+      "source": "icons/ui/svg/light/skip-next.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/skip-next.svg",
+      "sha256": "a030da2e09e49cbcd53f74fcb0cdf094438ea1c311886e1c68cf6991a9f47581"
+    },
+    {
+      "source": "icons/ui/svg/light/sort.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/sort.svg",
+      "sha256": "fcde02a023d2f2d1196dc1573493f5c056956c7baa7912f1513cc70b1f9052b0"
+    },
+    {
+      "source": "icons/ui/svg/light/source-add.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/source-add.svg",
+      "sha256": "dc1a4d722adce16e6608a09e56a20e4ad04d55bf07ee6bb4d41f58f4e2fa72e9"
+    },
+    {
+      "source": "icons/ui/svg/light/source-remove.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/source-remove.svg",
+      "sha256": "73012e2e8b815e205711501b7cb31e15a48b9754620114e27e2b5040a7cf97cf"
+    },
+    {
+      "source": "icons/ui/svg/light/sources.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/sources.svg",
+      "sha256": "305f5cec6959ea9eac8bf6b87edcc24c4cb9012fc42fb3a8700b2422b00f249d"
+    },
+    {
+      "source": "icons/ui/svg/light/stop.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/stop.svg",
+      "sha256": "9923555dce972d8ace33f9602341ef07ad844d474fd75b73495d355bfceadafa"
+    },
+    {
+      "source": "icons/ui/svg/light/sun.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/sun.svg",
+      "sha256": "b42bb0fd0b3662d71a47488f7eea0fa0cbbf7a9c1a18d27de3648eb632754b9b"
+    },
+    {
+      "source": "icons/ui/svg/light/sync.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/sync.svg",
+      "sha256": "63524ca7813f569ec737dc922563cbe8f06e6c053813501b735a26c2dcf2a89b"
+    },
+    {
+      "source": "icons/ui/svg/light/tags.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/tags.svg",
+      "sha256": "39a60d900df305bdb527b9cb7fdfbcc8d9339cc972287fa99aecc5840954ab77"
+    },
+    {
+      "source": "icons/ui/svg/light/temporary-preview.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/temporary-preview.svg",
+      "sha256": "948c947e2e0c90336bab9fa864508b7224fd935a237149c10304f550f778f909"
+    },
+    {
+      "source": "icons/ui/svg/light/time.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/time.svg",
+      "sha256": "b686d5c1c3126476300efec3b8c0c6ad8ef44b92b7ada7dbc69f748fa6f95b72"
+    },
+    {
+      "source": "icons/ui/svg/light/timeline.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/timeline.svg",
+      "sha256": "1bc2f94cdbed6050b3120263400dad8942865e6d25be4a74f263001051b21204"
+    },
+    {
+      "source": "icons/ui/svg/light/video-file.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/video-file.svg",
+      "sha256": "fee8b12441ce7cfd1984b11a2007f92d8e7fd412d4599d09d254f9f60cdf2396"
+    },
+    {
+      "source": "icons/ui/svg/light/videos.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/videos.svg",
+      "sha256": "fb972291f7c7f15d76e6287a87e7373b74b9df8afe1352e9ed8d85c342b44d8b"
+    },
+    {
+      "source": "icons/ui/svg/light/volume.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/volume.svg",
+      "sha256": "290c6ad61b39a5738aaa3398dfb7c9c4487bf0b0048b040e8900fad7d68d19f8"
+    },
+    {
+      "source": "icons/ui/svg/light/warning.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/warning.svg",
+      "sha256": "cf554d7cf673b28e811eec5bc1c112870cf2e0dfa7b2e124576968be342decf5"
+    },
+    {
+      "source": "icons/ui/svg/light/zoom-in.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/zoom-in.svg",
+      "sha256": "49cde22859d5c3d5dd7b0c3feadf14e8fa7c483323d197130a567883af5ab863"
+    },
+    {
+      "source": "icons/ui/svg/light/zoom-out.svg",
+      "destination": "Assets/NektronMoments/icons/ui/svg/light/zoom-out.svg",
+      "sha256": "2e96ee82ab7e21fc9d2396fb109261a76a9ce35e58d55fab8f49ea9a79adc76b"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.scale-100.png",
+      "destination": "Assets/AppList.scale-100.png",
+      "sha256": "c72889c867d2537ab6dd39373caa7cb08e8fe0df7475d04016f325445aa3dbbb"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.scale-125.png",
+      "destination": "Assets/AppList.scale-125.png",
+      "sha256": "06c360266dcd491b9f3ec7976fae21f2cae85c49f6701c379b1760ebae30a420"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.scale-150.png",
+      "destination": "Assets/AppList.scale-150.png",
+      "sha256": "8d3c326905b81df81bcb9e9835b0729221c041d4e17d1423546b3d0105631197"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.scale-200.png",
+      "destination": "Assets/AppList.scale-200.png",
+      "sha256": "c4d6b78f3ec55d794826a2d640da96d93e992dbb252ecf61f58ba9b4091c7a9d"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.scale-400.png",
+      "destination": "Assets/AppList.scale-400.png",
+      "sha256": "bc4e0355dbcbfdda2d3f923dcb91909f5149d436430220fb706a523525ba6e05"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-16.png",
+      "destination": "Assets/AppList.targetsize-16.png",
+      "sha256": "0800742a185960ac6efd715daa45c1dc7c47224158358e625113fde63f016999"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-16_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-16_altform-lightunplated.png",
+      "sha256": "dda5100eec0ec490c73c9e2258adc33dc391d24c76de8c92946a0934cc79e1ad"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-16_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-16_altform-unplated.png",
+      "sha256": "3dbc2531a449de06db43635d1cbfe1b3d5495a5bdc58932d3789e7cfb50bc852"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-20.png",
+      "destination": "Assets/AppList.targetsize-20.png",
+      "sha256": "eb5b027d8f1fa7c0ddce6853d393d99b94d184fce8a600f6694cd14cc9080509"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-20_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-20_altform-lightunplated.png",
+      "sha256": "8d7525f33bffcb75fccbf63e42eccf35bb07e7e942024381453c1dc4e5c55299"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-20_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-20_altform-unplated.png",
+      "sha256": "4e4d196f10b42f1410d42f522587f61251146607d187ab771528ea0d6de3658f"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-24.png",
+      "destination": "Assets/AppList.targetsize-24.png",
+      "sha256": "59abbd51364ba9b8a87624625035ca321909497639e5589935b33c45252d9608"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-24_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-24_altform-lightunplated.png",
+      "sha256": "b716d677405fde88688b55829ec51f8d8be7ac63c63149b7af481aa1e257f1cf"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-24_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-24_altform-unplated.png",
+      "sha256": "cf461819aa68eae53cfbbaeafd4c6b14c28617f81fee39c815d8987e5f4b62e0"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-256.png",
+      "destination": "Assets/AppList.targetsize-256.png",
+      "sha256": "ee6d94f3952948fe86be21f20a0dc1f19554ee4c3a57ad7698badcbfab8ec7cc"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-256_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-256_altform-lightunplated.png",
+      "sha256": "67b622567c6049ad5c8e1caf660961c941c088fd67608e3bcd738ab0fdfd0875"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-256_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-256_altform-unplated.png",
+      "sha256": "974f7a8b20b74796f803a65f8cf93f5b2e413e740386ab1bbde53df031a67153"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-30.png",
+      "destination": "Assets/AppList.targetsize-30.png",
+      "sha256": "948c43906b434906d84a85981d2a105801b953212bf75609ac74f80ecb062da8"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-30_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-30_altform-lightunplated.png",
+      "sha256": "4b7bb226ef0e02b533de160551c590074d74f215a1dbc3be94dfd90605cfc930"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-30_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-30_altform-unplated.png",
+      "sha256": "63c0cbdc38c8a923610717872926cbd4d94506e69333fd4ef6b58575123e9913"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-32.png",
+      "destination": "Assets/AppList.targetsize-32.png",
+      "sha256": "5816d0d225066240ae0aa43a08c179cf23ba40d1846e3b36fa43df3a7c3e8d18"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-32_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-32_altform-lightunplated.png",
+      "sha256": "b7e589159ac75cd5a2b8bd941d43239f80dd784989bd0b528ebd57740d5c6b97"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-32_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-32_altform-unplated.png",
+      "sha256": "1a61ecde4961877e4ab96c42c82584b7de068c03d0651a154d785c268e747ccf"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-36.png",
+      "destination": "Assets/AppList.targetsize-36.png",
+      "sha256": "3f7ca1ac4035e7bd6e33c9f022d46acf9c84fc0303fb211fe3aab1b10e33effe"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-36_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-36_altform-lightunplated.png",
+      "sha256": "4d795742a8eb99021619d5e283e93d265c4b610acf5630a8987df8f6ba03796e"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-36_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-36_altform-unplated.png",
+      "sha256": "b31d9fb94e6079bc456990224bcc17c46336ba716b07c86e8d118392eb6967fb"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-40.png",
+      "destination": "Assets/AppList.targetsize-40.png",
+      "sha256": "d37242ca48420216d80aeed7cde46c6a757913347eccb90970fb650337f51ab0"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-40_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-40_altform-lightunplated.png",
+      "sha256": "9901a875a468d6417aba8f27997956306c8dceac3398ba5643de7d28fde9b63a"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-40_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-40_altform-unplated.png",
+      "sha256": "65ee5002d7bc5f92d4e74c1d95d715f6992cd2f1d71381d8f8d2631123425d01"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-48.png",
+      "destination": "Assets/AppList.targetsize-48.png",
+      "sha256": "e74333e6f37d958c4a8aa09d4734b2b1526c0ea810fd8c1e3c41a9424bb4dfa0"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-48_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-48_altform-lightunplated.png",
+      "sha256": "9017fb7093103919d10b7c580916b0ad1a02fbffe0066200a5fa00326e43e8fe"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-48_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-48_altform-unplated.png",
+      "sha256": "7d6920ddc8254b9ccfa176df15b42b66630137fce5dbe0e953b0361cfbec2f7a"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-60.png",
+      "destination": "Assets/AppList.targetsize-60.png",
+      "sha256": "4099ef8ffa029b00705a795e85aca76dee70d82fae4e83aa08bcfc08268cb435"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-60_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-60_altform-lightunplated.png",
+      "sha256": "402631f64408554d267a912e43bdebcf89210b32a0ff4e56c53a3f17d7e2660d"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-60_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-60_altform-unplated.png",
+      "sha256": "5a2c37998acd71ea0b61bb146fc71275c4123d89883a11bf42ff66e6502ce2da"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-64.png",
+      "destination": "Assets/AppList.targetsize-64.png",
+      "sha256": "f43d978afc20329db8d0543979b8adde389a515de61cd8b380cfcc104413ecb7"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-64_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-64_altform-lightunplated.png",
+      "sha256": "f98e496140f4074f6b11de9bbd5177c356c124a74f55dd5f1c3e297d0673f898"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-64_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-64_altform-unplated.png",
+      "sha256": "3007282fd4f5901eb223a0a08454817a59b041bc33c0741acd4765cd9fabe5cb"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-72.png",
+      "destination": "Assets/AppList.targetsize-72.png",
+      "sha256": "45c86ffd29a911337657d126d9d5a585db6734851c89d24f36e0e76c6e09f9b4"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-72_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-72_altform-lightunplated.png",
+      "sha256": "66453928dc6ffd9d3ce31e2f52ee012f1962565d588283346f7ad5842768d3e6"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-72_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-72_altform-unplated.png",
+      "sha256": "ed93adc54446cab2a68fd569816afee136c8d2f5a1e2266b834d51b214509d88"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-80.png",
+      "destination": "Assets/AppList.targetsize-80.png",
+      "sha256": "0bedaca8df4032a7c87d23e7136abb01bfc542b53d4c31b45397a99d261e3e2c"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-80_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-80_altform-lightunplated.png",
+      "sha256": "1afb1a9d462225a49267ff41fbc41113f13c4ca120598768e6cb330cf3f73068"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-80_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-80_altform-unplated.png",
+      "sha256": "2b958aa563a1c018f7fcfa65f56a796c1a6b468572a51662ef5485335458b468"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-96.png",
+      "destination": "Assets/AppList.targetsize-96.png",
+      "sha256": "2e0641532c69b750eeed1017facb165cb7f5122e878f859a2ade47aebbc01741"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-96_altform-lightunplated.png",
+      "destination": "Assets/AppList.targetsize-96_altform-lightunplated.png",
+      "sha256": "dca7622530cad061120fee929cdc6c237b336e5b620e665a2ce9e380c884821e"
+    },
+    {
+      "source": "platforms/windows/Assets/AppList.targetsize-96_altform-unplated.png",
+      "destination": "Assets/AppList.targetsize-96_altform-unplated.png",
+      "sha256": "0d846774d2d68a89faa54122cedbc9b89c0f149dc757fe61d5b5ce8e8b391c96"
+    },
+    {
+      "source": "platforms/windows/Assets/SplashScreen.scale-100.png",
+      "destination": "Assets/SplashScreen.scale-100.png",
+      "sha256": "9a2a39ba3704d70eb5cf5e33f486ced4935ba8ddcec7162060c609d7f42652b4"
+    },
+    {
+      "source": "platforms/windows/Assets/SplashScreen.scale-125.png",
+      "destination": "Assets/SplashScreen.scale-125.png",
+      "sha256": "c8642db5ee25271f7ea4d61c4b0a91e843ef7bc88068b5850888b5b414962f80"
+    },
+    {
+      "source": "platforms/windows/Assets/SplashScreen.scale-150.png",
+      "destination": "Assets/SplashScreen.scale-150.png",
+      "sha256": "bb47e4d5450bd48980748dbb73fc5a78c61a8f01e06bca34184355825edb7162"
+    },
+    {
+      "source": "platforms/windows/Assets/SplashScreen.scale-200.png",
+      "destination": "Assets/SplashScreen.scale-200.png",
+      "sha256": "7d6014845b42f117a0e8b758155c571609bfde6b869c8dabaf5206b56542dd99"
+    },
+    {
+      "source": "platforms/windows/Assets/SplashScreen.scale-400.png",
+      "destination": "Assets/SplashScreen.scale-400.png",
+      "sha256": "89982cde9931a381d983c7acf8dde9b2dc9ffc2a5cca5bc07f1ab78b2f4463f8"
+    },
+    {
+      "source": "platforms/windows/Assets/Square150x150Logo.scale-100.png",
+      "destination": "Assets/Square150x150Logo.scale-100.png",
+      "sha256": "de5d41bf937a8a9e228075a1777e9570eb34e8a35702250dbf9be14aad79f5f4"
+    },
+    {
+      "source": "platforms/windows/Assets/Square150x150Logo.scale-125.png",
+      "destination": "Assets/Square150x150Logo.scale-125.png",
+      "sha256": "7168946b68c7f531e8cf3e9dfe85de259335add4c17be2ae1656a30541ee3345"
+    },
+    {
+      "source": "platforms/windows/Assets/Square150x150Logo.scale-150.png",
+      "destination": "Assets/Square150x150Logo.scale-150.png",
+      "sha256": "3ef7acd450cb359163922b48aa93af9b096e6965191bd79321bd30216001e4d3"
+    },
+    {
+      "source": "platforms/windows/Assets/Square150x150Logo.scale-200.png",
+      "destination": "Assets/Square150x150Logo.scale-200.png",
+      "sha256": "ce2276e277a8d7bc588ac5786a0d3cdab96d8345f2c138b1c228247565d289c9"
+    },
+    {
+      "source": "platforms/windows/Assets/Square150x150Logo.scale-400.png",
+      "destination": "Assets/Square150x150Logo.scale-400.png",
+      "sha256": "94dcb4c6a9146d3f7f15fff3616986e0bd7639bf154fc9b89b724cda40d50a56"
+    },
+    {
+      "source": "platforms/windows/Assets/Square310x310Logo.scale-100.png",
+      "destination": "Assets/Square310x310Logo.scale-100.png",
+      "sha256": "7b882e09d1656d67cef728b91085ed04b18dbd45b9613840c5d8dada0a0f6d88"
+    },
+    {
+      "source": "platforms/windows/Assets/Square310x310Logo.scale-125.png",
+      "destination": "Assets/Square310x310Logo.scale-125.png",
+      "sha256": "ff10aa19e93bb90fdebfeba838c066902a8bd85d563a21052e071fde3ae75e45"
+    },
+    {
+      "source": "platforms/windows/Assets/Square310x310Logo.scale-150.png",
+      "destination": "Assets/Square310x310Logo.scale-150.png",
+      "sha256": "fcb3efa42a9317334204d5656b2781933a8869ec8e15ed3d9ad8012655420c8f"
+    },
+    {
+      "source": "platforms/windows/Assets/Square310x310Logo.scale-200.png",
+      "destination": "Assets/Square310x310Logo.scale-200.png",
+      "sha256": "67776597178b6ed8c259eeb43c08bfd988f4c6be0e66675e70b7e1bd767b27e3"
+    },
+    {
+      "source": "platforms/windows/Assets/Square310x310Logo.scale-400.png",
+      "destination": "Assets/Square310x310Logo.scale-400.png",
+      "sha256": "fbd37a5b6140bb4feccd58ef28f34c3a302b52e9fb292344fa5ae780294027a3"
+    },
+    {
+      "source": "platforms/windows/Assets/Square71x71Logo.scale-100.png",
+      "destination": "Assets/Square71x71Logo.scale-100.png",
+      "sha256": "86730ca7ecbc585434ab44c65a386fc6a43a11cd1dc1b41eb7bacb61b73ea42f"
+    },
+    {
+      "source": "platforms/windows/Assets/Square71x71Logo.scale-125.png",
+      "destination": "Assets/Square71x71Logo.scale-125.png",
+      "sha256": "47ec6828098f08e3e40a392e191bdc6f3081024d11e00c6f8803dfaf6e7b856d"
+    },
+    {
+      "source": "platforms/windows/Assets/Square71x71Logo.scale-150.png",
+      "destination": "Assets/Square71x71Logo.scale-150.png",
+      "sha256": "ed205408ac03fd4c912fc87792e06f41e9ac44d8af1ea1aeb8fab669c6fa1338"
+    },
+    {
+      "source": "platforms/windows/Assets/Square71x71Logo.scale-200.png",
+      "destination": "Assets/Square71x71Logo.scale-200.png",
+      "sha256": "7594d510c0c8e30066ba1fa13e961506621c3166fc06f779e522b8c171dfe7b5"
+    },
+    {
+      "source": "platforms/windows/Assets/Square71x71Logo.scale-400.png",
+      "destination": "Assets/Square71x71Logo.scale-400.png",
+      "sha256": "0615d4d5d757b8767d67d023aef37c60f988cdcc70819dbd8dd5dc41090bab6c"
+    },
+    {
+      "source": "platforms/windows/Assets/StoreLogo.scale-100.png",
+      "destination": "Assets/StoreLogo.scale-100.png",
+      "sha256": "38c8aae692beca77f87168e2912f8e53acaeaefdf07adb6dfeb96df5b8dca573"
+    },
+    {
+      "source": "platforms/windows/Assets/StoreLogo.scale-125.png",
+      "destination": "Assets/StoreLogo.scale-125.png",
+      "sha256": "abe4f4abdc50e80635b6a2e838c8c4b8433a80a7929df78b4a849779870ccadf"
+    },
+    {
+      "source": "platforms/windows/Assets/StoreLogo.scale-150.png",
+      "destination": "Assets/StoreLogo.scale-150.png",
+      "sha256": "86ed2eba28488af0fd992a0958bf371619749b84d3003f94e50a563bddc1727b"
+    },
+    {
+      "source": "platforms/windows/Assets/StoreLogo.scale-200.png",
+      "destination": "Assets/StoreLogo.scale-200.png",
+      "sha256": "08a31a133de8bece75d53f96446bcc6ebe072b2ceb4749ce462ee8fc9ac85d77"
+    },
+    {
+      "source": "platforms/windows/Assets/StoreLogo.scale-400.png",
+      "destination": "Assets/StoreLogo.scale-400.png",
+      "sha256": "41dd7bd061ce50144b8ea97f023e4733c934ab116a2e57910a3525818230446e"
+    },
+    {
+      "source": "platforms/windows/Assets/Wide310x150Logo.scale-100.png",
+      "destination": "Assets/Wide310x150Logo.scale-100.png",
+      "sha256": "2a79f75739ce2ee575199a975e0fc687bf98ea53796f428437b2cd4cbd8d705a"
+    },
+    {
+      "source": "platforms/windows/Assets/Wide310x150Logo.scale-125.png",
+      "destination": "Assets/Wide310x150Logo.scale-125.png",
+      "sha256": "42d4ce1831f2de2969f63b0ce9c941ddf98376b0efb9234e5067aa06cd14aab9"
+    },
+    {
+      "source": "platforms/windows/Assets/Wide310x150Logo.scale-150.png",
+      "destination": "Assets/Wide310x150Logo.scale-150.png",
+      "sha256": "a9d2f47a2a4ac65e350570b6782c9b7d0fd0649e344766bdcd1d2f47c88c0248"
+    },
+    {
+      "source": "platforms/windows/Assets/Wide310x150Logo.scale-200.png",
+      "destination": "Assets/Wide310x150Logo.scale-200.png",
+      "sha256": "ecf30b73e265e73b489baf2f1301cc147609ae3b4be8aad52e112128421bb135"
+    },
+    {
+      "source": "platforms/windows/Assets/Wide310x150Logo.scale-400.png",
+      "destination": "Assets/Wide310x150Logo.scale-400.png",
+      "sha256": "4fea4d814c5a0a8e9b6c6772326696baefd7976b78cbf3c7f3f12bfef41a2acc"
+    }
+  ],
+  "version": "1.3.0"
+}

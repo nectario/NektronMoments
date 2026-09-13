@@ -1,0 +1,11 @@
+<UserControl
+    x:Class="NektronMoments.Controls.MediaThumbnail"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Background="{ThemeResource MomentsSecondaryBrush}">
+        <ContentControl x:Name="Placeholder" Width="36" Height="36"
+                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                        ContentTemplate="{ThemeResource MomentsIconPhotos}"/>
+        <Image x:Name="Picture" Stretch="UniformToFill"/>
+    </Grid>
+</UserControl>

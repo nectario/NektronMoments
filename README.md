@@ -5,16 +5,27 @@ photos and videos. It is also the media source for the future NektronAI
 Intelligence Layer.
 
 Native product targets are **Windows, iOS, and Android**, with the existing CLI
-as a companion. The [brand handoff](Brand_Images/README.md) and
-[offline asset gallery](Brand_Images/START-HERE.html) collect the NektronAI
-family references for the aesthetics model. The approved public name is
-Nektron Moments. The Python distribution and CLI are `nektron-moments`, the CLI
+as a companion. The first [native Windows preview](apps/windows/README.md) is
+available and uses the approved v1.3 runtime assets. Full design archives remain
+under `Brand_Images/`; the active package is recorded in
+[ACTIVE_PACKAGE.json](Brand_Images/ACTIVE_PACKAGE.json).
+The Python distribution and CLI are `nektron-moments`, the CLI
 package is `cli.nektron_moments_cli`, and configuration uses `NEKTRON_MOMENTS_*`.
 See [rename compatibility](docs/RENAME.md) for existing installs and deployed resources.
 
 Repository: [nectario/NektronMoments](https://github.com/nectario/NektronMoments).
 The physical checkout is `C:\Development\Projects\NektronMoments`
 (`/mnt/c/Development/Projects/NektronMoments` in WSL).
+
+Launch the Windows preview from **Windows PowerShell**:
+
+```powershell
+./scripts/windows.ps1
+```
+
+This milestone reuses the existing signed-in Ubuntu CLI library through a local
+adapter. It is not yet a standalone consumer installer. See the Windows README
+for capabilities, measured performance, and remaining work.
 
 Phase 1 implements the Local-mode data path: the CLI discovers a folder,
 can register its directory metadata immediately, then extracts metadata and
