@@ -22,7 +22,7 @@ public sealed partial class MainWindow : Window
         AppWindow.SetIcon(System.IO.Path.Combine(AppContext.BaseDirectory, "Assets/Window.ico"));
         AppWindow.Resize(new Windows.Graphics.SizeInt32(1480, 960));
         ((FrameworkElement)Content).RequestedTheme =
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["Theme"] as string == "Dark"
+            Services.UserPreferences.Theme == "Dark"
                 ? ElementTheme.Dark : ElementTheme.Light;
 
         // Navigate the root frame to the main page on startup.

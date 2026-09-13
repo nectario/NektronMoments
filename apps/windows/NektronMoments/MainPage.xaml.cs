@@ -342,7 +342,8 @@ public sealed partial class MainPage : Page
     {
         if (App.MainWindowInstance?.Content is FrameworkElement root) {
             root.RequestedTheme = ActualTheme == ElementTheme.Dark ? ElementTheme.Light : ElementTheme.Dark;
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["Theme"] = root.RequestedTheme.ToString();
+            try { UserPreferences.Theme = root.RequestedTheme.ToString(); }
+            catch (Exception) { StatusText.Text = "Theme changed for this session; the preference could not be saved."; }
             UpdateSourceIcons();
         }
     }

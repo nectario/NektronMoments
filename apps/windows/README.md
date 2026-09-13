@@ -3,7 +3,11 @@
 The packaged C#/WinUI app lives in `NektronMoments/` and uses the approved brand
 v1.3. Windows is a first-class client alongside the planned iOS and Android apps.
 
-## Run
+## Install or run
+
+The traditional Windows installer is built with `./scripts/build-installer.ps1`.
+See [installer documentation](../../installer/README.md) for signed releases,
+per-user installation, bundled runtimes and the existing-workspace dependency.
 
 From the repository root in **Windows PowerShell**:
 
@@ -31,7 +35,7 @@ registration, Nektron Moments is also available through Windows Start.
 
 ## Deliberate preview boundary
 
-This is a real native UI, **not yet a standalone consumer installer**. Ubuntu WSL,
+This is a real native UI with an installer, **not yet a fully standalone app**. Ubuntu WSL,
 the repository's Python environment, and an existing signed-in CLI account are
 required. A stdio-only adapter reuses that account without copying passwords or
 tokens into Windows and without listening on a local HTTP port.
@@ -48,7 +52,7 @@ missing/unsupported originals; codec availability depends on Windows. Catalog
 refresh is explicit: this preview does not yet watch the source continuously.
 
 Standalone native authentication/sync, continuous watching, high-contrast/manual
-input acceptance, full localization, release signing and mobile clients remain
+input acceptance, full localization and mobile clients remain
 follow-up work. No new AWS infrastructure or production deployment is included.
 
 ## Verification — 2026-09-13
@@ -83,5 +87,5 @@ The temporary CLI adapter is isolated under `Services/`; native controls, media
 viewing and thumbnail generation stay on Windows. The previous WPF sibling apps
 provided visual references; their executables/control code are not embedded.
 
-The initial package identity is a development identity. Store signing, publisher
-identity and consumer installation/upgrade testing are separate release tasks.
+The MSIX package identity remains a development identity. The signed Inno installer
+has its own permanent product identity and self-contained distribution profile.

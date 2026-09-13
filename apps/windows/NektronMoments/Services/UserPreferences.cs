@@ -1,0 +1,48 @@
+using Microsoft.Win32;
+using System.Text.Json;
+
+namespace NektronMoments.Services;
+
+/// <summary>Non-secret preferences that also work without MSIX package identity.</summary>
+public static class UserPreferences
+{
+    private static readonly string DirectoryPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NektronMoments");
+    private static readonly string SettingsPath = Path.Combine(DirectoryPath, "preferences.json");
+
+    public static string Theme
+    {
+        get
+        {
+            try {
+                if (File.Exists(SettingsPath)) {
+                    using var document = JsonDocument.Parse(File.ReadAllText(SettingsPath));
+                    if (document.RootElement.TryGetProperty("theme", out var theme))
+                        return theme.GetString() == "Dark" ? "Dark" : "Light";
+                }
+            } catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException) { }
+            // Keep the original packaged-preview preference when it is available.
+            try { return Windows.Storage.ApplicationData.Current.LocalSettings.Values["Theme"] as string == "Dark" ? "Dark" : "Light"; }
+            catch (Exception) { return "Light"; } // An unpackaged install has no ApplicationData.Current.
+        }
+        set
+        {
+            Directory.CreateDirectory(DirectoryPath);
+            var temporary = SettingsPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            try {
+                File.WriteAllText(temporary, JsonSerializer.Serialize(new { theme = value == "Dark" ? "Dark" : "Light" }));
+                File.Move(temporary, SettingsPath, overwrite: true);
+            } finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        }
+    }
+
+    public static string? InstalledWorkspace
+    {
+        get
+        {
+            try {
+                return Registry.GetValue(@"HKEY_CURRENT_USER\Software\Nektron\NektronMoments", "Workspace", null) as string;
+            } catch (Exception error) when (error is UnauthorizedAccessException or System.Security.SecurityException or IOException) { return null; }
+        }
+    }
+}

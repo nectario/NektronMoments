@@ -21,7 +21,10 @@ public sealed class LibraryBridge : IDisposable
             if (File.Exists(System.IO.Path.Combine(directory.FullName, "pyproject.toml")) &&
                 Directory.Exists(System.IO.Path.Combine(directory.FullName, "cli")))
                 return directory.FullName;
-        return "";
+        var installedWorkspace = UserPreferences.InstalledWorkspace;
+        return !string.IsNullOrWhiteSpace(installedWorkspace) &&
+            File.Exists(System.IO.Path.Combine(installedWorkspace, "cli/nektron_moments_cli/desktop_bridge.py"))
+                ? installedWorkspace : "";
     }
     public static string ToWslPath(string path)
     {
@@ -33,7 +36,7 @@ public sealed class LibraryBridge : IDisposable
     public ProcessStartInfo StartInfo(params string[] arguments)
     {
         if (string.IsNullOrWhiteSpace(Workspace))
-            throw new InvalidOperationException("Launch with scripts/windows.ps1 so the app can find your CLI workspace.");
+            throw new InvalidOperationException("Your library workspace was not found. Rerun the Moments installer to reconnect it, or launch with scripts/windows.ps1.");
         var info = new ProcessStartInfo("wsl.exe") {
             UseShellExecute = false, CreateNoWindow = true, RedirectStandardInput = true,
             RedirectStandardOutput = true, RedirectStandardError = true,

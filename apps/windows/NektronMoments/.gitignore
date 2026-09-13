@@ -41,6 +41,7 @@ BundleArtifacts/
 # Publish output
 publish/
 *.pubxml
+!Properties/PublishProfiles/Installer.pubxml
 PublishScripts/
 
 # Code analysis and tooling

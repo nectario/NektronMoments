@@ -23,8 +23,9 @@ Launch the Windows preview from **Windows PowerShell**:
 ./scripts/windows.ps1
 ```
 
-This milestone reuses the existing signed-in Ubuntu CLI library through a local
-adapter. It is not yet a standalone consumer installer. See the Windows README
+The [signed Windows installer](installer/README.md) can be built with
+`./scripts/build-installer.ps1`. This milestone reuses the existing signed-in
+Ubuntu CLI library through a local adapter; it is not fully standalone yet. See the Windows README
 for capabilities, measured performance, and remaining work.
 
 Phase 1 implements the Local-mode data path: the CLI discovers a folder,

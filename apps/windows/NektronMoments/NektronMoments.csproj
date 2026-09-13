@@ -16,6 +16,11 @@
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <AssemblyTitle>Nektron Moments</AssemblyTitle>
     <Product>Nektron Moments</Product>
+    <Version>0.1.1</Version>
+    <AssemblyVersion>0.1.1.0</AssemblyVersion>
+    <FileVersion>0.1.1.0</FileVersion>
+    <InformationalVersion>0.1.1</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -65,4 +70,10 @@
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>
   </PropertyGroup>
+  <!-- WinUI packs most Content into the PRI; AppWindow.SetIcon needs real ICO files. -->
+  <Target Name="CopyNativeWindowIcons" AfterTargets="Publish">
+    <MakeDir Directories="$(PublishDir)Assets" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\Assets\AppIcon.ico;$(MSBuildProjectDirectory)\Assets\Window.ico"
+          DestinationFolder="$(PublishDir)Assets" />
+  </Target>
 </Project>

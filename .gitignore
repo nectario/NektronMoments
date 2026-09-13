@@ -24,3 +24,4 @@ apps/windows/**/.winapp/
 apps/windows/**/*.user
 apps/windows/**/*.pfx
 apps/windows/**/*.cer
+artifacts/
