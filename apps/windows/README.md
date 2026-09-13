@@ -40,7 +40,8 @@ registration, Nektron Moments is also available through Windows Start.
   source, or all local sources when no source filter is active.
 - **Stop processing** sends a cooperative interrupt to the CLI job host so saved
   batches survive. No paid scene-description or geocode work is started.
-- v1.3 icon-rich ribbon with 32-DIP icons / 56-DIP command targets and
+- v1.3 icon-rich ribbon with 24-DIP icons, 40-DIP-wide icon buttons, and
+  a compact 48-DIP row matching Nektron Write. Includes
   File/Edit/Library/View/Playback/Help menus. Sun denotes
   light mode; Moon denotes dark mode.
 - Remembered thumbnail slider and Small/Medium/Large/X-large presets.

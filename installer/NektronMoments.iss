@@ -3,7 +3,7 @@
 #endif
 #include "shared\NektronMoments.Branding.iss"
 #ifndef AppVersion
-  #define AppVersion "0.1.3"
+  #define AppVersion "0.1.5"
 #endif
 #ifndef SourcePublishDir
   #error SourcePublishDir is required. Use scripts/build-installer.ps1.
@@ -14,10 +14,8 @@
 #ifndef WorkspaceHint
   #define WorkspaceHint ""
 #endif
-#define MomentsAppId "{{7A13CB58-5B03-4B35-A2F4-7BC06610ED38}"
-
 [Setup]
-AppId={#MomentsAppId}
+AppId={code:GetMomentsAppId}
 AppName=Nektron Moments
 AppVersion={#AppVersion}
 AppVerName=Nektron Moments {#AppVersion}
@@ -35,6 +33,8 @@ DisableDirPage=yes
 DisableProgramGroupPage=yes
 UsePreviousAppDir=yes
 UsePreviousTasks=yes
+; Required for a code-based AppId; this installer has a single English language.
+UsePreviousLanguage=no
 AllowNoIcons=yes
 WizardStyle=modern light hidebevels includetitlebar
 DefaultDialogFontName=Segoe UI
@@ -81,16 +81,16 @@ Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription
 Source: "{#SourcePublishDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Registry]
-Root: HKCU; Subkey: "Software\Nektron\NektronMoments"; ValueType: string; ValueName: "Workspace"; ValueData: "{code:GetWorkspace}"
-Root: HKCU; Subkey: "Software\Nektron\NektronMoments"; ValueType: string; ValueName: "InstallerOwner"; ValueData: "Nektron, Inc."
+Root: HKCU; Subkey: "Software\Nektron\NektronMoments"; ValueType: string; ValueName: "Workspace"; ValueData: "{code:GetWorkspace}"; Check: IntegrateWithUser
+Root: HKCU; Subkey: "Software\Nektron\NektronMoments"; ValueType: string; ValueName: "InstallerOwner"; ValueData: "Nektron, Inc."; Check: IntegrateWithUser
 
 [Icons]
-Name: "{autoprograms}\Nektron Moments"; Filename: "{app}\NektronMoments.exe"; WorkingDir: "{app}"
-Name: "{autoprograms}\Uninstall Nektron Moments"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\Nektron Moments"; Filename: "{app}\NektronMoments.exe"; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{autoprograms}\Nektron Moments"; Filename: "{app}\NektronMoments.exe"; WorkingDir: "{app}"; Check: IntegrateWithUser
+Name: "{autoprograms}\Uninstall Nektron Moments"; Filename: "{uninstallexe}"; Check: IntegrateWithUser
+Name: "{autodesktop}\Nektron Moments"; Filename: "{app}\NektronMoments.exe"; WorkingDir: "{app}"; Tasks: desktopicon; Check: IntegrateWithUser
 
 [Run]
-Filename: "{app}\NektronMoments.exe"; Description: "Open Nektron Moments"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\NektronMoments.exe"; Description: "Open Nektron Moments"; Flags: nowait postinstall skipifsilent; Check: IntegrateWithUser
 
 [Code]
 #include "shared\WindowFocus.iss"
@@ -103,6 +103,37 @@ var
   WorkspacePage: TInputDirWizardPage;
   WorkspaceDetected: Boolean;
   ProgressImage: TBitmapImage;
+
+function IsCanaryInstall: Boolean;
+begin
+  Result := ExpandConstant('{param:ASSETCANARY|0}') = '1';
+end;
+
+function IntegrateWithUser: Boolean;
+begin
+  Result := not IsCanaryInstall;
+end;
+
+function GetMomentsAppId(Param: String): String;
+begin
+  if IsCanaryInstall then
+    Result := '{5DA57AF9-23F2-4B19-9950-0AA974C3E07D}'
+  else
+    Result := '{7A13CB58-5B03-4B35-A2F4-7BC06610ED38}';
+end;
+
+function InitializeSetup: Boolean;
+var
+  Target, Prefix: String;
+begin
+  Result := True;
+  if IsCanaryInstall then begin
+    Target := ExpandFileName(ExpandConstant('{param:DIR|}'));
+    Prefix := AddBackslash(GetTempDir) + 'NektronMoments-InstallCheck-';
+    Result := WizardSilent and (CompareText(Copy(Target, 1, Length(Prefix)), Prefix) = 0);
+    if not Result then Log('Asset canary requires silent setup and a dedicated temporary destination.');
+  end;
+end;
 
 function DwmSetWindowAttribute(hWnd: HWND; dwAttribute: Integer; var pvAttribute: Integer; cbAttribute: Integer): Integer;
   external 'DwmSetWindowAttribute@dwmapi.dll stdcall delayload';

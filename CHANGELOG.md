@@ -1,5 +1,21 @@
 # Nektron Moments Windows releases
 
+## [0.1.5] - 2026-09-13
+
+- Match Nektron Write's compact toolbar rhythm: 24-DIP icons in 40-DIP-wide
+  icon buttons, and remove the extra vertical ribbon padding.
+- Retain native overflow, labels on the two main library actions, theme behavior,
+  and the installed artwork fix from 0.1.4.
+
+## [0.1.4] - 2026-09-13
+
+- Refine the top ribbon to 24-DIP icons and 48-DIP command height; keep the
+  larger 32-DIP playback controls in the photo viewer.
+- Fix missing installed icons by publishing the complete approved SVG/PNG asset
+  tree; PRI resource indexes reference these files rather than embedding them.
+- Gate releases on byte-for-byte asset checks and actual Light/Dark icon rendering
+  from the unpackaged application and installed payload.
+
 ## [0.1.3] - 2026-09-13
 
 - Enlarge the approved v1.3 ribbon and canvas playback icons to 32 DIP, with

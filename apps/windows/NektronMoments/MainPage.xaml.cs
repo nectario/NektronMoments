@@ -46,6 +46,13 @@ public sealed partial class MainPage : Page
     {
         if (_ready) return;
         _ready = true;
+        // Installer regression mode exercises the real release shell without
+        // reading a photo library, connecting to WSL, or starting any jobs.
+        var assetCheck = Environment.GetEnvironmentVariable("NEKTRON_MOMENTS_ASSET_CHECK_DIR");
+        if (!string.IsNullOrWhiteSpace(assetCheck)) {
+            await VerifyReleaseAssetsAsync(assetCheck);
+            return;
+        }
         UpdateThemeChrome();
         PerformanceLabel.Text = $"{PerformanceProfile.Current.Name} · {PerformanceProfile.PhysicalBytes / (1024d * 1024 * 1024):N0} GB";
         await ReloadAsync(false);

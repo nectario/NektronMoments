@@ -20,10 +20,11 @@ or user credential is copied into this repository or into the installer.
 
 The build runs the full repository regression suite and native viewing/cache
 policy assertions, publishes a self-contained
-untrimmed x64 application, checks required files and private-data exclusions, signs
+untrimmed x64 application, checks every published asset byte-for-byte and verifies
+actual Light/Dark icon pixels in the release shell, checks private-data exclusions, signs
 the app EXE/DLL, verifies direct launch, compiles/signs the setup and uninstaller,
 then tests a temporary install outside the checkout. It checks workspace reconnect,
-native launch, signatures and uninstall before publishing the release.
+native launch, installed artwork rendering, signatures and uninstall before publishing the release.
 
 Output: `artifacts/releases/installers/NektronMoments.Setup.<version>.exe`,
 with JSON and SHA-256 sidecars. Completed versions are immutable; increment the
@@ -57,9 +58,16 @@ available until the standalone native backend connection replaces this adapter.
 
 ## Verification and provenance
 
-- `Test-Installer.ps1` refuses to run over an existing Moments Inno installation.
-  Its unique temporary installation is uninstalled and pre-existing reconnect
-  preferences are restored. It never recursively deletes library data.
+- `Test-Installer.ps1` never installs over an existing Moments installation.
+  If one exists, `/ASSETCANARY=1` selects a separate test AppId, requires a silent
+  install to a dedicated temporary path, and skips user shortcuts/preferences.
+  Existing registration and reconnect preferences are checked unchanged. Otherwise
+  the original fresh-install test restores any preferences it temporarily touched.
+  Only the verified temporary installation is uninstalled; no library data is deleted.
+- `Test-PublishedAssets.ps1` verifies all shipped asset files against the source,
+  then opens the actual unpackaged EXE in a no-library diagnostic mode. It checks
+  SVG URI loading, painted icon pixels, and separate ribbon/viewer sizes. The
+  installed copy repeats these checks; a responsive empty window is insufficient.
 - `Generate-InstallerBranding.ps1` follows the sibling installer layout and draws
   the provided 256px/128px marks at native size; no logo redraw or bitmap upscaling.
 - `shared/WindowFocus.iss` reuses the sibling's bounded foreground pulse. The

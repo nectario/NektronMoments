@@ -1,0 +1,19 @@
+{
+  "product": "Nektron Moments",
+  "version": "0.1.4",
+  "file": "NektronMoments.Setup.0.1.4.exe",
+  "bytes": 73211576,
+  "sha256": "E968C6045F523BAFFF28264B145DBF03AD32054233A8121096BA3D535ED9B9F6",
+  "signature": "Valid",
+  "publisher": "Nektron, Inc.",
+  "timestamped": true,
+  "testsPassed": 414,
+  "nativePolicyAssertions": 36,
+  "assetFilesVerified": 739,
+  "svgUrisOpened": 656,
+  "renderedIconChecks": 38,
+  "signedInstallLaunchUninstallCanary": "Passed",
+  "scope": "CurrentUser",
+  "dependency": "Existing Ubuntu WSL / CLI library workspace",
+  "brandPackage": "1.3.0"
+}

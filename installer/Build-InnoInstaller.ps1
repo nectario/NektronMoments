@@ -56,6 +56,7 @@ try {
     if ($payloadFiles | Where-Object { $_.Name -in @('.env','credentials.json','config.json','state.sqlite3') -or $_.Extension -in @('.pfx','.key','.sqlite3') }) {
         throw 'Private configuration/state must never ship in the installer.'
     }
+    & (Join-Path $PSScriptRoot 'Test-PublishedAssets.ps1') -ApplicationDirectory $payload -Render -RenderOutput (Join-Path $attempt 'published-artwork')
     $publishedExe = Join-Path $payload 'NektronMoments.exe'
     $publishedVersion = (Get-Item -LiteralPath $publishedExe).VersionInfo
     if ($publishedVersion.ProductVersion -ne $version -or $publishedVersion.FileVersion -ne "$version.0") {

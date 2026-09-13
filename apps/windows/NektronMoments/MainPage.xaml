@@ -68,40 +68,51 @@
                     TextChanged="SearchChanged" QuerySubmitted="SearchSubmitted"
                     AutomationProperties.Name="Search filenames; press Enter to search indexed descriptions and addresses"/>
         </Grid>
-        <Grid Grid.Row="1" Background="{ThemeResource MomentsSurfaceBrush}" Padding="8,6,16,6">
+        <Grid Grid.Row="1" Background="{ThemeResource MomentsSurfaceBrush}" Padding="8,0,16,0">
             <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
         <CommandBar x:Name="RibbonBar" Background="{ThemeResource MomentsSurfaceBrush}" DefaultLabelPosition="Right" HorizontalAlignment="Left">
             <CommandBar.Resources>
-                <ResourceDictionary Source="Styles/Moments.CommandBar.xaml"/>
+                <ResourceDictionary>
+                    <ResourceDictionary.MergedDictionaries>
+                        <ResourceDictionary Source="Styles/Moments.CommandBar.xaml"/>
+                    </ResourceDictionary.MergedDictionaries>
+                    <!-- Compact, Mail-like top ribbon; viewer controls remain 32 DIP. -->
+                    <x:Double x:Key="AppBarButtonContentHeight">24</x:Double>
+                    <x:Double x:Key="AppBarThemeCompactHeight">48</x:Double>
+                    <x:Double x:Key="AppBarThemeMinHeight">48</x:Double>
+                    <Style TargetType="AppBarButton" BasedOn="{StaticResource DefaultAppBarButtonStyle}">
+                        <Setter Property="Width" Value="40"/>
+                    </Style>
+                </ResourceDictionary>
             </CommandBar.Resources>
             <AppBarButton x:Name="AddFolderButton" Label="Add folder" LabelPosition="Default" Click="AddFolder" ToolTipService.ToolTip="Add a local folder">
-                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsAddImage}"/></AppBarButton.Icon>
+                <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsAddImage}"/></AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton x:Name="ProcessButton" Label="Process metadata" Click="ProcessMetadata" ToolTipService.ToolTip="Read hashes, dates, GPS and dimensions, then sync metadata. Does not start paid AI enrichment.">
-                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsMetadataImage}"/></AppBarButton.Icon>
+                <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsMetadataImage}"/></AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton Label="Refresh" Click="RefreshLibrary" ToolTipService.ToolTip="Refresh library (F5)" LabelPosition="Collapsed">
-                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsRefreshImage}"/></AppBarButton.Icon>
+                <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsRefreshImage}"/></AppBarButton.Icon>
             </AppBarButton>
             <AppBarSeparator/>
             <AppBarButton Label="View photo" Click="ViewMedia" ToolTipService.ToolTip="View selected photo in the canvas" LabelPosition="Collapsed">
-                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsPhotosImage}"/></AppBarButton.Icon>
+                <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsPhotosImage}"/></AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton Label="Slideshow" Click="StartSlideshow" ToolTipService.ToolTip="Start a photo slideshow in the canvas" LabelPosition="Collapsed">
-                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsPlayImage}"/></AppBarButton.Icon>
+                <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsPlayImage}"/></AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton Label="Open original" Click="OpenOriginal" ToolTipService.ToolTip="Open with the default application" LabelPosition="Collapsed">
-                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsOpenImage}"/></AppBarButton.Icon>
+                <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsOpenImage}"/></AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton Label="Details" Click="ToggleDetails" ToolTipService.ToolTip="Show or hide photo details" LabelPosition="Collapsed">
-                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsInfoImage}"/></AppBarButton.Icon>
+                <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsInfoImage}"/></AppBarButton.Icon>
             </AppBarButton>
             <AppBarSeparator/>
             <AppBarButton x:Name="ThemeButton" Label="Light theme" Click="ChangeTheme" ToolTipService.ToolTip="Switch to dark theme" LabelPosition="Collapsed">
-                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsThemeImage}"/></AppBarButton.Icon>
+                <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsThemeImage}"/></AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton Label="Activity" Click="ShowActivity" LabelPosition="Collapsed">
-                <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsActivityImage}"/></AppBarButton.Icon>
+                <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsActivityImage}"/></AppBarButton.Icon>
             </AppBarButton>
         </CommandBar>
         <StackPanel x:Name="ThumbnailSizePanel" Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
