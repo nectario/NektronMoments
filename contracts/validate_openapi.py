@@ -1,4 +1,4 @@
-"""Dependency-free structural checks for the ImageTracker OpenAPI contract."""
+"""Dependency-free structural checks for the Nektron Moments OpenAPI contract."""
 
 from __future__ import annotations
 

@@ -42,7 +42,7 @@ class S3ManifestObjectStore:
 
     def __init__(self, *, client: Any, bucket: str) -> None:
         if not bucket:
-            raise ValueError("The ImageTracker media bucket is required")
+            raise ValueError("The Nektron Moments media bucket is required")
         self._client = client
         self._bucket = bucket
 
@@ -70,7 +70,7 @@ class S3ManifestObjectStore:
             "ContentEncoding": MANIFEST_CONTENT_ENCODING,
             "ContentLength": content_length,
             "ChecksumSHA256": checksum_base64,
-            "Metadata": {"imagetracker-schema-version": "ManifestNdjsonV1"},
+            "Metadata": {"nektron-moments-schema-version": "ManifestNdjsonV1"},
         }
         url = self._client.generate_presigned_url(
             "put_object",
@@ -87,7 +87,7 @@ class S3ManifestObjectStore:
                 "Content-Encoding": MANIFEST_CONTENT_ENCODING,
                 "Content-Length": str(content_length),
                 "x-amz-checksum-sha256": checksum_base64,
-                "x-amz-meta-imagetracker-schema-version": "ManifestNdjsonV1",
+                "x-amz-meta-nektron-moments-schema-version": "ManifestNdjsonV1",
             },
             expires_at_utc=expires,
         )
@@ -151,7 +151,7 @@ class S3ManifestObjectStore:
 
     def _require_owned_object(self, bucket: str, object_key: str) -> None:
         if bucket != self._bucket or not object_key.startswith("manifests/"):
-            raise ValueError("Manifest object is outside ImageTracker ownership")
+            raise ValueError("Manifest object is outside Nektron Moments ownership")
 
     @staticmethod
     def _checksum_base64(value: str) -> str:

@@ -6,7 +6,7 @@ from uuid import UUID
 
 import pytest
 
-from cli.imagetracker_cli.bulk import write_manifest_gzip
+from cli.nektron_moments_cli.bulk import write_manifest_gzip
 from infra.scripts import live_bulk_mysql_canary as canary
 from services.bulk.manifest import ManifestGuardrails, parse_manifest_gzip
 

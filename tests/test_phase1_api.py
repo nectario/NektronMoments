@@ -545,7 +545,7 @@ def test_s3_manifest_store_binds_private_gzip_bytes_and_result_download():
         "Content-Encoding": MANIFEST_CONTENT_ENCODING,
         "Content-Length": "1234",
         "x-amz-checksum-sha256": checksum_base64,
-        "x-amz-meta-imagetracker-schema-version": "ManifestNdjsonV1",
+        "x-amz-meta-nektron-moments-schema-version": "ManifestNdjsonV1",
     }
     put_params = client.presigned[0][1]["Params"]
     assert put_params["ContentLength"] == 1234
@@ -604,7 +604,7 @@ def test_cognito_claims_are_read_from_mangum_scope_not_raw_bearer_header():
                 "jwt": {
                     "claims": {
                         "sub": "verified-subject",
-                        "cognito:groups": ["ImageTrackerAdmin"],
+                        "cognito:groups": ["NektronMomentsAdmin"],
                     },
                     "scopes": [],
                 }
@@ -625,7 +625,7 @@ def test_cognito_claims_are_read_from_mangum_scope_not_raw_bearer_header():
     assert service.last_identity == AuthIdentity(
         subject="verified-subject",
         email=None,
-        groups=frozenset({"ImageTrackerAdmin"}),
+        groups=frozenset({"NektronMomentsAdmin"}),
         is_admin=True,
     )
 
@@ -660,7 +660,7 @@ def test_problem_details_and_request_id_are_consistent():
     assert response.status_code == 401
     assert response.headers["x-request-id"] == REQUEST_ID
     assert response.json() == {
-        "type": "https://imagetracker.app/problems/authentication-required",
+        "type": "https://nektron.ai/problems/moments/authentication-required",
         "title": "Unauthorized",
         "status": 401,
         "code": "AUTHENTICATION_REQUIRED",
@@ -867,10 +867,14 @@ def test_enrichment_prepare_is_explicit_bounded_idempotent_and_device_scoped():
 
     missing_headers = _request(_app(service), "POST", path, json={})
     assert missing_headers.status_code == 400
+    assert missing_headers.json()["code"] == "DEVICE_REQUIRED"
+    missing_idempotency = _request(
+        _app(service), "POST", path, headers=_headers(device=True), json={}
+    )
+    assert missing_idempotency.status_code == 400
     missing_fields = {
-        item["field"] for item in missing_headers.json()["fieldErrors"]
+        item["field"] for item in missing_idempotency.json()["fieldErrors"]
     }
-    assert "header.X-ImageTracker-Device-Id" in missing_fields
     assert "header.Idempotency-Key" in missing_fields
 
     response = _request(
@@ -982,7 +986,7 @@ def test_local_visibility_endpoints_require_registered_device_header_shape():
     ):
         response = _request(_app(), "GET", path)
         assert response.status_code == 400, path
-        assert response.json()["code"] == "VALIDATION_FAILED"
+        assert response.json()["code"] == "DEVICE_REQUIRED"
 
     response = _request(
         _app(), "GET", "/v1/media?limit=201", headers=_headers(device=True)
@@ -1072,7 +1076,7 @@ def test_admin_placeholders_are_restricted_and_never_expose_secrets():
     admin = AuthIdentity(
         subject="admin-subject",
         email="admin@example.com",
-        groups=frozenset({"ImageTrackerAdmin"}),
+        groups=frozenset({"NektronMomentsAdmin"}),
         is_admin=True,
     )
     health = _request(_app(identity=admin), "GET", "/v1/admin/health")

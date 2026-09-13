@@ -41,7 +41,7 @@ def _failure(
 class AmazonLocationReverseGeocoder:
     """Resolve the closest address with Amazon Location Places V2.
 
-    ``IntendedUse=Storage`` is deliberate: ImageTracker persists normalized
+    ``IntendedUse=Storage`` is deliberate: Nektron Moments persists normalized
     address fields in MySQL for search and intelligence-layer queries. The
     provider is authenticated by the Lambda execution role, so no geocoding
     API key is copied into application configuration.

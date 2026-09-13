@@ -1,5 +1,5 @@
 [project]
-name = "imagetracker"
+name = "nektron-moments"
 version = "0.3.0"
 description = "UX-first local and remote media ingestion foundation"
 readme = "README.md"
@@ -30,7 +30,8 @@ dev = [
 ]
 
 [project.scripts]
-imagetracker = "cli.imagetracker_cli.app:main"
+nektron-moments = "cli.nektron_moments_cli.app:main"
+imagetracker = "cli.nektron_moments_cli.app:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
@@ -40,7 +41,7 @@ build-backend = "setuptools.build_meta"
 testpaths = ["tests"]
 
 [tool.setuptools]
-py-modules = ["ImageTracker", "tag_location"]
+py-modules = ["NektronMoments", "ImageTracker", "tag_location"]
 
 [tool.setuptools.packages.find]
 include = ["services*", "cli*"]

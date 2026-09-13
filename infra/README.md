@@ -1,6 +1,6 @@
-# ImageTracker AWS foundation
+# Nektron Moments AWS foundation
 
-This directory defines the small, independent ImageTracker AWS stack. It is
+This directory defines the small, independent Nektron Moments AWS stack. It is
 safe to package without contacting the database or reading application secrets.
 Nothing here deploys automatically.
 
@@ -10,7 +10,8 @@ Nothing here deploys automatically.
   protected by the Cognito JWT authorizer.
 - A Cognito email/password user pool and public native-app client. MFA is off;
   email confirmation uses one code, refresh tokens last 365 days, and messages
-  are sent through the verified SES identity `ImageTracker <info@nektron.ai>`.
+  use `Nektron Moments <info@nektron.ai>` after deploying this rename, retaining
+  the same verified SES identity.
 - One private, SSE-S3 media bucket. Incomplete multipart uploads expire after
   seven days, Local-mode staging objects after one day, and trash after 30 days.
   Remote originals transition to S3 Intelligent-Tiering.
@@ -57,7 +58,7 @@ GPS reverse-geocoding is asynchronous and demand-driven. A manifest creates a
 location enrichment job; the SQS worker sends only latitude and longitude to
 Amazon Location Service Places V2, never the photo or video. `ReverseGeocode`
 sets `IntendedUse=Storage`, `MaxResults=1`, and filters to address-oriented place
-types because ImageTracker permanently stores and searches the result. Durable
+types because Nektron Moments permanently stores and searches the result. Durable
 rows use provider identifier `AmazonLocationPlacesV2`. Nearby coordinates reuse
 a stored result within 5 metres before any provider call is made. Provider
 calls are capped at 1,000 per user per month, while the worker's concurrency of
@@ -67,8 +68,8 @@ requests, the default ceiling bounds this component to about USD 4 per user per
 month. No new always-on compute service is introduced.
 
 The production controls are
-`IMAGETRACKER_GEOCODE_REUSE_RADIUS_METERS=5` and
-`IMAGETRACKER_GEOCODE_MONTHLY_CALL_LIMIT=1000`. The Lambda execution role grants
+`NEKTRON_MOMENTS_GEOCODE_REUSE_RADIUS_METERS=5` and
+`NEKTRON_MOMENTS_GEOCODE_MONTHLY_CALL_LIMIT=1000`. The Lambda execution role grants
 only `geo-places:ReverseGeocode`, scoped to the regional
 `provider/default` resource.
 
@@ -107,7 +108,7 @@ intended environment is WSL Ubuntu because it already holds the project's AWS
 credentials:
 
 ```bash
-cd /mnt/c/Development/Projects/ImageTracker/infra
+cd /mnt/c/Development/Projects/NektronMoments/infra
 npm ci
 npm run validate
 npm run package
@@ -156,7 +157,7 @@ files, Serverless parameters, CloudFormation output, or shell history.
 Before deploying this build, preview and apply the additive migrations:
 
 ```bash
-cd /mnt/c/Development/Projects/ImageTracker
+cd /mnt/c/Development/Projects/NektronMoments
 ./scripts/migrate-db.sh
 ./scripts/migrate-db.sh --apply
 ./scripts/db-smoke.sh
@@ -205,7 +206,7 @@ npm run deploy -- --budget-email info@nektron.ai
 
 The staged metadata rollout declares both the general enrichment event-source
 mapping and `RetryDueJobs` rule disabled, and sets
-`IMAGETRACKER_ENRICHMENT_PROCESSING_ENABLED=false`. The manifest-import worker
+`NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED=false`. The manifest-import worker
 and its recovery rule remain enabled. Enabling enrichment later is a deliberate
 release that must change all three controls together; the API otherwise rejects
 preparation before creating jobs or provider reservations.

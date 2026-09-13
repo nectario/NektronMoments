@@ -17,7 +17,7 @@ from services.common.settings import AppSettings
 
 
 class DatabaseConfigurationError(ValueError):
-    """Raised when a database secret could escape the ImageTracker schema."""
+    """Raised when a database secret could escape the Nektron Moments schema."""
 
 
 class SsmParameterResolver:
@@ -186,7 +186,7 @@ def database_config_from_secret(
         raise DatabaseConfigurationError("Only MySQL database URLs are supported")
     if url.database != required_database or required_database != "ImageTracker":
         raise DatabaseConfigurationError(
-            "The app service may connect only to the ImageTracker database"
+            "The app service may connect only to the Nektron Moments database"
         )
     if url.drivername == "mysql":
         url = url.set(drivername="mysql+pymysql")
@@ -222,7 +222,7 @@ def create_mysql_engine(config: DatabaseConnectionConfig | URL) -> Engine:
     url = config.url
     if url.get_backend_name() != "mysql" or url.database != "ImageTracker":
         raise DatabaseConfigurationError(
-            "The app service may connect only to the ImageTracker MySQL database"
+            "The app service may connect only to the Nektron Moments MySQL database"
         )
     connect_args: dict[str, Any] = {
         "connect_timeout": 5,

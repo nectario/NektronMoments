@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 from PIL import Image, TiffImagePlugin
 
-from cli.imagetracker_cli.scene_preview import (
+from cli.nektron_moments_cli.scene_preview import (
     JPEG_CONTENT_TYPE,
     ScenePreviewError,
     prepare_scene_preview,

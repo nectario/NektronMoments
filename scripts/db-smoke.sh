@@ -7,7 +7,7 @@ require_environment
 cd_repository
 
 step "Running aggregate-only read-only database checks"
-"${IMAGETRACKER_PYTHON}" -B - <<'PY'
+"${NEKTRON_MOMENTS_PYTHON}" -B - <<'PY'
 import json
 import os
 
@@ -15,14 +15,14 @@ import boto3
 import pymysql
 
 
-region = os.environ["IMAGETRACKER_AWS_REGION"]
-parameter_name = os.environ["IMAGETRACKER_DB_SECRET_PARAMETER"]
+region = os.environ["NEKTRON_MOMENTS_AWS_REGION"]
+parameter_name = os.environ["NEKTRON_MOMENTS_DB_SECRET_PARAMETER"]
 secret = json.loads(
     boto3.client("ssm", region_name=region)
     .get_parameter(Name=parameter_name, WithDecryption=True)["Parameter"]["Value"]
 )
 if secret.get("database") != "ImageTracker":
-    raise SystemExit("The configured credential is not scoped to ImageTracker")
+    raise SystemExit("The configured credential is not scoped to NektronMoments")
 
 connection = pymysql.connect(
     host=secret["host"],

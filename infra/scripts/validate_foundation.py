@@ -1,4 +1,4 @@
-"""Perform credential-free structural checks on the ImageTracker foundation."""
+"""Perform credential-free structural checks on the Nektron Moments foundation."""
 
 from __future__ import annotations
 
@@ -26,19 +26,20 @@ REQUIRED_MARKERS = {
     "worker queue consumption": "- sqs:ReceiveMessage",
     "worker queue deletion": "- sqs:DeleteMessage",
     "worker visibility management": "- sqs:ChangeMessageVisibility",
-    "packaged location rules path": "IMAGETRACKER_LOCATION_NORMALIZATION_RULES_PATH: /var/task/location_normalization_rules.json",
-    "nearby geocode reuse radius": "IMAGETRACKER_GEOCODE_REUSE_RADIUS_METERS: '5'",
-    "bounded monthly geocode calls": "IMAGETRACKER_GEOCODE_MONTHLY_CALL_LIMIT: '1000'",
-    "scene description model": "IMAGETRACKER_SCENE_DESCRIPTION_MODEL: gpt-5.6-terra",
-    "bounded monthly descriptions": "IMAGETRACKER_SCENE_DESCRIPTION_MONTHLY_CALL_LIMIT: '100000'",
-    "hard monthly scene USD ceiling": "IMAGETRACKER_SCENE_DESCRIPTION_MONTHLY_USD_LIMIT: '230.000000'",
-    "conservative scene USD reservation": "IMAGETRACKER_SCENE_DESCRIPTION_RESERVED_USD_PER_REQUEST: '0.010000'",
-    "cost-efficient scene tier": "IMAGETRACKER_SCENE_DESCRIPTION_SERVICE_TIER: flex",
+    "packaged location rules path": "NEKTRON_MOMENTS_LOCATION_NORMALIZATION_RULES_PATH: /var/task/location_normalization_rules.json",
+    "nearby geocode reuse radius": "NEKTRON_MOMENTS_GEOCODE_REUSE_RADIUS_METERS: '5'",
+    "bounded monthly geocode calls": "NEKTRON_MOMENTS_GEOCODE_MONTHLY_CALL_LIMIT: '1000'",
+    "scene description model": "NEKTRON_MOMENTS_SCENE_DESCRIPTION_MODEL: gpt-5.6-terra",
+    "bounded monthly descriptions": "NEKTRON_MOMENTS_SCENE_DESCRIPTION_MONTHLY_CALL_LIMIT: '100000'",
+    "hard monthly scene USD ceiling": "NEKTRON_MOMENTS_SCENE_DESCRIPTION_MONTHLY_USD_LIMIT: '230.000000'",
+    "conservative scene USD reservation": "NEKTRON_MOMENTS_SCENE_DESCRIPTION_RESERVED_USD_PER_REQUEST: '0.010000'",
+    "cost-efficient scene tier": "NEKTRON_MOMENTS_SCENE_DESCRIPTION_SERVICE_TIER: flex",
     "Phase 1 API proxy": "path: /v1/{proxy+}",
     "device context CORS header": "- X-ImageTracker-Device-Id",
+    "renamed device context CORS header": "- X-Nektron-Moments-Device-Id",
     "Cognito user pool": "Type: AWS::Cognito::UserPool",
     "case-insensitive email sign-in": "CaseSensitive: false",
-    "verified custom email sender": "From: ImageTracker <info@nektron.ai>",
+    "verified custom email sender": "From: Nektron Moments <info@nektron.ai>",
     "Cognito developer email delivery": "EmailSendingAccount: DEVELOPER",
     "Cognito JWT authorizer": "type: jwt",
     "private media bucket": "PublicAccessBlockConfiguration:",
@@ -52,9 +53,9 @@ REQUIRED_MARKERS = {
     "maintenance schedules": "Type: AWS::Events::Rule",
     "disabled general retry default": "retryScheduleState: ${param:retryScheduleState, 'DISABLED'}",
     "enabled manifest retry default": "manifestImportRetryScheduleState: ${param:manifestImportRetryScheduleState, 'ENABLED'}",
-    "disabled enrichment API default": "IMAGETRACKER_ENRICHMENT_PROCESSING_ENABLED: 'false'",
+    "disabled enrichment API default": "NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED: 'false'",
     "disabled schedule default": "maintenanceSchedulesState: ${param:maintenanceSchedulesState, 'DISABLED'}",
-    "SSM parameter prefix": "IMAGETRACKER_CONFIG_PARAMETER_PREFIX:",
+    "SSM parameter prefix": "NEKTRON_MOMENTS_CONFIG_PARAMETER_PREFIX:",
     "incremental budget": "Type: AWS::Budgets::Budget",
     "resource tags": "Application: ImageTracker",
 }
@@ -114,7 +115,7 @@ def _validate_packaged_template(path: Path) -> list[str]:
     if api_lambda.get("Timeout") != 28:
         failures.append("packaged API Lambda timeout is not 28 seconds")
     api_environment = api_lambda.get("Environment", {}).get("Variables", {})
-    if api_environment.get("IMAGETRACKER_ENRICHMENT_PROCESSING_ENABLED") != "false":
+    if api_environment.get("NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED") != "false":
         failures.append("packaged API must reject enrichment while processing is paused")
 
     worker_lambda = resources.get("WorkerLambdaFunction", {}).get("Properties", {})
@@ -226,8 +227,8 @@ def _validate_packaged_template(path: Path) -> list[str]:
     email_configuration = user_pool.get("EmailConfiguration", {})
     if email_configuration.get("EmailSendingAccount") != "DEVELOPER":
         failures.append("Cognito must use the verified Amazon SES sender")
-    if email_configuration.get("From") != "ImageTracker <info@nektron.ai>":
-        failures.append("Cognito From address is not ImageTracker <info@nektron.ai>")
+    if email_configuration.get("From") != "Nektron Moments <info@nektron.ai>":
+        failures.append("Cognito From address is not Nektron Moments <info@nektron.ai>")
     if email_configuration.get("ReplyToEmailAddress") != "info@nektron.ai":
         failures.append("Cognito Reply-To address is not info@nektron.ai")
     if "identity/info@nektron.ai" not in json.dumps(

@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional
 
 import pytest
 
-from ImageTracker import (
+from NektronMoments import (
     CaptionResult,
     CaptureDateTimeInfo,
     ExifCaptureDateTimeExtractor,
@@ -365,7 +365,7 @@ def test_parse_cutoff_date_accepts_date_only():
 
 def test_parse_cutoff_date_uses_historical_dst_offset(monkeypatch):
     from zoneinfo import ZoneInfo
-    import ImageTracker as image_tracker_module
+    import NektronMoments as image_tracker_module
 
     monkeypatch.setattr(
         image_tracker_module,

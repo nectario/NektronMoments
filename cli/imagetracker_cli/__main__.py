@@ -1,5 +1,4 @@
-from .app import main
-
+from cli.nektron_moments_cli.app import main
 
 if __name__ == "__main__":
     main()

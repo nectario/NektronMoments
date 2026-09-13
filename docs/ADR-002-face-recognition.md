@@ -9,9 +9,9 @@ Use Amazon Rekognition face collections and user vectors as the first
 production `FaceRecognitionProvider`. GPT vision is not the identity-matching
 engine.
 
-- Maintain one Rekognition collection per ImageTracker user.
+- Maintain one Rekognition collection per Nektron Moments user.
 - Index multiple diverse face observations into a Rekognition user vector.
-- Store ImageTracker asset/observation/person mappings and user corrections in
+- Store Nektron Moments asset/observation/person mappings and user corrections in
   MySQL.
 - Never infer a person's name from the internet. A person receives a name only
   from the owning user.

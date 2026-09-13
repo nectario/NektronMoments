@@ -147,7 +147,7 @@ def test_one_file_loader_uses_one_load_and_one_commit(tmp_path: Path, monkeypatc
     assert connection.closed is True
 
 
-def test_admin_env_file_is_scoped_to_imagetracker_without_echoing_values(
+def test_admin_env_file_is_scoped_to_nektron_moments_without_echoing_values(
     tmp_path: Path,
 ):
     path = tmp_path / ".env.prod"

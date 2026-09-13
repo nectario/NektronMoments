@@ -15,7 +15,7 @@ class S3TemporaryObjectStore:
 
     def __init__(self, *, client: Any, bucket: str) -> None:
         if not bucket:
-            raise ValueError("The ImageTracker media bucket is required")
+            raise ValueError("The Nektron Moments media bucket is required")
         self._client = client
         self._bucket = bucket
 
@@ -45,7 +45,7 @@ class S3TemporaryObjectStore:
             "ContentType": content_type,
             "ContentLength": content_length,
             "ChecksumSHA256": checksum_sha256_base64,
-            "Metadata": {"imagetracker-expires-at": expires_metadata},
+            "Metadata": {"nektron-moments-expires-at": expires_metadata},
         }
         url = self._client.generate_presigned_url(
             "put_object",
@@ -61,7 +61,7 @@ class S3TemporaryObjectStore:
                 "Content-Type": content_type,
                 "Content-Length": str(content_length),
                 "x-amz-checksum-sha256": checksum_sha256_base64,
-                "x-amz-meta-imagetracker-expires-at": expires_metadata,
+                "x-amz-meta-nektron-moments-expires-at": expires_metadata,
             },
             expires_at_utc=self._as_utc(url_expires_at_utc),
         )
@@ -113,7 +113,7 @@ class S3TemporaryObjectStore:
 
     def _require_owned_bucket(self, bucket: str) -> None:
         if bucket != self._bucket:
-            raise ValueError("Temporary object is outside the ImageTracker bucket")
+            raise ValueError("Temporary object is outside the Nektron Moments bucket")
 
     @staticmethod
     def _decode_checksum(value: str) -> bytes:

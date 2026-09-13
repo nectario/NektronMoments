@@ -1,3 +1,5 @@
+# Preserve existing CloudFormation and physical resource identities.
+# Product labels and preferred environment names are Nektron Moments.
 service: image-tracker
 frameworkVersion: '4'
 configValidationMode: error
@@ -44,6 +46,7 @@ provider:
         - Content-Type
         - Idempotency-Key
         - X-ImageTracker-Device-Id
+        - X-Nektron-Moments-Device-Id
         - X-Request-Id
       allowedMethods:
         - GET
@@ -66,42 +69,42 @@ provider:
         audience:
           - Ref: ImageTrackerUserPoolClientV2
   environment:
-    IMAGETRACKER_SERVICE_NAME: imagetracker-api
-    IMAGETRACKER_STAGE: ${sls:stage}
-    IMAGETRACKER_AWS_REGION: ${aws:region}
-    IMAGETRACKER_MYSQL_DATABASE: ImageTracker
-    IMAGETRACKER_CONFIG_PARAMETER_PREFIX: ${self:custom.parameterPrefix}
-    IMAGETRACKER_DB_SECRET_PARAMETER: ${self:custom.parameterPrefix}/mysql
-    IMAGETRACKER_OPENAI_SECRET_PARAMETER: ${self:custom.parameterPrefix}/openai
-    IMAGETRACKER_ELEVENLABS_SECRET_PARAMETER: ${self:custom.parameterPrefix}/elevenlabs
-    IMAGETRACKER_MEDIA_BUCKET:
+    NEKTRON_MOMENTS_SERVICE_NAME: nektron-moments-api
+    NEKTRON_MOMENTS_STAGE: ${sls:stage}
+    NEKTRON_MOMENTS_AWS_REGION: ${aws:region}
+    NEKTRON_MOMENTS_MYSQL_DATABASE: ImageTracker
+    NEKTRON_MOMENTS_CONFIG_PARAMETER_PREFIX: ${self:custom.parameterPrefix}
+    NEKTRON_MOMENTS_DB_SECRET_PARAMETER: ${self:custom.parameterPrefix}/mysql
+    NEKTRON_MOMENTS_OPENAI_SECRET_PARAMETER: ${self:custom.parameterPrefix}/openai
+    NEKTRON_MOMENTS_ELEVENLABS_SECRET_PARAMETER: ${self:custom.parameterPrefix}/elevenlabs
+    NEKTRON_MOMENTS_MEDIA_BUCKET:
       Ref: MediaBucket
-    IMAGETRACKER_PROCESSING_QUEUE_URL:
+    NEKTRON_MOMENTS_PROCESSING_QUEUE_URL:
       Ref: ProcessingQueue
-    IMAGETRACKER_PROCESSING_QUEUE_ARN:
+    NEKTRON_MOMENTS_PROCESSING_QUEUE_ARN:
       Fn::GetAtt:
         - ProcessingQueue
         - Arn
-    IMAGETRACKER_ENRICHMENT_PROCESSING_ENABLED: 'false'
-    IMAGETRACKER_MANIFEST_IMPORT_QUEUE_URL:
+    NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED: 'false'
+    NEKTRON_MOMENTS_MANIFEST_IMPORT_QUEUE_URL:
       Ref: ManifestImportQueue
-    IMAGETRACKER_LOCATION_NORMALIZATION_RULES_PATH: /var/task/location_normalization_rules.json
-    IMAGETRACKER_GEOCODE_REUSE_RADIUS_METERS: '5'
-    IMAGETRACKER_GEOCODE_MONTHLY_CALL_LIMIT: '1000'
-    IMAGETRACKER_SCENE_DESCRIPTION_MODEL: gpt-5.6-terra
-    IMAGETRACKER_SCENE_DESCRIPTION_DETAIL: high
-    IMAGETRACKER_SCENE_DESCRIPTION_SERVICE_TIER: flex
-    IMAGETRACKER_SCENE_DESCRIPTION_MAX_WORDS: '24'
-    IMAGETRACKER_SCENE_DESCRIPTION_MONTHLY_CALL_LIMIT: '100000'
-    IMAGETRACKER_SCENE_DESCRIPTION_MONTHLY_USD_LIMIT: '230.000000'
-    IMAGETRACKER_SCENE_DESCRIPTION_RESERVED_USD_PER_REQUEST: '0.010000'
-    IMAGETRACKER_SCENE_DESCRIPTION_INPUT_USD_PER_MILLION: '2.000000'
-    IMAGETRACKER_SCENE_DESCRIPTION_CACHED_INPUT_USD_PER_MILLION: '0.200000'
-    IMAGETRACKER_SCENE_DESCRIPTION_OUTPUT_USD_PER_MILLION: '12.000000'
+    NEKTRON_MOMENTS_LOCATION_NORMALIZATION_RULES_PATH: /var/task/location_normalization_rules.json
+    NEKTRON_MOMENTS_GEOCODE_REUSE_RADIUS_METERS: '5'
+    NEKTRON_MOMENTS_GEOCODE_MONTHLY_CALL_LIMIT: '1000'
+    NEKTRON_MOMENTS_SCENE_DESCRIPTION_MODEL: gpt-5.6-terra
+    NEKTRON_MOMENTS_SCENE_DESCRIPTION_DETAIL: high
+    NEKTRON_MOMENTS_SCENE_DESCRIPTION_SERVICE_TIER: flex
+    NEKTRON_MOMENTS_SCENE_DESCRIPTION_MAX_WORDS: '24'
+    NEKTRON_MOMENTS_SCENE_DESCRIPTION_MONTHLY_CALL_LIMIT: '100000'
+    NEKTRON_MOMENTS_SCENE_DESCRIPTION_MONTHLY_USD_LIMIT: '230.000000'
+    NEKTRON_MOMENTS_SCENE_DESCRIPTION_RESERVED_USD_PER_REQUEST: '0.010000'
+    NEKTRON_MOMENTS_SCENE_DESCRIPTION_INPUT_USD_PER_MILLION: '2.000000'
+    NEKTRON_MOMENTS_SCENE_DESCRIPTION_CACHED_INPUT_USD_PER_MILLION: '0.200000'
+    NEKTRON_MOMENTS_SCENE_DESCRIPTION_OUTPUT_USD_PER_MILLION: '12.000000'
   iam:
     role:
       statements:
-        - Sid: ReadImageTrackerConfiguration
+        - Sid: ReadNektronMomentsConfiguration
           Effect: Allow
           Action:
             - ssm:GetParameter
@@ -116,7 +119,7 @@ provider:
                 - ':'
                 - Ref: AWS::AccountId
                 - ':parameter${self:custom.parameterPrefix}/*'
-        - Sid: ReadAndWriteImageTrackerMedia
+        - Sid: ReadAndWriteNektronMomentsMedia
           Effect: Allow
           Action:
             - s3:GetObject
@@ -131,7 +134,7 @@ provider:
                     - MediaBucket
                     - Arn
                 - '/*'
-        - Sid: ListImageTrackerMediaUploads
+        - Sid: ListNektronMomentsMediaUploads
           Effect: Allow
           Action:
             - s3:ListBucket
@@ -140,7 +143,7 @@ provider:
             Fn::GetAtt:
               - MediaBucket
               - Arn
-        - Sid: EnqueueImageTrackerProcessing
+        - Sid: EnqueueNektronMomentsProcessing
           Effect: Allow
           Action:
             - sqs:SendMessage
@@ -151,7 +154,7 @@ provider:
             - Fn::GetAtt:
                 - ManifestImportQueue
                 - Arn
-        - Sid: ConsumeImageTrackerProcessing
+        - Sid: ConsumeNektronMomentsProcessing
           Effect: Allow
           Action:
             - sqs:ReceiveMessage
@@ -165,7 +168,7 @@ provider:
             - Fn::GetAtt:
                 - ManifestImportQueue
                 - Arn
-        - Sid: ResolveStoredImageTrackerLocations
+        - Sid: ResolveStoredNektronMomentsLocations
           Effect: Allow
           Action:
             - geo-places:ReverseGeocode
@@ -188,7 +191,7 @@ package:
 functions:
   api:
     name: ${self:service}-${sls:stage}-api
-    description: ImageTracker authenticated HTTP API
+    description: Nektron Moments authenticated HTTP API
     handler: services/api/handler.handler
     reservedConcurrency: 4
     events:
@@ -204,7 +207,7 @@ functions:
             name: cognito
   worker:
     name: ${self:service}-${sls:stage}-worker
-    description: ImageTracker bounded asynchronous enrichment worker
+    description: Nektron Moments bounded asynchronous enrichment worker
     handler: services/worker/handler.handler
     memorySize: 384
     timeout: 120
@@ -220,7 +223,7 @@ functions:
           functionResponseType: ReportBatchItemFailures
   manifestImportWorker:
     name: ${self:service}-${sls:stage}-manifest-import-worker
-    description: ImageTracker bounded set-based manifest import worker
+    description: Nektron Moments bounded set-based manifest import worker
     handler: services/bulk/handler.handler
     memorySize: 1024
     timeout: 900
@@ -242,7 +245,7 @@ resources:
       Type: Number
       Default: ${self:custom.monthlyBudgetUsd}
       MinValue: 1
-      Description: Monthly incremental ImageTracker budget in USD.
+      Description: Monthly incremental Nektron Moments budget in USD.
 
   Resources:
     ImageTrackerUserPoolV2:
@@ -279,7 +282,7 @@ resources:
             Required: true
         EmailConfiguration:
           EmailSendingAccount: DEVELOPER
-          From: ImageTracker <info@nektron.ai>
+          From: Nektron Moments <info@nektron.ai>
           ReplyToEmailAddress: info@nektron.ai
           SourceArn:
             Fn::Join:
@@ -293,8 +296,8 @@ resources:
                 - ':identity/info@nektron.ai'
         VerificationMessageTemplate:
           DefaultEmailOption: CONFIRM_WITH_CODE
-          EmailSubject: Your ImageTracker verification code
-          EmailMessage: Your ImageTracker verification code is {####}.
+          EmailSubject: Your Nektron Moments verification code
+          EmailMessage: Your Nektron Moments verification code is {####}.
         UserPoolTags:
           Application: ImageTracker
           Product: NektronAI
@@ -601,7 +604,7 @@ resources:
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
-            - Sid: AllowImageTrackerSchedules
+            - Sid: AllowNektronMomentsSchedules
               Effect: Allow
               Principal:
                 Service: events.amazonaws.com
@@ -663,7 +666,7 @@ resources:
 
   Outputs:
     ImageTrackerHttpApiUrl:
-      Description: ImageTracker HTTP API base URL.
+      Description: Nektron Moments HTTP API base URL.
       Value:
         Fn::GetAtt:
           - HttpApi
@@ -712,5 +715,5 @@ resources:
       Description: Maintenance schedule state deployed with this stack.
       Value: ${self:custom.maintenanceSchedulesState}
     MonthlyBudgetName:
-      Description: Incremental ImageTracker cost budget name.
+      Description: Incremental Nektron Moments cost budget name.
       Value: ${self:service}-${sls:stage}-incremental-monthly

@@ -1,8 +1,20 @@
-# ImageTracker
+# Nektron Moments
 
-ImageTracker is a consumer media app for indexing, finding, and reliving
+Nektron Moments (previously ImageTracker) is a consumer media app for indexing, finding, and reliving
 photos and videos. It is also the media source for the future NektronAI
 Intelligence Layer.
+
+Native product targets are **Windows, iOS, and Android**, with the existing CLI
+as a companion. The [brand handoff](Brand_Images/README.md) and
+[offline asset gallery](Brand_Images/START-HERE.html) collect the NektronAI
+family references for the aesthetics model. The approved public name is
+Nektron Moments. The Python distribution and CLI are `nektron-moments`, the CLI
+package is `cli.nektron_moments_cli`, and configuration uses `NEKTRON_MOMENTS_*`.
+See [rename compatibility](docs/RENAME.md) for existing installs and deployed resources.
+
+Repository: [nectario/NektronMoments](https://github.com/nectario/NektronMoments).
+The physical checkout is `C:\Development\Projects\NektronMoments`
+(`/mnt/c/Development/Projects/NektronMoments` in WSL).
 
 Phase 1 implements the Local-mode data path: the CLI discovers a folder,
 can register its directory metadata immediately, then extracts metadata and
@@ -19,7 +31,7 @@ Amazon Location Service Places V2 so the request can explicitly declare stored
 use.
 
 The approved architecture and delivery sequence are in
-[the UX-first implementation plan](docs/ImageTracker%20App%20UX-First%20Implementation%20Plan.md).
+[the UX-first implementation plan](docs/Nektron%20Moments%20App%20UX-First%20Implementation%20Plan.md).
 The current implementation and verification ledger is in
 [the Phase 1 status](docs/PHASE1_STATUS.md).
 
@@ -29,7 +41,7 @@ The deployed Local core provides:
 
 - Cognito email/password sign-up, one-time email confirmation, login, session
   status, token refresh, and logout. Verification messages are sent as
-  `ImageTracker <info@nektron.ai>`.
+  `Nektron Moments <info@nektron.ai>` after deploying this rename.
 - Device registration and Local folder source creation, listing, update, and
   removal.
 - Parallel photo and video discovery with exact filenames and local locators.
@@ -93,7 +105,7 @@ Or run the components directly:
 ```bash
 python -m pytest -q
 python contracts/validate_openapi.py
-imagetracker doctor --json
+nektron-moments doctor --json
 ```
 
 See [`scripts/README.md`](scripts/README.md) for the individual WSL shell
@@ -108,18 +120,18 @@ The easiest setup uses AWS credentials already available to WSL and discovers
 the API and Cognito identifiers from the deployed CloudFormation stack:
 
 ```bash
-imagetracker configure \
+nektron-moments configure \
   --stack image-tracker-prod \
   --region us-east-2
 
-imagetracker doctor
+nektron-moments doctor
 ```
 
 Add `--profile PROFILE` when the credentials are under a named AWS profile.
 For isolated development or automation, configuration may instead be supplied
-with `IMAGETRACKER_API_URL`, `IMAGETRACKER_AWS_REGION`,
-`IMAGETRACKER_COGNITO_USER_POOL_ID`, and
-`IMAGETRACKER_COGNITO_CLIENT_ID`. Set `IMAGETRACKER_CONFIG_DIR` to relocate
+with `NEKTRON_MOMENTS_API_URL`, `NEKTRON_MOMENTS_AWS_REGION`,
+`NEKTRON_MOMENTS_COGNITO_USER_POOL_ID`, and
+`NEKTRON_MOMENTS_COGNITO_CLIENT_ID`. Set `NEKTRON_MOMENTS_CONFIG_DIR` to relocate
 the CLI configuration and SQLite state directory.
 
 ## Create an account and sign in
@@ -127,10 +139,10 @@ the CLI configuration and SQLite state directory.
 Omit `--password` to use the private interactive prompt:
 
 ```bash
-imagetracker auth signup you@example.com
-imagetracker auth confirm you@example.com ONE_TIME_CODE
-imagetracker auth login you@example.com
-imagetracker auth status
+nektron-moments auth signup you@example.com
+nektron-moments auth confirm you@example.com ONE_TIME_CODE
+nektron-moments auth login you@example.com
+nektron-moments auth status
 ```
 
 The session uses the operating-system credential vault when one is available,
@@ -138,7 +150,7 @@ with a permission-restricted local credential file as the WSL fallback. To end
 the session:
 
 ```bash
-imagetracker auth logout
+nektron-moments auth logout
 ```
 
 ## Add and synchronize a Local source
@@ -146,14 +158,14 @@ imagetracker auth logout
 Register a folder once, then synchronize it by name, source ID, or local path:
 
 ```bash
-imagetracker source add "/mnt/d/Pictures/Camera Uploads" \
+nektron-moments source add "/mnt/d/Pictures/Camera Uploads" \
   --name "Camera Uploads"
 
-imagetracker source list
-imagetracker sync "Camera Uploads" --fast-add
-imagetracker sync "Camera Uploads" --scan-workers 64
-imagetracker enrich "Camera Uploads" --limit 64
-imagetracker status
+nektron-moments source list
+nektron-moments sync "Camera Uploads" --fast-add
+nektron-moments sync "Camera Uploads" --scan-workers 64
+nektron-moments enrich "Camera Uploads" --limit 64
+nektron-moments status
 ```
 
 `--fast-add` inventories new files from directory metadata without reading
@@ -171,15 +183,15 @@ pending hashes, rejected bulk rows, and unsupported relinks automatically keep
 or return to the batch path without discarding saved work:
 
 ```bash
-imagetracker sync "Camera Uploads" --transport auto
-imagetracker sync "Camera Uploads" --transport bulk
-imagetracker sync "Camera Uploads" --transport bulk --bulk-max-rows 1000
-imagetracker sync "Camera Uploads" --transport batch
+nektron-moments sync "Camera Uploads" --transport auto
+nektron-moments sync "Camera Uploads" --transport bulk
+nektron-moments sync "Camera Uploads" --transport bulk --bulk-max-rows 1000
+nektron-moments sync "Camera Uploads" --transport batch
 ```
 
 `Ctrl+C` stops watching, not the durable server import. The next sync refreshes
 the authoritative server phase before deciding whether to upload, continue,
-apply the result, or fall back. `imagetracker status --follow` shows the bulk
+apply the result, or fall back. `nektron-moments status --follow` shows the bulk
 phase, processed rows, percentage, and whether a value is freshly fetched or
 cached.
 `--bulk-max-rows` processes one bounded prefix and stops before rescanning, so
@@ -207,8 +219,8 @@ location and scene processing, or add `--with-enrichment` after a metadata
 sync:
 
 ```bash
-imagetracker enrich "Camera Uploads" --limit 64
-imagetracker sync "Camera Uploads" --with-enrichment
+nektron-moments enrich "Camera Uploads" --limit 64
+nektron-moments sync "Camera Uploads" --with-enrichment
 ```
 
 `--dry-run` scans and hashes without sending a manifest. A normal sync saves
@@ -226,11 +238,11 @@ to the batch while preserving exact-hash deduplication and resumable imports.
 Useful operating commands:
 
 ```bash
-imagetracker sync "Camera Uploads" --watch
-imagetracker sync "Camera Uploads" --force-rehash
-imagetracker status --follow
-imagetracker source set-mode "Camera Uploads" Local
-imagetracker source remove "Camera Uploads"
+nektron-moments sync "Camera Uploads" --watch
+nektron-moments sync "Camera Uploads" --force-rehash
+nektron-moments status --follow
+nektron-moments source set-mode "Camera Uploads" Local
+nektron-moments source remove "Camera Uploads"
 ```
 
 Local cache, source bindings, and manifest outbox state are isolated by the
@@ -238,8 +250,8 @@ active Cognito account. If a manifest entry needs attention, the CLI
 quarantines that entry without replaying the same broken batch forever:
 
 ```bash
-imagetracker outbox list
-imagetracker outbox discard BATCH_ID
+nektron-moments outbox list
+nektron-moments outbox discard BATCH_ID
 ```
 
 Discarding a failed batch releases its rejected revision so a later sync can
@@ -250,11 +262,11 @@ time were deliberately preserved.
 Browse the Local metadata visible on this device and inspect processing work:
 
 ```bash
-imagetracker media list
-imagetracker media search "birthday"
-imagetracker media show MEDIA_ASSET_ID
-imagetracker jobs list
-imagetracker jobs retry JOB_ID
+nektron-moments media list
+nektron-moments media search "birthday"
+nektron-moments media show MEDIA_ASSET_ID
+nektron-moments jobs list
+nektron-moments jobs retry JOB_ID
 ```
 
 GPS in a manifest stores coordinates only. `enrich` explicitly creates a
@@ -298,22 +310,22 @@ read-only transactions. The recommended deployed configuration resolves the
 database credential from SSM without printing it:
 
 ```bash
-export IMAGETRACKER_DB_SECRET_PARAMETER=/imagetracker/prod/mysql
+export NEKTRON_MOMENTS_DB_SECRET_PARAMETER=/imagetracker/prod/mysql
 
-imagetracker legacy audit
-imagetracker legacy migrate --dry-run --limit 500
-imagetracker legacy migrate --dry-run --limit 500 --save-checkpoint
-imagetracker legacy migrate --dry-run --after-id 500 --limit 500
+nektron-moments legacy audit
+nektron-moments legacy migrate --dry-run --limit 500
+nektron-moments legacy migrate --dry-run --limit 500 --save-checkpoint
+nektron-moments legacy migrate --dry-run --after-id 500 --limit 500
 ```
 
 The preview reports the next legacy ID for the following batch. The optional
 checkpoint is local and preview-only; it never represents a MySQL migration
 write. Actual legacy migration writes remain disabled in this slice.
-`IMAGETRACKER_ADMIN_MYSQL_DSN`, `MYSQL_DSN`, or scoped `MYSQL_*`
+`NEKTRON_MOMENTS_ADMIN_MYSQL_DSN`, `MYSQL_DSN`, or scoped `MYSQL_*`
 variables are supported for local administration, but the database name must
 resolve exactly to `ImageTracker`.
 
-The root `ImageTracker.py` importer remains available for its existing legacy
+The root `NektronMoments.py` importer remains available for its existing legacy
 workflow, but it is not called by the new CLI or shell playground. Its writes
 are separate from the Phase 1 legacy migration preview.
 
@@ -376,11 +388,11 @@ deployment commands.
 The production geocode controls are deliberately small and explicit:
 
 ```text
-IMAGETRACKER_GEOCODE_REUSE_RADIUS_METERS=5
-IMAGETRACKER_GEOCODE_MONTHLY_CALL_LIMIT=1000
-IMAGETRACKER_SCENE_DESCRIPTION_MONTHLY_CALL_LIMIT=100000
-IMAGETRACKER_SCENE_DESCRIPTION_MONTHLY_USD_LIMIT=230.000000
-IMAGETRACKER_SCENE_DESCRIPTION_RESERVED_USD_PER_REQUEST=0.010000
+NEKTRON_MOMENTS_GEOCODE_REUSE_RADIUS_METERS=5
+NEKTRON_MOMENTS_GEOCODE_MONTHLY_CALL_LIMIT=1000
+NEKTRON_MOMENTS_SCENE_DESCRIPTION_MONTHLY_CALL_LIMIT=100000
+NEKTRON_MOMENTS_SCENE_DESCRIPTION_MONTHLY_USD_LIMIT=230.000000
+NEKTRON_MOMENTS_SCENE_DESCRIPTION_RESERVED_USD_PER_REQUEST=0.010000
 ```
 
 ## Architecture boundaries
@@ -391,7 +403,7 @@ IMAGETRACKER_SCENE_DESCRIPTION_RESERVED_USD_PER_REQUEST=0.010000
   and AWS Lambda adapter.
 - `services/domain` and `services/data`: transaction-scoped domain logic,
   repositories, SQLAlchemy mappings, durable idempotency, and MySQL access.
-- `cli/imagetracker_cli`: configuration, authentication, Local scanner,
+- `cli/nektron_moments_cli`: configuration, authentication, Local scanner,
   SQLite state/outbox, sync, status, and legacy inspection.
 - `infra`: isolated, low-cost AWS Serverless foundation.
 - `migrations/007_CreateMediaAppTables.sql` through the additive hardening

@@ -1,14 +1,21 @@
-# ImageTracker App — UX-First Implementation Plan
+# Nektron Moments — UX-First Implementation Plan
+
+Brand/platform update, 2026-09-12: the approved product name is **Nektron
+Moments**, with **Windows, iOS, and Android** as native client targets.
+The [brand handoff](../Brand_Images/README.md) includes the aesthetic manifesto,
+supplied screenshots, and source references from Write, Mail, and
+InterviewHelperAI. The aesthetics model owns new Moments artwork and layouts.
+Existing technical names and this document's filename remain for compatibility.
 
 ## 1. Product and Architecture Summary
 
-Build ImageTracker as a consumer media app whose first release includes native iOS and Android apps, a polished Python CLI, and a small Python serverless backend living inside the existing DeepTrading AWS/RDS infrastructure.
+Build Nektron Moments as a consumer media app with native Windows, iOS, and Android clients, a polished Python CLI, and a small Python serverless backend living inside the existing DeepTrading AWS/RDS infrastructure.
 
 Core decisions:
 
-- Mobile first, with feature-parity native SwiftUI and Jetpack Compose apps in v1.
+- Three first-class native clients: Windows, SwiftUI on iOS, and Jetpack Compose on Android. Platform behavior is native; shared product behavior follows the same API contract.
 - “Upload and relive” experience: timeline, search, map, media details, transcripts, and clear sync status.
-- Separate ImageTracker email/password accounts through Amazon Cognito; no organizations, MFA, or enterprise RBAC in v1.
+- Separate Nektron Moments email/password accounts through Amazon Cognito; no organizations, MFA, or enterprise RBAC in v1.
 - Local or Remote storage selected per source/device; Local is the onboarding default.
 - Local mode keeps originals on the source device/computer and stores metadata in the `ImageTracker` MySQL database.
 - Remote mode stores one exact original in private S3 and makes it available across devices.
@@ -27,10 +34,10 @@ Core decisions:
 
 Organize the repository into:
 
-- Native iOS and Android applications.
+- Native Windows, iOS, and Android applications.
 - Python API and asynchronous worker.
 - Python Typer/Rich CLI.
-- Versioned OpenAPI contract and generated Swift/Kotlin/Python clients.
+- Versioned OpenAPI contract and Swift/Kotlin/C#/Python client boundaries.
 - A minimal independent Serverless Framework stack.
 - Existing importer and tagging utilities retained as compatibility entry points during migration.
 
@@ -68,6 +75,13 @@ The app immediately renders local PhotoKit/MediaStore content from its device ca
 
 ### Native clients
 
+**Windows**
+
+- Planned packaged C#/WinUI 3 application with a persistent local library cache and sync queue.
+- Folder discovery/watching, progressive hashing, virtualized thumbnails, and responsive photo/video detail.
+- Native windowing, keyboard navigation, per-monitor DPI, and installer/app identity.
+- Sibling apps currently use WPF; consult their source resources for visual fidelity without silently changing the planned Windows framework or importing sibling executables.
+
 **iOS**
 
 - SwiftUI application using PhotoKit identifiers and change tracking.
@@ -82,7 +96,7 @@ The app immediately renders local PhotoKit/MediaStore content from its device ca
 - Keystore token storage and Room-backed sync state.
 - Apply the same deletion safeguards and API contract as iOS.
 
-Both apps share behavior and contract fixtures, not UI code.
+All three clients share behavior and contract fixtures. UI code and OS media integrations remain platform-specific.
 
 ### Local and Remote source behavior
 
@@ -213,7 +227,7 @@ S3 policies:
 - Delete Local-mode staging bytes after provider completion, with one-day lifecycle fallback.
 - Delete trashed Remote originals after 30 days.
 - Use S3 Intelligent-Tiering for originals and Standard storage for small previews.
-- Add an AWS budget alert for ImageTracker-tagged resources.
+- Keep the AWS budget alert scoped to existing `Application=ImageTracker` tags.
 
 Cognito email/password tokens are passed to API Gateway in the authorization header and verified by the Cognito authorizer. [AWS Cognito/API Gateway integration](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-enable-cognito-user-pool.html)
 
@@ -258,16 +272,16 @@ Build a first-class Python CLI using Typer, Rich, generated API types, and OS ke
 Command surface:
 
 ```text
-imagetracker auth login|logout|status
-imagetracker source add|list|set-mode|remove
-imagetracker sync [SOURCE] [--watch] [--dry-run]
-imagetracker upload FILE...
-imagetracker status [--follow]
-imagetracker media list|show|search|trash|restore
-imagetracker jobs list|retry
-imagetracker legacy audit|migrate
-imagetracker admin db-audit|quota|reprocess
-imagetracker doctor
+nektron-moments auth login|logout|status
+nektron-moments source add|list|set-mode|remove
+nektron-moments sync [SOURCE] [--watch] [--dry-run]
+nektron-moments upload FILE...
+nektron-moments status [--follow]
+nektron-moments media list|show|search|trash|restore
+nektron-moments jobs list|retry
+nektron-moments legacy audit|migrate
+nektron-moments admin db-audit|quota|reprocess
+nektron-moments doctor
 ```
 
 CLI requirements:
@@ -283,7 +297,7 @@ CLI requirements:
 
 ### Windows phase
 
-After the mobile v1 contract stabilizes, create a packaged C# WinUI 3 app using the Windows App SDK.
+Windows is part of the native-client milestone, alongside iOS and Android. The current plan is a packaged C# WinUI 3 app using the Windows App SDK and the existing versioned API.
 
 - Derive its complete visual identity from Nektron Write and Nektron Mail, including typography, color, spacing, iconography, motion, density, and interaction character.
 - Treat aesthetic and UX review as a release gate; generic template styling is not an acceptable finished result.
@@ -313,13 +327,14 @@ Exit criteria: empty new schema deploys safely beside `ImageAsset`; authenticate
 
 Exit criteria: two paths containing identical bytes create one asset/two occurrences; Local sync sends no original to S3; CLI can resume safely after interruption.
 
-### Phase 2 — Native mobile Local mode
+### Phase 2 — Native Windows, iOS, and Android Local mode
 
-- Build the complete iOS and Android onboarding, local cache, timeline, search shell, map shell, details, and Activity.
+- Establish the approved Moments identity, using the three sibling products as references.
+- Build Windows, iOS, and Android onboarding, local cache, timeline, search shell, map shell, details, and Activity in platform-specific slices.
 - Implement full-library discovery, staged background hashing, incremental changes, and safe deletion detection.
 - Keep local assets visible only on their source device.
 
-Exit criteria: both apps index a large library without blocking normal use, survive restart/network loss, and never interpret permission loss as deletion.
+Exit criteria: each client indexes a large library without blocking normal use, survives restart/network loss, and never interprets permission loss as deletion.
 
 ### Phase 3 — Remote mode and cloud lifecycle
 
@@ -338,7 +353,7 @@ Exit criteria: transcript search opens the right video moment; quota exhaustion 
 
 ### Phase 5 — Legacy migration and mobile beta
 
-- Create the initial ImageTracker account and source for the existing archive.
+- Create the initial Nektron Moments account and source for the existing archive.
 - Compute hashes from original files and migrate all legacy rows as occurrences.
 - Preserve current values; mark the one confirmed temporal inconsistency for review rather than silently changing it.
 - Queue the 556 missing descriptions under quota.
@@ -347,11 +362,11 @@ Exit criteria: transcript search opens the right video moment; quota exhaustion 
 
 Expected migration invariant: 2,099 legacy occurrences; `MediaAsset` count may be lower only where byte hashing proves exact duplicates.
 
-### Phase 6 — Windows app
+### Phase 6 — Windows release and cross-platform polish
 
-- Verify the WinUI development environment and scaffold the packaged app from the official template.
-- Audit the in-development Nektron Write and Nektron Mail products and codify their shared design tokens and interaction patterns before composing screens.
-- Build the Windows uploader/library using the stable v1 API.
+- Complete packaged Windows distribution and cross-platform visual/interaction review of the clients introduced in Phase 2.
+- Reconcile approved Moments designs with the family conventions from Nektron Write, Nektron Mail, and InterviewHelperAI.
+- Finish the Windows uploader/library using the stable v1 API.
 - Validate background folder watching, keyboard/touch UX, responsive layouts, accessibility, build, packaged launch, and upgrade behavior.
 
 ## 4. Test and Acceptance Plan
@@ -404,7 +419,7 @@ Expected migration invariant: 2,099 legacy occurrences; `MediaAsset` count may b
 - The new monorepo supersedes the earlier root-script-only constraint; legacy scripts remain compatible during transition.
 - The single deployment environment lives in the existing DeepTrading AWS account and `us-east-2`.
 - New tables live only in the `ImageTracker` database, despite other databases sharing the RDS instance.
-- Current DeepTrading infrastructure spend is existing baseline; the $50 target applies to incremental ImageTracker infrastructure.
+- Current DeepTrading infrastructure spend is existing baseline; the $50 target applies to incremental Nektron Moments infrastructure.
 - Local is the default for every new source.
 - Local-only assets are hidden from other devices, though their MySQL evidence remains available for future authorized intelligence queries.
 - Dedupe is exact, per user, and content-hash based; no global or perceptual dedupe.

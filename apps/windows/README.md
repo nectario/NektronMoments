@@ -1,11 +1,19 @@
-# ImageTracker for Windows
+# Nektron Moments for Windows
 
-The third client implementation will be a packaged native C# WinUI 3 app. It
-will reuse the stable media/source/upload API established by the mobile apps and
-CLI.
+Windows is a first-class native client alongside iOS and Android. The current
+architecture plan is a packaged C# WinUI 3 application using the shared
+media/source/upload API and its own durable local library cache.
 
-The visual identity is not generic WinUI. Before implementation, the team must
-audit Nektron Write and Nektron Mail and derive shared typography, color,
-spacing, iconography, motion, and interaction rules. Native WinUI controls and
-Fluent behavior remain the accessibility and platform baseline, while final
-aesthetic acceptance belongs to the Nektron product identity.
+The [brand package](../../Brand_Images/README.md) contains references from
+Nektron Write, Nektron Mail, and InterviewHelperAI. Their current code uses WPF.
+Their visual language can inform WinUI; WPF controls are not directly reusable
+WinUI components. See the [source review](../../Brand_Images/SOURCE-REVIEW.md).
+
+The desktop experience includes folder import/watching, a virtualized media
+library, photo/video detail, search, source modes, and quiet background activity.
+Plan keyboard navigation, selection, per-monitor DPI, window resizing, and both
+themes from the first screen. Final Moments-specific artwork and layouts are
+being developed by the aesthetics model.
+
+This folder currently records the client boundary; a Windows app project has
+not been scaffolded yet.

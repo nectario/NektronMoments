@@ -1,4 +1,4 @@
-"""Build, validate, and deploy one freshly rendered ImageTracker package."""
+"""Build, validate, and deploy one freshly rendered Nektron Moments package."""
 
 from __future__ import annotations
 

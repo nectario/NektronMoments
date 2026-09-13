@@ -49,7 +49,7 @@ def create_app(
     }:
         raise ValueError("Injected identities are allowed only in local or test stages")
     app = FastAPI(
-        title="ImageTracker API",
+        title="Nektron Moments API",
         version=resolved_settings.service_version,
         docs_url=None,
         redoc_url=None,

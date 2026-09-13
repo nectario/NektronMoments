@@ -7,4 +7,4 @@ require_environment
 cd_repository
 
 step "Checking the self-cleaning bulk MySQL canary"
-exec "${IMAGETRACKER_PYTHON}" -B infra/scripts/live_bulk_mysql_canary.py "$@"
+exec "${NEKTRON_MOMENTS_PYTHON}" -B infra/scripts/live_bulk_mysql_canary.py "$@"

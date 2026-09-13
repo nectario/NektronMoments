@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ImageTracker import _split_sql_statements
+from NektronMoments import _split_sql_statements
 
 
 ROOT = Path(__file__).resolve().parents[1]

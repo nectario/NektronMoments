@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import requests
 
-from ImageTracker import Database, load_settings, parse_mysql_config
+from NektronMoments import Database, load_settings, parse_mysql_config
 
 
 @dataclass(frozen=True)
@@ -357,7 +357,7 @@ def run_tagging(
 def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="tag_location.py",
-        description="Manual location tagging for ImageTracker rows.",
+        description="Manual location tagging for Nektron Moments rows.",
     )
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument(

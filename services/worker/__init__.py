@@ -1,4 +1,4 @@
-"""Asynchronous ImageTracker enrichment workers."""
+"""Asynchronous Nektron Moments enrichment workers."""
 
 from services.worker.contracts import (
     DescriptionCleanupDecision,

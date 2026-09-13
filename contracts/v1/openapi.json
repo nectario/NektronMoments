@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "ImageTracker API",
+    "title": "Nektron Moments API",
     "version": "0.1.0",
-    "description": "Versioned foundation contract for ImageTracker mobile, CLI, and future native Windows clients. The v1 API stores metadata for Local sources, manages exact-deduplicated originals for Remote sources, and exposes cursor-based media evidence without coupling clients to the MySQL schema."
+    "description": "Versioned foundation contract for Nektron Moments mobile, CLI, and future native Windows clients. The v1 API stores metadata for Local sources, manages exact-deduplicated originals for Remote sources, and exposes cursor-based media evidence without coupling clients to the MySQL schema."
   },
   "tags": [
     {
@@ -88,7 +88,7 @@
           "Account"
         ],
         "operationId": "getCurrentUser",
-        "summary": "Get the signed-in ImageTracker user",
+        "summary": "Get the signed-in Nektron Moments user",
         "responses": {
           "200": {
             "description": "Successful response.",
@@ -1932,7 +1932,7 @@
         ],
         "operationId": "getAdminHealth",
         "summary": "Get restricted dependency health",
-        "description": "Requires an ImageTracker administrator claim. The response contains service-level status only and never returns credentials, DSNs, bucket keys, or provider secrets.",
+        "description": "Requires an Nektron Moments administrator claim. The response contains service-level status only and never returns credentials, DSNs, bucket keys, or provider secrets.",
         "security": [
           {
             "AdminBearer": []
@@ -2020,13 +2020,13 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "Amazon Cognito access token for the ImageTracker user pool."
+        "description": "Amazon Cognito access token for the Nektron Moments user pool."
       },
       "AdminBearer": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "The same Cognito access token with the ImageTracker administrator claim."
+        "description": "The same Cognito access token with the Nektron Moments administrator claim."
       }
     },
     "headers": {
@@ -2066,10 +2066,10 @@
         }
       },
       "DeviceIdHeader": {
-        "name": "X-ImageTracker-Device-Id",
+        "name": "X-Nektron-Moments-Device-Id",
         "in": "header",
         "required": true,
-        "description": "Registered calling device used to enforce Local-media visibility.",
+        "description": "Registered calling device used to enforce Local-media visibility. Legacy clients may send X-ImageTracker-Device-Id instead. At least one is required; sending different values returns DEVICE_HEADER_MISMATCH.",
         "schema": {
           "type": "string",
           "format": "uuid"
@@ -2501,7 +2501,7 @@
         "properties": {
           "service": {
             "type": "string",
-            "example": "ImageTracker API"
+            "example": "Nektron Moments API"
           },
           "version": {
             "type": "string",

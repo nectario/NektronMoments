@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import re
 
-from ImageTracker import _split_sql_statements
+from NektronMoments import _split_sql_statements
 from services.bulk.manifest import CANONICAL_CSV_COLUMNS
 from services.data.models import (
     Base,

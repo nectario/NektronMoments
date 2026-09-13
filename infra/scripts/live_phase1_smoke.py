@@ -213,7 +213,7 @@ def _http_json(
     encoded = None
     request_headers = {
         "Accept": "application/json",
-        "User-Agent": "ImageTracker-Phase1-Live-Smoke/1",
+        "User-Agent": "NektronMoments-Phase1-Live-Smoke/1",
     }
     if payload is not None:
         encoded = json.dumps(payload, separators=(",", ":")).encode("utf-8")
@@ -335,7 +335,7 @@ def _verify_database(runtime: DatabaseRuntime) -> None:
         ).scalar_one()
     _require(
         selected_database == "ImageTracker",
-        "The verified database runtime is not connected to ImageTracker",
+        "The verified database runtime is not connected to NektronMoments",
     )
 
 
@@ -653,13 +653,13 @@ def _exercise_api(
                 **common_entry,
                 "sourceItemId": "photos/duplicate-a.jpg",
                 "fileName": "duplicate-a.jpg",
-                "localLocator": "/tmp/imagetracker-live-smoke/a/duplicate.jpg",
+                "localLocator": "/tmp/nektron-moments-live-smoke/a/duplicate.jpg",
             },
             {
                 **common_entry,
                 "sourceItemId": "photos/duplicate-b.jpg",
                 "fileName": "duplicate-b.jpg",
-                "localLocator": "/tmp/imagetracker-live-smoke/b/duplicate.jpg",
+                "localLocator": "/tmp/nektron-moments-live-smoke/b/duplicate.jpg",
             },
         ],
     }
@@ -826,7 +826,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 
     run_id = uuid4().hex
     user_state = DisposableCognitoUser(
-        email=f"imagetracker-smoke-{run_id}@example.com",
+        email=f"nektron-moments-smoke-{run_id}@example.com",
         password=f"It-{secrets.token_urlsafe(30)}-Aa1!",
     )
     user_pool_id = outputs["CognitoUserPoolId"]

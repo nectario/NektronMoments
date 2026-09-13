@@ -278,7 +278,7 @@ def test_ssm_resolution_is_cached_and_secret_is_database_restricted(monkeypatch)
     assert "ssl_verify_cert" not in captured["connect_args"]
     assert "ssl_verify_identity" not in captured["connect_args"]
 
-    with pytest.raises(DatabaseConfigurationError, match="only to the ImageTracker"):
+    with pytest.raises(DatabaseConfigurationError, match="only to the Nektron Moments"):
         database_config_from_secret(
             "mysql://app:secret@db.example/DeepTradingAI",
             required_database="ImageTracker",

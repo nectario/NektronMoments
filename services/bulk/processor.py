@@ -229,7 +229,7 @@ class BulkManifestProcessor:
         if work_root is not None:
             work_root.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(
-            prefix="imagetracker-bulk-",
+            prefix="nektron-moments-bulk-",
             dir=str(work_root) if work_root is not None else None,
         ) as temporary:
             directory = Path(temporary)

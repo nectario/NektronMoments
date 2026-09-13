@@ -51,7 +51,7 @@ async def _domain_call(awaitable: Awaitable[T]) -> T:
         raise ConflictError(exc.detail, code=_error_code(exc.code)) from exc
     except (OperationalError, SqlAlchemyTimeoutError) as exc:
         raise ServiceUnavailableError(
-            "The ImageTracker database is temporarily unavailable",
+            "The Nektron Moments database is temporarily unavailable",
             code="DATABASE_UNAVAILABLE",
         ) from exc
 

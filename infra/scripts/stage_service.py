@@ -1,4 +1,4 @@
-"""Stage the shared ImageTracker services beside the Serverless configuration.
+"""Stage the shared Nektron Moments services beside the Serverless configuration.
 
 Serverless Framework resolves handler paths relative to the service directory.
 The application code remains owned by ``services``; this script creates an

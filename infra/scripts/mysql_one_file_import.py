@@ -26,11 +26,13 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from cli.imagetracker_cli.auth import TokenStore  # noqa: E402
-from cli.imagetracker_cli.config import ConfigStore  # noqa: E402
-from cli.imagetracker_cli.media import MediaScanner, stream_sha256  # noqa: E402
-from cli.imagetracker_cli.state import LocalState, SourceBinding  # noqa: E402
+from cli.nektron_moments_cli.auth import TokenStore  # noqa: E402
+from cli.nektron_moments_cli.config import ConfigStore  # noqa: E402
+from cli.nektron_moments_cli.media import MediaScanner, stream_sha256  # noqa: E402
+from cli.nektron_moments_cli.state import LocalState, SourceBinding  # noqa: E402
 from infra.scripts.migrate_enrichment import _connect, _secret  # noqa: E402
+
+from services.common.branding import environment_value
 
 
 CSV_COLUMNS = (
@@ -42,7 +44,7 @@ CSV_COLUMNS = (
     "LocalLocator",
     "ObservedByteSize",
 )
-TEMPORARY_TABLE = "TempImageTrackerOneFileManifest"
+TEMPORARY_TABLE = "TempNektronMomentsOneFileManifest"
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -58,11 +60,11 @@ def _parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument("--workers", type=int, help="Parallel filesystem metadata workers")
-    parser.add_argument("--region", default=os.environ.get("IMAGETRACKER_AWS_REGION", "us-east-2"))
+    parser.add_argument("--region", default=environment_value("NEKTRON_MOMENTS_AWS_REGION", "us-east-2"))
     parser.add_argument(
         "--db-parameter",
         default=os.environ.get(
-            "IMAGETRACKER_DB_SECRET_PARAMETER", "/imagetracker/prod/mysql"
+            "NEKTRON_MOMENTS_DB_SECRET_PARAMETER", "/imagetracker/prod/mysql"
         ),
     )
     parser.add_argument(
@@ -81,7 +83,7 @@ def _runtime_state(source_selector: str) -> tuple[LocalState, SourceBinding]:
     store = ConfigStore()
     tokens = TokenStore(store.fallback_token_path).load()
     if tokens is None or not tokens.local_subject:
-        raise RuntimeError("Sign in with ImageTracker before running a one-file import")
+        raise RuntimeError("Sign in with Nektron Moments before running a one-file import")
     state = LocalState(store.state_path_for_subject(tokens.local_subject))
     binding = state.resolve_binding(source_selector)
     if binding.storage_mode != "Local":
@@ -242,7 +244,7 @@ def load_one_file(
             )
             source = cursor.fetchone()
             if source is None:
-                raise RuntimeError("The active ImageTracker source was not found in MySQL")
+                raise RuntimeError("The active Nektron Moments source was not found in MySQL")
             source_id = int(source["Id"])
             user_id = int(source["UserId"])
             device_id = int(source["DeviceId"])

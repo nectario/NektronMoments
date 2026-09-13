@@ -1,4 +1,4 @@
-"""Apply the narrowly scoped additive ImageTracker migrations 012 through 014.
+"""Apply the narrowly scoped additive Nektron Moments migrations 012 through 014.
 
 The runner is deliberately narrow and crash-reconcilable. If MySQL commits DDL
 before the SchemaMigration marker is written, a rerun verifies the complete
@@ -23,7 +23,9 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from ImageTracker import _split_sql_statements  # noqa: E402
+from NektronMoments import _split_sql_statements  # noqa: E402
+
+from services.common.branding import environment_value
 
 
 MIGRATIONS = {
@@ -43,9 +45,9 @@ def _secret(region: str, parameter_name: str) -> dict[str, Any]:
     try:
         value = json.loads(response["Parameter"]["Value"])
     except (KeyError, TypeError, json.JSONDecodeError) as exc:
-        raise RuntimeError("The ImageTracker database parameter is invalid") from exc
+        raise RuntimeError("The Nektron Moments database parameter is invalid") from exc
     if not isinstance(value, dict) or value.get("database") != "ImageTracker":
-        raise RuntimeError("The database credential must be scoped to ImageTracker")
+        raise RuntimeError("The database credential must be scoped to NektronMoments")
     return value
 
 
@@ -75,7 +77,7 @@ def _connect(
     password = secret.get("password")
     host = secret.get("host")
     if not all(isinstance(value, str) and value for value in (user, password, host)):
-        raise RuntimeError("The ImageTracker database parameter is incomplete")
+        raise RuntimeError("The Nektron Moments database parameter is incomplete")
     options: dict[str, Any] = {}
     if bool(secret.get("tls", True)):
         options["ssl"] = {"ca": str(CA_PATH), "check_hostname": True}
@@ -417,7 +419,7 @@ def _assert_idle(connection: pymysql.Connection) -> None:
         row = cursor.fetchone()
     if int(row["ActiveUploads"] or 0) or int(row["ActiveJobs"] or 0):
         raise RuntimeError(
-            "ImageTracker processing must be idle before schema migration"
+            "Nektron Moments processing must be idle before schema migration"
         )
 
 
@@ -453,12 +455,12 @@ def main() -> int:
     parser.add_argument("--apply", action="store_true")
     parser.add_argument(
         "--region",
-        default=os.environ.get("IMAGETRACKER_AWS_REGION", "us-east-2"),
+        default=environment_value("NEKTRON_MOMENTS_AWS_REGION", "us-east-2"),
     )
     parser.add_argument(
         "--parameter",
         default=os.environ.get(
-            "IMAGETRACKER_DB_SECRET_PARAMETER", "/imagetracker/prod/mysql"
+            "NEKTRON_MOMENTS_DB_SECRET_PARAMETER", "/imagetracker/prod/mysql"
         ),
     )
     args = parser.parse_args()

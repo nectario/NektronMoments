@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 
-from ImageTracker import _split_sql_statements
+from NektronMoments import _split_sql_statements
 
 
 MIGRATION_PATH = (

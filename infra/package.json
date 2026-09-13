@@ -1,8 +1,8 @@
 {
-  "name": "imagetracker-infrastructure",
+  "name": "nektron-moments-infrastructure",
   "version": "0.1.0",
   "private": true,
-  "description": "Minimal AWS Serverless foundation for ImageTracker",
+  "description": "Minimal AWS Serverless foundation for Nektron Moments",
   "engines": {
     "node": ">=18.17.0"
   },

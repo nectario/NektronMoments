@@ -1,4 +1,4 @@
-"""User-scoped domain services for ImageTracker Phase 1."""
+"""User-scoped domain services for Nektron Moments Phase 1."""
 
 from services.domain.errors import (
     ConflictError,

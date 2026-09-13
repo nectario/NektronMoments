@@ -13,7 +13,7 @@ import pytest
 from pydantic import ValidationError
 from typer.testing import CliRunner
 
-from cli.imagetracker_cli.app import app as cli_app
+from cli.nektron_moments_cli.app import app as cli_app
 from services.api.app import create_app
 from services.common.enums import (
     EnrichmentStatus,
@@ -44,14 +44,14 @@ def test_health_endpoint_is_stable_and_does_not_require_secrets():
     assert response.headers["x-request-id"] == "d27598e0-2607-45a7-a6c0-f12bb44a2cf0"
     payload = response.json()
     assert payload["status"] == "Ok"
-    assert payload["service"] == "imagetracker-api"
+    assert payload["service"] == "nektron-moments-api"
     assert payload["version"] == "0.3.0"
     assert set(payload) == {"status", "service", "version", "timeUtc"}
     assert datetime.fromisoformat(payload["timeUtc"].replace("Z", "+00:00")).tzinfo is not None
 
 
 def test_service_refuses_another_deeptrading_database():
-    with pytest.raises(ValidationError, match="only to the ImageTracker database"):
+    with pytest.raises(ValidationError, match="only to the Nektron Moments database"):
         AppSettings(mysql_database="DeepTradingAI")
 
 
@@ -87,8 +87,8 @@ def test_all_shared_enums_match_openapi():
 
 
 def test_cli_doctor_json_is_non_secret(monkeypatch):
-    monkeypatch.setenv("IMAGETRACKER_STAGE", "test")
-    monkeypatch.setenv("IMAGETRACKER_API_URL", "https://example.invalid")
+    monkeypatch.setenv("NEKTRON_MOMENTS_STAGE", "test")
+    monkeypatch.setenv("NEKTRON_MOMENTS_API_URL", "https://example.invalid")
     monkeypatch.setenv("MYSQL_PASSWORD", "must-not-appear")
     get_settings.cache_clear()
 
@@ -174,20 +174,20 @@ def test_worker_infrastructure_is_bounded_and_schedules_stay_disabled():
     assert "- sqs:GetQueueAttributes" in serverless
     assert "- geo-places:ReverseGeocode" in serverless
     assert "::provider/default" in serverless
-    assert "IMAGETRACKER_GEOCODE_REUSE_RADIUS_METERS: '5'" in serverless
-    assert "IMAGETRACKER_ENRICHMENT_PROCESSING_ENABLED: 'false'" in serverless
-    assert "IMAGETRACKER_GEOCODE_MONTHLY_CALL_LIMIT: '1000'" in serverless
-    assert "IMAGETRACKER_SCENE_DESCRIPTION_MODEL: gpt-5.6-terra" in serverless
-    assert "IMAGETRACKER_SCENE_DESCRIPTION_SERVICE_TIER: flex" in serverless
-    assert "IMAGETRACKER_SCENE_DESCRIPTION_MONTHLY_CALL_LIMIT: '100000'" in serverless
-    assert "IMAGETRACKER_SCENE_DESCRIPTION_MONTHLY_USD_LIMIT: '230.000000'" in serverless
-    assert "IMAGETRACKER_SCENE_DESCRIPTION_RESERVED_USD_PER_REQUEST: '0.010000'" in serverless
-    assert "IMAGETRACKER_SCENE_DESCRIPTION_INPUT_USD_PER_MILLION: '2.000000'" in serverless
+    assert "NEKTRON_MOMENTS_GEOCODE_REUSE_RADIUS_METERS: '5'" in serverless
+    assert "NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED: 'false'" in serverless
+    assert "NEKTRON_MOMENTS_GEOCODE_MONTHLY_CALL_LIMIT: '1000'" in serverless
+    assert "NEKTRON_MOMENTS_SCENE_DESCRIPTION_MODEL: gpt-5.6-terra" in serverless
+    assert "NEKTRON_MOMENTS_SCENE_DESCRIPTION_SERVICE_TIER: flex" in serverless
+    assert "NEKTRON_MOMENTS_SCENE_DESCRIPTION_MONTHLY_CALL_LIMIT: '100000'" in serverless
+    assert "NEKTRON_MOMENTS_SCENE_DESCRIPTION_MONTHLY_USD_LIMIT: '230.000000'" in serverless
+    assert "NEKTRON_MOMENTS_SCENE_DESCRIPTION_RESERVED_USD_PER_REQUEST: '0.010000'" in serverless
+    assert "NEKTRON_MOMENTS_SCENE_DESCRIPTION_INPUT_USD_PER_MILLION: '2.000000'" in serverless
     assert (
-        "IMAGETRACKER_SCENE_DESCRIPTION_CACHED_INPUT_USD_PER_MILLION: '0.200000'"
+        "NEKTRON_MOMENTS_SCENE_DESCRIPTION_CACHED_INPUT_USD_PER_MILLION: '0.200000'"
         in serverless
     )
-    assert "IMAGETRACKER_SCENE_DESCRIPTION_OUTPUT_USD_PER_MILLION: '12.000000'" in serverless
+    assert "NEKTRON_MOMENTS_SCENE_DESCRIPTION_OUTPUT_USD_PER_MILLION: '12.000000'" in serverless
     assert serverless.count("State: ${self:custom.maintenanceSchedulesState}") == 3
     assert "retryScheduleState: ${param:retryScheduleState, 'DISABLED'}" in serverless
     assert (
@@ -208,7 +208,7 @@ def test_worker_infrastructure_is_bounded_and_schedules_stay_disabled():
     assert "ephemeralStorageSize: 2048" in serverless
     assert "VisibilityTimeout: 1800" in serverless
     assert "maxReceiveCount: 5" in serverless
-    assert "IMAGETRACKER_MANIFEST_IMPORT_QUEUE_URL:" in serverless
+    assert "NEKTRON_MOMENTS_MANIFEST_IMPORT_QUEUE_URL:" in serverless
     assert "Prefix: manifests/input/" in serverless
     assert "ManifestImportRetrySchedule:" in serverless
     assert "RetryManifestImports" in serverless
@@ -232,7 +232,17 @@ def test_python_wheel_includes_the_rds_trust_bundle(tmp_path: Path):
         capture_output=True,
         text=True,
     )
-    wheels = list(tmp_path.glob("imagetracker-*.whl"))
+    wheels = list(tmp_path.glob("nektron_moments-*.whl"))
     assert len(wheels) == 1
     with zipfile.ZipFile(wheels[0]) as archive:
         assert "services/data/certs/us-east-2-bundle.pem" in archive.namelist()
+        for module in (
+            "NektronMoments.py", "ImageTracker.py",
+            "cli/nektron_moments_cli/app.py", "cli/imagetracker_cli/app.py",
+            "services/common/branding.py",
+        ):
+            assert module in archive.namelist()
+        entry_points = next(name for name in archive.namelist() if name.endswith("/entry_points.txt"))
+        entries = archive.read(entry_points).decode()
+        assert "nektron-moments = cli.nektron_moments_cli.app:main" in entries
+        assert "imagetracker = cli.nektron_moments_cli.app:main" in entries

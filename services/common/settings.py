@@ -4,7 +4,7 @@ from decimal import Decimal
 from functools import lru_cache
 
 from pydantic import Field, field_validator, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, EnvSettingsSource, SettingsConfigDict
 
 from services.enrichment.openai_scene import scene_description_maximum_cost_usd
 
@@ -18,12 +18,12 @@ class AppSettings(BaseSettings):
     """
 
     model_config = SettingsConfigDict(
-        env_prefix="IMAGETRACKER_",
+        env_prefix="NEKTRON_MOMENTS_",
         extra="ignore",
         case_sensitive=False,
     )
 
-    service_name: str = "imagetracker-api"
+    service_name: str = "nektron-moments-api"
     service_version: str = "0.3.0"
     stage: str = "local"
     aws_region: str = "us-east-2"
@@ -76,11 +76,19 @@ class AppSettings(BaseSettings):
     api_url: str = ""
     log_level: str = Field(default="INFO", pattern=r"^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$")
 
+    @classmethod
+    def settings_customise_sources(
+        cls, settings_cls, init_settings, env_settings, dotenv_settings,
+        file_secret_settings,
+    ):
+        legacy_env = EnvSettingsSource(settings_cls, env_prefix="IMAGETRACKER_")
+        return init_settings, env_settings, legacy_env, dotenv_settings, file_secret_settings
+
     @field_validator("mysql_database")
     @classmethod
-    def require_imagetracker_database(cls, value: str) -> str:
+    def require_nektron_moments_database(cls, value: str) -> str:
         if value != "ImageTracker":
-            raise ValueError("The app service may connect only to the ImageTracker database")
+            raise ValueError("The app service may connect only to the Nektron Moments database")
         return value
 
     @model_validator(mode="after")

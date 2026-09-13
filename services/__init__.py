@@ -1,1 +1,1 @@
-"""ImageTracker cloud service packages."""
+"""Nektron Moments cloud service packages."""

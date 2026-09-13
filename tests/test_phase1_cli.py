@@ -16,21 +16,21 @@ import pytest
 import typer
 from typer.testing import CliRunner
 
-import cli.imagetracker_cli.app as cli_app_module
-from cli.imagetracker_cli.api_client import ApiClient, ApiError, ApiProblem
-from cli.imagetracker_cli.app import ExitCode, app, _register_device
-from cli.imagetracker_cli.auth import (
+import cli.nektron_moments_cli.app as cli_app_module
+from cli.nektron_moments_cli.api_client import ApiClient, ApiError, ApiProblem
+from cli.nektron_moments_cli.app import ExitCode, app, _register_device
+from cli.nektron_moments_cli.auth import (
     CognitoAuth,
     FileTokenBackend,
     TokenSet,
     TokenStore,
     id_token_subject,
 )
-from cli.imagetracker_cli.config import ConfigStore, config_from_stack
-from cli.imagetracker_cli.media import MediaScanner, ScanResult, source_item_id, stream_sha256
-from cli.imagetracker_cli.legacy import load_legacy_db_config
-from cli.imagetracker_cli.state import LocalState
-from cli.imagetracker_cli.sync import MANIFEST_BATCH_SIZE, SyncEngine
+from cli.nektron_moments_cli.config import ConfigStore, config_from_stack
+from cli.nektron_moments_cli.media import MediaScanner, ScanResult, source_item_id, stream_sha256
+from cli.nektron_moments_cli.legacy import load_legacy_db_config
+from cli.nektron_moments_cli.state import LocalState
+from cli.nektron_moments_cli.sync import MANIFEST_BATCH_SIZE, SyncEngine
 
 
 SOURCE_ID = "c132f11e-976c-42f0-b2d8-61e88f1757d2"
@@ -342,7 +342,7 @@ def test_account_state_paths_are_hashed_deterministic_and_isolated(tmp_path: Pat
 
 
 def test_legacy_database_config_refuses_another_deeptrading_database():
-    with pytest.raises(ValueError, match="restricted to the ImageTracker database"):
+    with pytest.raises(ValueError, match="restricted to the Nektron Moments database"):
         load_legacy_db_config(
             environ={
                 "MYSQL_HOST": "shared-rds.example",

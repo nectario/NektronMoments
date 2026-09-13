@@ -7,7 +7,7 @@ require_environment
 cd_repository
 
 step "Calling the FastAPI health route in memory"
-"${IMAGETRACKER_PYTHON}" -B - <<'PY'
+"${NEKTRON_MOMENTS_PYTHON}" -B - <<'PY'
 import asyncio
 import json
 

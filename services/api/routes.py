@@ -63,7 +63,19 @@ from services.api.service import (
 
 Cursor = Annotated[str | None, Query(min_length=1, max_length=2048)]
 Limit = Annotated[int, Query(ge=1, le=200)]
-DeviceId = Annotated[UUID, Header(alias="X-ImageTracker-Device-Id")]
+def request_device_id(
+    current: Annotated[UUID | None, Header(alias="X-Nektron-Moments-Device-Id")] = None,
+    legacy: Annotated[UUID | None, Header(alias="X-ImageTracker-Device-Id")] = None,
+) -> UUID:
+    if current is not None and legacy is not None and current != legacy:
+        raise BadRequestError("Device headers disagree", code="DEVICE_HEADER_MISMATCH")
+    selected = current if current is not None else legacy
+    if selected is None:
+        raise BadRequestError("X-Nektron-Moments-Device-Id is required", code="DEVICE_REQUIRED")
+    return selected
+
+
+DeviceId = Annotated[UUID, Depends(request_device_id)]
 IdempotencyKey = Annotated[
     str,
     Header(

@@ -6,13 +6,13 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 usage() {
     cat <<'EOF'
-ImageTracker developer playground
+Nektron Moments developer playground
 
 Usage: ./scripts/play.sh <command> [arguments]
 
 Commands:
   setup          Create/update the ignored Python environment
-  cli [args...]  Run or forward ImageTracker CLI commands
+  cli [args...]  Run or forward Nektron Moments CLI commands
   test           Run tests, contract validation, and pip checks
   api            Call the FastAPI health route in memory
   aws            Verify stack status and the protected HTTP boundary

@@ -121,13 +121,13 @@ class LazyConfiguredPhase1Service:
                     )
                 except Exception as exc:
                     raise ServiceUnavailableError(
-                        "The ImageTracker data service is temporarily unavailable",
+                        "The Nektron Moments data service is temporarily unavailable",
                         code="DATA_SERVICE_UNAVAILABLE",
                     ) from exc
         adapter = self._adapter
         if adapter is None:  # pragma: no cover - guarded by the lock above
             raise ServiceUnavailableError(
-                "The ImageTracker data service is temporarily unavailable",
+                "The Nektron Moments data service is temporarily unavailable",
                 code="DATA_SERVICE_UNAVAILABLE",
             )
         return adapter

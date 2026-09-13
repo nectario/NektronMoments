@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from cli.imagetracker_cli.bulk import write_manifest_gzip  # noqa: E402
+from cli.nektron_moments_cli.bulk import write_manifest_gzip  # noqa: E402
 from services.bulk.manifest import (  # noqa: E402
     ManifestGuardrails,
     parse_manifest_gzip,
@@ -48,9 +48,11 @@ from services.data.database import (  # noqa: E402
     database_config_from_secret,
 )
 
+from services.common.branding import environment_value
+
 
 CANARY_NAMESPACE = UUID("c1638a72-77fc-4ba8-93f3-b95eec32aa1b")
-CANARY_LABEL = "imagetracker-bulk-db-canary"
+CANARY_LABEL = "nektron-moments-bulk-db-canary"
 DEFAULT_PARAMETER = "/imagetracker/prod/mysql"
 PARAMETER_PATTERN = re.compile(r"^/imagetracker/[a-z0-9][a-z0-9-]*/mysql$")
 EXPECTED_SCHEMA_TABLES = {
@@ -105,14 +107,14 @@ class CanaryTarget:
             prefix=prefix,
             device_key=f"{prefix}:device",
             source_key=f"{prefix}:source",
-            device_name=f"{run_text}: ImageTracker Bulk DB Canary Device",
-            source_name=f"{run_text}: ImageTracker Bulk DB Canary Source",
+            device_name=f"{run_text}: Nektron Moments Bulk DB Canary Device",
+            source_name=f"{run_text}: Nektron Moments Bulk DB Canary Source",
             idempotency_key=f"{run_text}:bulk-db-canary-import",
             request_sha256=hashlib.sha256(
                 f"{prefix}:request".encode("utf-8")
             ).hexdigest(),
             asset_hashes=hashes,  # type: ignore[arg-type]
-            local_locator_prefix=f"/__imagetracker_bulk_db_canary__/{run_text}/",
+            local_locator_prefix=f"/__nektron-moments_bulk_db_canary__/{run_text}/",
         )
         _validate_target(target)
         return target
@@ -179,7 +181,7 @@ def _validate_parameter_name(value: str) -> str:
     selected = value.strip()
     if not PARAMETER_PATTERN.fullmatch(selected):
         raise CanaryError(
-            "The database parameter must be an ImageTracker app credential path "
+            "The database parameter must be an Nektron Moments app credential path "
             "ending in /mysql."
         )
     return selected
@@ -211,7 +213,7 @@ def _validate_target(target: CanaryTarget) -> None:
     )
     _require(
         target.local_locator_prefix
-        == f"/__imagetracker_bulk_db_canary__/{run_text}/",
+        == f"/__nektron-moments_bulk_db_canary__/{run_text}/",
         "Canary Local locator prefix is invalid",
     )
 
@@ -226,7 +228,7 @@ def _bundled_ca(region: str) -> Path:
 def _connect_factory(config: DatabaseConnectionConfig, *, region: str) -> ConnectionFactory:
     url = config.url
     if url.database != "ImageTracker":
-        raise CanaryError("The canary credential is not scoped to ImageTracker")
+        raise CanaryError("The canary credential is not scoped to NektronMoments")
     ssl: dict[str, Any] | None = None
     if config.tls_enabled:
         ca = Path(config.ssl_ca) if config.ssl_ca else _bundled_ca(region)
@@ -326,7 +328,7 @@ def _preflight(
             cursor.execute("SET SESSION TRANSACTION READ ONLY")
             cursor.execute("START TRANSACTION READ ONLY")
             database_name = _scalar(cursor, "SELECT DATABASE() AS Value")
-            _require(database_name == "ImageTracker", "Canary connection escaped ImageTracker")
+            _require(database_name == "ImageTracker", "Canary connection escaped NektronMoments")
             local_infile = bool(
                 int(_scalar(cursor, "SELECT @@local_infile AS Value") or 0)
             )
@@ -337,7 +339,7 @@ def _preflight(
             accounts = list(cursor.fetchall())
             _require(
                 len(accounts) == 1,
-                "Bulk canary requires exactly one active ImageTracker account",
+                "Bulk canary requires exactly one active Nektron Moments account",
             )
             account_id = int(accounts[0]["Id"])
             account_public_id = UUID(str(accounts[0]["PublicId"]))
@@ -530,7 +532,7 @@ def _insert_control_rows(
                 "DeclaredEntryCount, AttemptCount, MaxAttempts, NextAttemptAtUtc, "
                 "QueuedAtUtc, CreatedAtUtc, UpdatedAtUtc) VALUES (%s, %s, %s, %s, %s, "
                 "%s, 1, 'Full', 'NotApplicable', 0, %s, 'ManifestNdjsonV1', 'Queued', "
-                "'Queued', 'imagetracker-bulk-db-canary', %s, %s, %s, 4, 0, 2, %s, %s, %s, %s)",
+                "'Queued', 'nektron-moments-bulk-db-canary', %s, %s, %s, 4, 0, 2, %s, %s, %s, %s)",
                 (
                     str(target.import_public_id),
                     preflight.account_id,
@@ -988,7 +990,7 @@ def _exercise(
     preflight: Preflight,
 ) -> dict[str, Any]:
     entries = _manifest_entries(target)
-    with tempfile.TemporaryDirectory(prefix="imagetracker-bulk-db-canary-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="nektron-moments-bulk-db-canary-") as temporary:
         directory = Path(temporary)
         input_path = directory / "manifest.ndjson.gz"
         csv_path = directory / "manifest.csv"
@@ -1066,7 +1068,7 @@ def _exercise(
         )
         repository.complete_result(
             claim,
-            bucket="imagetracker-bulk-db-canary",
+            bucket="nektron-moments-bulk-db-canary",
             object_key=f"manifests/canary/{target.run_id}/result.ndjson.gz",
             checksum_sha256=result_sha256,
             byte_size=result_bytes,
@@ -1103,7 +1105,7 @@ def _exercise(
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Run the self-cleaning ImageTracker bulk MySQL canary."
+        description="Run the self-cleaning Nektron Moments bulk MySQL canary."
     )
     parser.add_argument(
         "--apply",
@@ -1112,15 +1114,15 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--region",
-        default=os.environ.get("IMAGETRACKER_AWS_REGION", "us-east-2"),
+        default=environment_value("NEKTRON_MOMENTS_AWS_REGION", "us-east-2"),
     )
     parser.add_argument("--profile", help="Optional AWS profile from WSL config.")
     parser.add_argument(
         "--parameter",
         default=os.environ.get(
-            "IMAGETRACKER_DB_SECRET_PARAMETER", DEFAULT_PARAMETER
+            "NEKTRON_MOMENTS_DB_SECRET_PARAMETER", DEFAULT_PARAMETER
         ),
-        help="ImageTracker application MySQL SSM parameter.",
+        help="Nektron Moments application MySQL SSM parameter.",
     )
     return parser
 

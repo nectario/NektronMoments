@@ -78,7 +78,7 @@ class AccountRepository:
             )
         )
         if account is None:
-            raise NotFoundError("UserNotFound", "The ImageTracker account was not found")
+            raise NotFoundError("UserNotFound", "The Nektron Moments account was not found")
         return account
 
     def bootstrap(
@@ -122,7 +122,7 @@ class AccountRepository:
 
         if account.deleted_at_utc is not None or account.account_status != "Active":
             raise ConflictError(
-                "AccountInactive", "The ImageTracker account is not active"
+                "AccountInactive", "The Nektron Moments account is not active"
             )
         changed = False
         if email is not None and email != account.email:

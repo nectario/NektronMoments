@@ -7,14 +7,14 @@ require_environment
 cd_repository
 
 if (($# > 0)); then
-    exec "${IMAGETRACKER_CLI}" "$@"
+    exec "${NEKTRON_MOMENTS_CLI}" "$@"
 fi
 
 step "CLI help"
-"${IMAGETRACKER_CLI}" --help
+"${NEKTRON_MOMENTS_CLI}" --help
 
 step "CLI version"
-"${IMAGETRACKER_CLI}" version
+"${NEKTRON_MOMENTS_CLI}" version
 
 step "Local diagnostics"
-"${IMAGETRACKER_CLI}" doctor
+"${NEKTRON_MOMENTS_CLI}" doctor

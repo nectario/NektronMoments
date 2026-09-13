@@ -57,7 +57,7 @@ def _extract_gateway_claims(request: Request) -> Mapping[str, Any] | None:
     if not isinstance(authorizer, Mapping):
         return None
 
-    # HTTP API JWT authorizer (the deployed ImageTracker shape).
+    # HTTP API JWT authorizer (the deployed Nektron Moments shape).
     jwt = authorizer.get("jwt")
     if isinstance(jwt, Mapping) and isinstance(jwt.get("claims"), Mapping):
         return jwt["claims"]
@@ -84,13 +84,16 @@ def _identity_from_claims(claims: Mapping[str, Any]) -> AuthIdentity:
     groups = _normalize_groups(claims.get("cognito:groups"))
     normalized_groups = {group.casefold() for group in groups}
     explicit_admin = str(
-        claims.get("custom:imagetracker_admin")
+        claims.get("custom:nektron_moments_admin")
+        or claims.get("nektron-moments:admin")
+        or claims.get("custom:imagetracker_admin")
         or claims.get("imagetracker:admin")
         or ""
     ).casefold() in {"1", "true", "yes"}
     is_admin = explicit_admin or bool(
         normalized_groups
-        & {"imagetrackeradmin", "imagetracker-admin", "imagetracker_admin"}
+        & {"nektronmomentsadmin", "nektron-moments-admin", "nektron_moments_admin",
+           "imagetrackeradmin", "imagetracker-admin", "imagetracker_admin"}
     )
     return AuthIdentity(
         subject=subject,
@@ -131,7 +134,7 @@ async def require_admin(
 ) -> AuthIdentity:
     if not identity.is_admin:
         raise ForbiddenError(
-            "This operation requires an ImageTracker administrator",
+            "This operation requires a Nektron Moments administrator",
             code="ADMIN_REQUIRED",
         )
     return identity

@@ -1,4 +1,4 @@
-# ImageTracker shell toolkit
+# Nektron Moments shell toolkit
 
 These Bash scripts are intended for WSL Ubuntu and resolve the repository root
 without depending on the caller's working directory.
@@ -6,7 +6,7 @@ without depending on the caller's working directory.
 Start with:
 
 ```bash
-cd /mnt/c/Development/Projects/ImageTracker
+cd /mnt/c/Development/Projects/NektronMoments
 ./scripts/play.sh help
 ./scripts/play.sh check
 ```
@@ -59,7 +59,7 @@ Safety boundaries:
   memory and opens an explicitly read-only transaction. It prints counts only.
 - `bulk-db-canary.sh` is a WSL-only, self-cleaning acceptance test for the
   set-based MySQL importer. It is read-only by default. `--apply` requires
-  migration 014, exactly one active account, the SSM-scoped ImageTracker app
+  migration 014, exactly one active account, the SSM-scoped Nektron Moments app
   credential, and an empty UUID-prefixed synthetic target. It imports exactly
   four no-GPS `.nef` metadata rows, verifies two assets, three occurrences, one
   rejected row, zero jobs/locations/uploads, and terminal redelivery safety,
@@ -81,13 +81,13 @@ Safety boundaries:
   occurrences and their change rows set-wise, and commits once. Use
   `--admin-env-file` when the normal app credential deliberately lacks
   temporary-table privileges; values are loaded in memory and never printed.
-- No script invokes `ImageTracker.py`, `tag_location.py`, or `serverless deploy`.
+- No script invokes `NektronMoments.py`, `tag_location.py`, or `serverless deploy`.
 
 Override defaults only when intentionally checking another environment:
 
 ```bash
-IMAGETRACKER_AWS_REGION=us-east-2 \
-IMAGETRACKER_STACK_NAME=image-tracker-prod \
-IMAGETRACKER_DB_SECRET_PARAMETER=/imagetracker/prod/mysql \
+NEKTRON_MOMENTS_AWS_REGION=us-east-2 \
+NEKTRON_MOMENTS_STACK_NAME=image-tracker-prod \
+NEKTRON_MOMENTS_DB_SECRET_PARAMETER=/imagetracker/prod/mysql \
 ./scripts/play.sh check
 ```

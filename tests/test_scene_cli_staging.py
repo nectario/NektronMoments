@@ -13,16 +13,16 @@ from PIL import Image
 import pytest
 from typer.testing import CliRunner
 
-import cli.imagetracker_cli.app as cli_app_module
-from cli.imagetracker_cli.api_client import ApiClient, ApiError, ApiProblem
-from cli.imagetracker_cli.app import app
-from cli.imagetracker_cli.media import ScanResult, stream_sha256
-from cli.imagetracker_cli.scene_preview import (
+import cli.nektron_moments_cli.app as cli_app_module
+from cli.nektron_moments_cli.api_client import ApiClient, ApiError, ApiProblem
+from cli.nektron_moments_cli.app import app
+from cli.nektron_moments_cli.media import ScanResult, stream_sha256
+from cli.nektron_moments_cli.scene_preview import (
     SCENE_PREVIEW_CAPABILITY_VERSION,
     ScenePreviewError,
 )
-from cli.imagetracker_cli.state import LocalState, SourceBinding
-from cli.imagetracker_cli.sync import SyncEngine, SyncSummary
+from cli.nektron_moments_cli.state import LocalState, SourceBinding
+from cli.nektron_moments_cli.sync import SyncEngine, SyncSummary
 
 
 SOURCE_ID = "b4bc0eb8-b696-4af6-8af9-6dcc180e53a4"

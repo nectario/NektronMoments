@@ -1,4 +1,4 @@
-"""Persistence primitives for the ImageTracker media application."""
+"""Persistence primitives for the Nektron Moments media application."""
 
 from services.data.database import (
     DatabaseConfigurationError,

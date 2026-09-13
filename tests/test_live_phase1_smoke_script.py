@@ -113,7 +113,7 @@ def test_bucket_snapshot_is_content_sensitive_without_exposing_keys():
 def test_disposable_cognito_user_is_suppressed_and_confirmed():
     cognito = FakeCognito()
     state = DisposableCognitoUser(
-        email="imagetracker-smoke@example.com", password="private-password"
+        email="nektron-moments-smoke@example.com", password="private-password"
     )
 
     _create_confirmed_user(cognito, user_pool_id="pool", user_state=state)

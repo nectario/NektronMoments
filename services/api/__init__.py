@@ -1,1 +1,1 @@
-"""ImageTracker REST API."""
+"""Nektron Moments REST API."""

@@ -37,7 +37,7 @@ def test_playground_has_no_deploy_migration_or_importer_execution_path():
 
     assert "serverless deploy" not in executable_text
     assert "npm run deploy" not in executable_text
-    assert "ImageTracker.py" not in executable_text
+    assert "NektronMoments.py" not in executable_text
     assert "tag_location.py" not in executable_text
 
 
@@ -49,7 +49,7 @@ def test_playground_help_is_available_without_environment_setup():
         text=True,
     )
 
-    assert "ImageTracker developer playground" in result.stdout
+    assert "Nektron Moments developer playground" in result.stdout
     assert "No `play.sh` command" in result.stdout
     assert "excluded from this playground" in result.stdout
 
@@ -58,7 +58,7 @@ def test_migration_wrapper_is_explicit_and_never_runs_legacy_importer():
     text = (SCRIPTS / "migrate-db.sh").read_text(encoding="utf-8")
     assert "migrate_enrichment.py" in text
     assert '"$@"' in text
-    assert "ImageTracker.py" not in text
+    assert "NektronMoments.py" not in text
 
 
 def test_mysql_one_file_wrapper_is_explicit_and_not_in_playground():
@@ -92,7 +92,7 @@ def test_store_openai_key_updates_env_without_printing_secret(tmp_path: Path):
         env={
             **os.environ,
             "OPENAI_API_KEY": secret,
-            "IMAGETRACKER_ENV_FILE": str(env_file),
+            "NEKTRON_MOMENTS_ENV_FILE": str(env_file),
         },
     )
 

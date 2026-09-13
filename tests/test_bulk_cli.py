@@ -13,11 +13,11 @@ import httpx
 import pytest
 from typer.testing import CliRunner
 
-import cli.imagetracker_cli.app as cli_app_module
-from cli.imagetracker_cli.api_client import ApiClient, ApiError, ApiProblem
-from cli.imagetracker_cli.app import app
-from cli.imagetracker_cli.auth import TokenSet
-from cli.imagetracker_cli.bulk import (
+import cli.nektron_moments_cli.app as cli_app_module
+from cli.nektron_moments_cli.api_client import ApiClient, ApiError, ApiProblem
+from cli.nektron_moments_cli.app import app
+from cli.nektron_moments_cli.auth import TokenSet
+from cli.nektron_moments_cli.bulk import (
     BulkArtifactError,
     MANIFEST_SCHEMA_VERSION,
     RESULT_SCHEMA_VERSION,
@@ -26,9 +26,9 @@ from cli.imagetracker_cli.bulk import (
     read_result_header,
     write_manifest_gzip,
 )
-from cli.imagetracker_cli.state import LocalState
-from cli.imagetracker_cli.media import ScanResult
-from cli.imagetracker_cli.sync import SyncEngine
+from cli.nektron_moments_cli.state import LocalState
+from cli.nektron_moments_cli.media import ScanResult
+from cli.nektron_moments_cli.sync import SyncEngine
 from services.bulk.manifest import parse_manifest_gzip, write_result_gzip
 
 

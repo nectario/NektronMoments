@@ -4,7 +4,7 @@ set -Eeuo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/_common.sh"
 
 cd_repository
-export IMAGETRACKER_ENV_FILE="${IMAGETRACKER_ENV_FILE:-${REPOSITORY_ROOT}/.env}"
+export NEKTRON_MOMENTS_ENV_FILE="${NEKTRON_MOMENTS_ENV_FILE:-${IMAGETRACKER_ENV_FILE:-${REPOSITORY_ROOT}/.env}}"
 
 [[ -n "${OPENAI_API_KEY:-}" ]] || fail \
     "OPENAI_API_KEY is empty in this shell. Export it, then rerun this command."
@@ -17,7 +17,7 @@ from pathlib import Path
 import stat
 
 
-target = Path(os.environ["IMAGETRACKER_ENV_FILE"]).expanduser().resolve(strict=False)
+target = Path(os.environ["NEKTRON_MOMENTS_ENV_FILE"]).expanduser().resolve(strict=False)
 value = os.environ.get("OPENAI_API_KEY", "")
 if not value:
     raise SystemExit("OPENAI_API_KEY is empty")

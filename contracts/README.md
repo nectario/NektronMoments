@@ -1,6 +1,6 @@
-# ImageTracker API contracts
+# Nektron Moments API contracts
 
-`v1/openapi.json` is the source of truth for the first ImageTracker HTTP API. It
+`v1/openapi.json` is the source of truth for the first Nektron Moments HTTP API. It
 uses OpenAPI 3.0.3 so Swift, Kotlin, and Python client generators can consume it
 without relying on OpenAPI 3.1-only JSON Schema features.
 
@@ -11,8 +11,10 @@ without relying on OpenAPI 3.1-only JSON Schema features.
   values. `capturedAtLocal` is a local wall-clock value and is paired with time
   zone and/or offset metadata when known.
 - Authenticated client requests use a Cognito bearer token. Media and change-feed
-  reads also send `X-ImageTracker-Device-Id` so Local-only media can be filtered
-  to the owning device.
+  reads also send `X-Nektron-Moments-Device-Id` so Local-only media can be filtered
+  to the owning device. The legacy `X-ImageTracker-Device-Id` remains accepted.
+  Missing both returns `DEVICE_REQUIRED`; conflicting values return
+  `DEVICE_HEADER_MISMATCH`. New CLI versions send both names for older servers.
 - Every client mutation requires an `Idempotency-Key`. Reusing a key with an
   identical request replays the original response; reusing it with a different
   request returns `409 IDEMPOTENCY_KEY_REUSED`.

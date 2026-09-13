@@ -42,7 +42,7 @@ def problem_response(
     headers: dict[str, str] | None = None,
 ) -> JSONResponse:
     problem = ProblemDetails(
-        type=f"https://imagetracker.app/problems/{code.casefold().replace('_', '-')}",
+        type=f"https://nektron.ai/problems/moments/{code.casefold().replace('_', '-')}",
         title=title or _STATUS_TITLES.get(status, "Request failed"),
         status=status,
         code=code,
@@ -62,7 +62,7 @@ def problem_response(
 async def service_error_handler(request: Request, exc: ServiceError) -> JSONResponse:
     if exc.status_code >= 500:
         logger.error(
-            "ImageTracker service failure",
+            "Nektron Moments service failure",
             extra={
                 "request_id": _trace_id(request),
                 "path": request.url.path,
@@ -119,7 +119,7 @@ async def unexpected_error_handler(request: Request, exc: Exception) -> JSONResp
     # The exception itself belongs in structured server logs. Never expose it
     # to a consumer client, where it could reveal database or provider details.
     logger.exception(
-        "Unhandled ImageTracker API request failure",
+        "Unhandled Nektron Moments API request failure",
         extra={"request_id": _trace_id(request), "path": request.url.path},
     )
     return problem_response(
