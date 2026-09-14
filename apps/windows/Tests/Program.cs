@@ -40,4 +40,5 @@ Check(cache.TryGet("a", out _), "Hot entry retained");
 cache.Put("huge", "oversize", 100);
 Check(cache.Bytes <= 10 && !cache.TryGet("huge", out _), "Byte budget respected");
 cache.Clear(); Check(cache.Count == 0 && cache.Bytes == 0, "Cache clear");
-Console.WriteLine($"Native viewing/cache policy: {assertions} assertions passed.");
+ScrollPolicyTests.Run(Check);
+Console.WriteLine($"Native viewing/cache/scroll policy: {assertions} assertions passed.");

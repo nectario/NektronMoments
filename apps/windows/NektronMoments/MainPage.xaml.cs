@@ -46,6 +46,11 @@ public sealed partial class MainPage : Page
     {
         if (_ready) return;
         _ready = true;
+        var scrollCheck = Environment.GetEnvironmentVariable("NEKTRON_MOMENTS_SCROLL_CHECK_DIR");
+        if (!string.IsNullOrWhiteSpace(scrollCheck)) {
+            await VerifyPixelScrollingAsync(scrollCheck);
+            return;
+        }
         // Installer regression mode exercises the real release shell without
         // reading a photo library, connecting to WSL, or starting any jobs.
         var assetCheck = Environment.GetEnvironmentVariable("NEKTRON_MOMENTS_ASSET_CHECK_DIR");
@@ -63,7 +68,7 @@ public sealed partial class MainPage : Page
             await VerifyUiAsync();
 #endif
     }
-    public void Shutdown() { _lifetime.Cancel(); _search?.Cancel(); _thumbnailPrefetch?.Cancel(); _jobCancellation?.Cancel(); Viewer.Close(); _bridge.Dispose(); }
+    public void Shutdown() { _pixelScroll?.Dispose(); _lifetime.Cancel(); _search?.Cancel(); _thumbnailPrefetch?.Cancel(); _jobCancellation?.Cancel(); Viewer.Close(); _bridge.Dispose(); }
     private async Task ReloadAsync(bool refresh)
     {
         if (Viewer.IsOpen) ReturnToGallery();
@@ -99,6 +104,7 @@ public sealed partial class MainPage : Page
         if (generation != _generation) { _pagingGate.Release(); return; }
         if (!reset && !_hasMore) { _pagingGate.Release(); return; }
         if (reset) {
+            _pixelScroll?.Stop();
             _offset = 0; _highestVisible = 0; _thumbnailPrefetch?.Cancel();
             _activeQuery = SearchBox.Text; _activeSource = _sourceId;
             _activeMediaType = _mediaType; _activeAscending = _ascending;
@@ -319,7 +325,7 @@ public sealed partial class MainPage : Page
     private async Task ShowSettingsAsync()
     {
         await ShowDialogAsync("Nektron Moments", new TextBlock {
-            Text = "Nektron Moments 0.1.2 · Brand v1.3\n\nProcess metadata reads available dates, GPS, dimensions and hashes, then updates the library. Paid descriptions and address resolution remain separate.\n\nDouble-click: open in canvas\nCtrl+F: search · F5: refresh\nEsc: return to library\nLeft / Right: previous / next\nSpace: pause / resume slideshow\nF11: full screen\n\nThumbnail size and enlargement preferences are remembered. The slideshow interval is in the viewer's overflow menu.\n\nThis preview reuses your existing Ubuntu CLI sign-in without copying passwords to Windows.",
+            Text = $"Nektron Moments {typeof(App).Assembly.GetName().Version?.ToString(3)} · Brand v1.3\n\nProcess metadata reads available dates, GPS, dimensions and hashes, then updates the library. Paid descriptions and address resolution remain separate.\n\nDouble-click: open in canvas\nCtrl+F: search · F5: refresh\nEsc: return to library\nLeft / Right: previous / next\nSpace: pause / resume slideshow\nF11: full screen\n\nThe mouse wheel browses in gentle pixel increments. Thumbnail size and enlargement preferences are remembered. The slideshow interval is in the viewer's overflow menu.\n\nThis preview reuses your existing Ubuntu CLI sign-in without copying passwords to Windows.",
             TextWrapping = TextWrapping.Wrap, MaxWidth = 520,
         });
     }
@@ -358,7 +364,7 @@ public sealed partial class MainPage : Page
         DetailsSplit.OpenPaneLength = Math.Min(320, Math.Max(260, ActualWidth - 70));
         ResizeGallery();
     }
-    private void GalleryResized(object sender, SizeChangedEventArgs e) => ResizeGallery();
+    private void GalleryResized(object sender, SizeChangedEventArgs e) { _pixelScroll?.Stop(); ResizeGallery(); }
     private void ResizeGallery()
     {
         if (Gallery.ItemsPanelRoot is ItemsWrapGrid wrap) {

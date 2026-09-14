@@ -11,6 +11,14 @@ namespace NektronMoments;
 public sealed partial class MainPage
 {
     private readonly SemaphoreSlim _pagingGate = new(1);
+    private PixelWheelScroller? _pixelScroll;
+
+    private void GalleryLoaded(object sender, RoutedEventArgs e)
+    {
+        if (_pixelScroll is not null) return;
+        var scroll = AssetDescendants(Gallery).OfType<ScrollViewer>().FirstOrDefault();
+        if (scroll?.Content is UIElement) _pixelScroll = new PixelWheelScroller(scroll);
+    }
     private bool _priming, _controlsReady, _settingSize;
     private bool _expandedViewportCache;
     private double _thumbnailSize = 240;
@@ -92,6 +100,7 @@ public sealed partial class MainPage
     private async Task OpenCanvasAsync(bool slideshow)
     {
         if (Items.Count == 0) return;
+        _pixelScroll?.Stop();
         ++_selectionGeneration;
         _thumbnailPrefetch?.Cancel();
         DetailsSplit.IsPaneOpen = false;
@@ -101,6 +110,7 @@ public sealed partial class MainPage
     }
     private void ReturnToGallery()
     {
+        _pixelScroll?.Stop();
         Viewer.Close(); LibraryCanvas.Visibility = Visibility.Visible;
         if (_selected is not null) {
             var item = Items.FirstOrDefault(x => x.Key == _selected.Key);
@@ -148,6 +158,7 @@ public sealed partial class MainPage
     }
     private void ApplyThumbnailSize(double size, bool save)
     {
+        _pixelScroll?.Stop();
         _thumbnailSize = ViewingPolicy.ThumbnailWidth(size);
         _settingSize = true;
         ThumbnailSlider.Value = _thumbnailSize;

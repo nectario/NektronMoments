@@ -6,6 +6,7 @@ v1.3. Windows is a first-class client alongside the planned iOS and Android apps
 ## Install or run
 
 The traditional Windows installer is built with `./scripts/build-installer.ps1`.
+Completed setups are placed directly in `installer/NektronMoments.Setup.<version>.exe`.
 See [installer documentation](../../installer/README.md) for signed releases,
 per-user installation, bundled runtimes and the existing-workspace dependency.
 
@@ -49,6 +50,11 @@ registration, Nektron Moments is also available through Windows Start.
   pause/resume, F11 fullscreen, and clipboard/reveal-original commands.
 
 ### Adaptive budgets in 0.1.2
+
+As of 0.1.6, mouse-wheel movement is independent of these budgets and of thumbnail
+size: 48 logical pixels per notch, fractional deltas preserved, with bounded
+frame-based easing. Reversal discards pending travel. Direct touchpad/touch
+manipulation, scrollbar dragging and keyboard input retain native behavior.
 
 These are ceilings and look-ahead targets, not upfront allocations:
 

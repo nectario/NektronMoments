@@ -44,6 +44,7 @@ try {
     $savedWorkspace = Get-ItemPropertyValue -LiteralPath $preferencesKey -Name Workspace
     if ($savedWorkspace -ne $Workspace) { throw 'The workspace reconnect preference was not saved correctly.' }
     & (Join-Path $PSScriptRoot 'Test-PublishedAssets.ps1') -ApplicationDirectory $resolvedCanary -Render -RenderOutput (Join-Path $LogDirectory 'artwork')
+    & (Join-Path $PSScriptRoot 'Test-GalleryScrolling.ps1') -ApplicationDirectory $resolvedCanary -OutputDirectory (Join-Path $LogDirectory 'scrolling')
     if ($RequireSignature) {
         foreach ($name in @('NektronMoments.exe','NektronMoments.dll','unins000.exe')) {
             $signature = Get-AuthenticodeSignature -LiteralPath (Join-Path $resolvedCanary $name)
@@ -62,7 +63,7 @@ try {
     if ($app.MainWindowHandle -eq [IntPtr]::Zero -or -not $app.Responding) { throw 'The installed app did not show a responsive window.' }
     $manifestChecks = @{
         installed=$true; userScope=$true; reconnectPreference=$true; directLaunch=$true
-        signaturesRequired=[bool]$RequireSignature; canary=$resolvedCanary; artworkRendered=$true; sideBySide=$sideBySide
+        signaturesRequired=[bool]$RequireSignature; canary=$resolvedCanary; artworkRendered=$true; pixelScrolling=$true; sideBySide=$sideBySide
     }
 } finally {
     $env:NEKTRON_MOMENTS_WORKSPACE = $workspaceBefore

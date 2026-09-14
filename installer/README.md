@@ -26,10 +26,12 @@ the app EXE/DLL, verifies direct launch, compiles/signs the setup and uninstalle
 then tests a temporary install outside the checkout. It checks workspace reconnect,
 native launch, installed artwork rendering, signatures and uninstall before publishing the release.
 
-Output: `artifacts/releases/installers/NektronMoments.Setup.<version>.exe`,
+Output: `installer/NektronMoments.Setup.<version>.exe`,
 with JSON and SHA-256 sidecars. Completed versions are immutable; increment the
 Windows project version, Inno fallback and changelog for each new installer.
 Failed attempts remain under ignored `build/installer/` and may be retried.
+Older completed installers remain in `artifacts/releases/installers/`; both
+locations are checked to prevent reusing an already-published version.
 `-DiagnosticUnsigned` produces a diagnostic under `build/`, never a release.
 
 ## Installation behavior
@@ -68,6 +70,10 @@ available until the standalone native backend connection replaces this adapter.
   then opens the actual unpackaged EXE in a no-library diagnostic mode. It checks
   SVG URI loading, painted icon pixels, and separate ribbon/viewer sizes. The
   installed copy repeats these checks; a responsive empty window is insufficient.
+- `Test-GalleryScrolling.ps1` exercises the real wheel controller and native gallery
+  with 100,000 synthetic entries, without opening any user photos. It checks
+  canvas movement at all four thumbnail presets, intermediate positions,
+  fractional wheel input, reversal, bounded bursts, cancellation and virtualization.
 - `Generate-InstallerBranding.ps1` follows the sibling installer layout and draws
   the provided 256px/128px marks at native size; no logo redraw or bitmap upscaling.
 - `shared/WindowFocus.iss` reuses the sibling's bounded foreground pulse. The

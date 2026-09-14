@@ -25,3 +25,6 @@ apps/windows/**/*.user
 apps/windows/**/*.pfx
 apps/windows/**/*.cer
 artifacts/
+/installer/NektronMoments.Setup.*.exe
+/installer/NektronMoments.Setup.*.exe.json
+/installer/NektronMoments.Setup.*.exe.sha256

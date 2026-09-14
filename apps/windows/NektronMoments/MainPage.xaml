@@ -188,14 +188,14 @@
                         <TextBlock x:Name="ResultCount" VerticalAlignment="Center" FontSize="13" Foreground="{ThemeResource MomentsMutedBrush}"/>
                         <Button x:Name="SortButton" Content="Newest first ↓" HorizontalAlignment="Right" Click="ToggleSort" Padding="12,6"/>
                     </Grid>
-                    <GridView x:Name="Gallery" Grid.Row="3" ItemsSource="{x:Bind Items}" SizeChanged="GalleryResized"
+                    <GridView x:Name="Gallery" Grid.Row="3" ItemsSource="{x:Bind Items}" SizeChanged="GalleryResized" Loaded="GalleryLoaded"
                         DoubleTapped="GalleryDoubleTapped"
                         IsItemClickEnabled="True" ItemClick="MediaClicked" SelectionMode="Single"
                         ContainerContentChanging="GalleryContainerChanging"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                         ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="0,0,8,8">
                         <GridView.ItemsPanel>
-                            <ItemsPanelTemplate><ItemsWrapGrid x:Name="MediaWrap" Orientation="Horizontal" ItemWidth="242" ItemHeight="224" CacheLength="3"/></ItemsPanelTemplate>
+                            <ItemsPanelTemplate><ItemsWrapGrid x:Name="MediaWrap" Background="Transparent" Orientation="Horizontal" ItemWidth="242" ItemHeight="224" CacheLength="3"/></ItemsPanelTemplate>
                         </GridView.ItemsPanel>
                         <GridView.ItemContainerStyle>
                             <Style TargetType="GridViewItem">

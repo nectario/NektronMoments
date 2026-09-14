@@ -1,5 +1,15 @@
 # Nektron Moments Windows releases
 
+## [0.1.6] - 2026-09-13
+
+- Use gentle pixel-based gallery wheel scrolling: 48 DIP per notch, fractional
+  wheel support, smooth frame-based easing, bounded travel and immediate reversal.
+- Keep touch gestures, scrollbar dragging, keyboard navigation, virtualization
+  and the workstation thumbnail buffer independent of mouse-wheel speed.
+- Verify actual canvas displacement at every thumbnail preset on a 100,000-item
+  virtualized gallery, both before packaging and in the installed app.
+- Publish completed installers directly under `installer/`, with checksum sidecars.
+
 ## [0.1.5] - 2026-09-13
 
 - Match Nektron Write's compact toolbar rhythm: 24-DIP icons in 40-DIP-wide

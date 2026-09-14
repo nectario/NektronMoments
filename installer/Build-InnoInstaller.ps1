@@ -12,9 +12,10 @@ $changelog = Get-Content (Join-Path $repo 'CHANGELOG.md') -Raw
 if ($changelog -notmatch ('(?m)^## \[' + [regex]::Escape($version) + '\] - \d{4}-\d{2}-\d{2}')) {
     throw 'A matching dated changelog is required.'
 }
-$releaseRoot = Join-Path $repo 'artifacts/releases/installers'
+$releaseRoot = $PSScriptRoot
 $final = Join-Path $releaseRoot "NektronMoments.Setup.$version.exe"
-if (-not $DiagnosticUnsigned -and (Test-Path -LiteralPath $final)) {
+$legacyFinal = Join-Path $repo "artifacts/releases/installers/NektronMoments.Setup.$version.exe"
+if (-not $DiagnosticUnsigned -and ((Test-Path -LiteralPath $final) -or (Test-Path -LiteralPath $legacyFinal))) {
     throw "Release $version already exists. Increment the version; completed installers are immutable."
 }
 $compiler = $env:INNO_SETUP_COMPILER
@@ -57,6 +58,7 @@ try {
         throw 'Private configuration/state must never ship in the installer.'
     }
     & (Join-Path $PSScriptRoot 'Test-PublishedAssets.ps1') -ApplicationDirectory $payload -Render -RenderOutput (Join-Path $attempt 'published-artwork')
+    & (Join-Path $PSScriptRoot 'Test-GalleryScrolling.ps1') -ApplicationDirectory $payload -OutputDirectory (Join-Path $attempt 'published-scrolling')
     $publishedExe = Join-Path $payload 'NektronMoments.exe'
     $publishedVersion = (Get-Item -LiteralPath $publishedExe).VersionInfo
     if ($publishedVersion.ProductVersion -ne $version -or $publishedVersion.FileVersion -ne "$version.0") {
