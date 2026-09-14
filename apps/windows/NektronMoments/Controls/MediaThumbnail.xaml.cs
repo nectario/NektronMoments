@@ -37,7 +37,6 @@ public sealed partial class MediaThumbnail : UserControl
     }
     private async void Load()
     {
-        if (_resizePreview) return;
         var item = Item;
         if (item is null) return;
         var requestedPixels = TargetPixels;
@@ -50,6 +49,15 @@ public sealed partial class MediaThumbnail : UserControl
             Picture.Source = ready; Placeholder.Visibility = Visibility.Collapsed; _displayedKey = key;
             _displayedIdentity = identity; _displayedPixels = requestedPixels;
             return;
+        }
+        if (_resizePreview) {
+            foreach (var pixels in new uint[] { 512, 1024 }) {
+                if (pixels < requestedPixels || !Decoded.TryGet(ThumbnailService.Shared.Key(item, pixels), out ready)) continue;
+                Picture.Source = ready; Placeholder.Visibility = Visibility.Collapsed;
+                _displayedIdentity = identity; _displayedPixels = pixels;
+                return;
+            }
+            return; // New I/O/decode waits until the gesture ends; warm bitmaps can still appear.
         }
         var loading = new CancellationTokenSource();
         _loading = loading;

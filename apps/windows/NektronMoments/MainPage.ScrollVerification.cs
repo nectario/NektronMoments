@@ -31,6 +31,9 @@ public sealed partial class MainPage
             Gallery.UpdateLayout(); GalleryLoaded(this, new RoutedEventArgs());
             if (_pixelScroll is null) throw new InvalidOperationException("Pixel controller was not attached to the native gallery.");
             var scroll = _pixelScroll.Scroll;
+            SyncGalleryScrollbar();
+            if (!GalleryScrollbar.IsEnabled || GalleryScrollbar.Maximum <= 0) throw new InvalidOperationException("Scrollbar range was not populated after loading the gallery.");
+            _pixelScroll.WheelDistance = 48; _pixelScroll.ScrollbarGlideMs = 120;
             if (_nativeWheel is null || _nativeWheel.RegisteredWindows == 0) throw new InvalidOperationException("Native wheel input bridge is not attached.");
             scroll.ViewChanged += Observe;
             try {
@@ -81,21 +84,39 @@ public sealed partial class MainPage
                 if (_nativeWheel.RouteWheel(-120, new Windows.Foundation.Point(bounds.X + 20, bounds.Y + 20), control: true)) errors.Add("Control-wheel was intercepted.");
                 var realized = Gallery.ItemsPanelRoot?.Children.Count ?? 0;
                 if (realized is <= 0 or > 1000) errors.Add("Gallery virtualization is not bounded.");
-                var verticalBar = AssetDescendants(scroll).OfType<Microsoft.UI.Xaml.Controls.Primitives.ScrollBar>().First(bar => bar.Orientation == Orientation.Vertical);
+                await Position(500);
+                SeekGalleryScrollbar(4000, true); await Task.Delay(35);
+                var dragIntermediate = scroll.VerticalOffset;
+                if (dragIntermediate <= 500 || dragIntermediate >= 4000) errors.Add("Scrollbar drag did not glide through intermediate positions.");
+                SeekGalleryScrollbar(1500, true); await Task.Delay(25);
+                SeekGalleryScrollbar(2500, false); await Settle();
+                if (Math.Abs(scroll.VerticalOffset - 2500) > 1) errors.Add("Scrollbar did not settle at the latest drag target.");
+                _pixelScroll.WheelDistance = 12; await Position(500);
+                _pixelScroll.QueueWheel(-120); await Settle();
+                if (Math.Abs(scroll.VerticalOffset - 512) > 1) errors.Add("Slow wheel setting was not applied.");
+                _pixelScroll.WheelDistance = 144; await Position(500);
+                _pixelScroll.QueueWheel(-120); await Settle();
+                if (Math.Abs(scroll.VerticalOffset - 644) > 1) errors.Add("Fast wheel setting was not applied.");
+                SeekGalleryScrollbar(2500, false); await Settle();
+                if (Math.Abs(scroll.VerticalOffset - 2500) > 1) errors.Add("Wheel speed changed absolute scrollbar seeking.");
+                _pixelScroll.WheelDistance = 48;
+                var verticalBar = GalleryScrollbar;
                 var barThumb = AssetDescendants(verticalBar).OfType<Microsoft.UI.Xaml.Controls.Primitives.Thumb>().First(thumb => thumb.Name == "VerticalThumb");
                 if (verticalBar.ActualWidth < 23 || barThumb.ActualWidth < 13) errors.Add("Gallery scrollbar is still too narrow.");
                 await Position(540); ApplyThumbnailSize(240, false); await Task.Delay(200);
                 var sizing = JsonSerializer.SerializeToElement(await MeasureThumbnailSizingAsync());
                 if (barThumb.ActualWidth < 13) errors.Add("Native scrollbar update reset the requested thumb width.");
-                if (sizing.GetProperty("mutationsDuringDrag").GetInt64() != 0) errors.Add("Slider dragging caused grid re-layouts.");
-                if (sizing.GetProperty("updateCadenceHz").GetDouble() < 50 || sizing.GetProperty("frameGapP95Ms").GetDouble() > 20) errors.Add("Slider update/render timing missed the 50 Hz target.");
+                if (sizing.GetProperty("liveReflowUpdates").GetInt64() < 5) errors.Add("Thumbnails did not rearrange live while dragging.");
+                if (sizing.GetProperty("mutationsDuringDrag").GetInt64() != 0) errors.Add("Live composition reflow rebuilt the native grid.");
+                if (sizing.GetProperty("liveColumnCounts").GetArrayLength() < 3) errors.Add("Live resizing did not change the grid column count.");
+                if (sizing.GetProperty("visibleContainers").GetInt32() > 1000) errors.Add("Live resize lost virtualization.");
                 await CaptureAssetShellAsync((FrameworkElement)App.MainWindowInstance!.Content, output, "pixel-scroll.png");
                 if (barThumb.ActualWidth < 13) errors.Add("Scrollbar width regressed after rendering.");
                 await File.WriteAllTextAsync(Path.Combine(output, "scroll.json"), JsonSerializer.Serialize(new {
                     passed = errors.Count == 0, errors, samples, burstEnd, reverseAt, reverseEnd,
                     itemCount = Gallery.Items.Count, realizedContainers = realized, inputSurface = _pixelScroll.InputSurface,
                     nativeInputWindows = _nativeWheel.RegisteredWindows,
-                    scrollbarWidth = verticalBar.ActualWidth, scrollbarThumbWidth = barThumb.ActualWidth, sizing,
+                    scrollbarWidth = verticalBar.ActualWidth, scrollbarThumbWidth = barThumb.ActualWidth, dragIntermediate, independentWheelSpeeds = true, sizing,
                     snapPoints = scroll.VerticalSnapPointsType.ToString(), libraryConnected = false,
                 }));
             } finally { scroll.ViewChanged -= Observe; }

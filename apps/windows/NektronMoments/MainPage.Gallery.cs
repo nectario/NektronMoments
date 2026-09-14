@@ -13,6 +13,7 @@ public sealed partial class MainPage
     private readonly SemaphoreSlim _pagingGate = new(1);
     private PixelWheelScroller? _pixelScroll;
     private NativeGalleryWheelBridge? _nativeWheel;
+    private long _scrollExtentToken, _scrollViewportToken;
 
     private void GalleryLoaded(object sender, RoutedEventArgs e)
     {
@@ -30,11 +31,19 @@ public sealed partial class MainPage
                     panning.Width = panning.MinWidth = 12; panning.MinHeight = 48; panning.Margin = new Thickness(6, 0, 6, 0);
                 }
             }
-            _pixelScroll = new PixelWheelScroller(scroll);
+            _pixelScroll = new PixelWheelScroller(scroll) {
+                WheelDistance = UserPreferences.Number("wheelPixelsPerNotch", 48),
+                ScrollbarGlideMs = Math.Clamp(UserPreferences.Number("scrollbarGlideMs", 120), 0, 250),
+            };
+            scroll.ViewChanged += (_, _) => SyncGalleryScrollbar();
+            scroll.SizeChanged += (_, _) => SyncGalleryScrollbar();
+            _scrollExtentToken = scroll.RegisterPropertyChangedCallback(ScrollViewer.ScrollableHeightProperty, (_, _) => SyncGalleryScrollbar());
+            _scrollViewportToken = scroll.RegisterPropertyChangedCallback(ScrollViewer.ViewportHeightProperty, (_, _) => SyncGalleryScrollbar());
+            SyncGalleryScrollbar(); StyleGalleryScrollbar();
             if (App.MainWindowInstance is { } window)
-                _nativeWheel = new NativeGalleryWheelBridge(window, Gallery,
+                _nativeWheel = new NativeGalleryWheelBridge(window, GalleryScrollHost,
                     () => !Viewer.IsOpen && !_dialog && LibraryCanvas.Visibility == Visibility.Visible,
-                    delta => { if (!_isThumbnailSizing) _pixelScroll.QueueWheel(delta); });
+                    delta => { if (!_isThumbnailSizing) { _scrollbarTracking = false; _pixelScroll.QueueWheel(delta); } });
         }
     }
     private bool _priming, _controlsReady, _settingSize;

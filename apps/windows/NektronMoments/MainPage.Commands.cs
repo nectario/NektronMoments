@@ -101,6 +101,7 @@ public sealed partial class MainPage
                 case "details": ToggleDetails(sender, e); break;
                 case "theme": ChangeTheme(sender, e); break;
                 case "fullscreen": ToggleFullScreen(); break;
+                case "scroll-settings": await ShowScrollingSettingsAsync(); break;
                 case "slideshow": await OpenCanvasAsync(true); break;
                 case "pause": await Viewer.ToggleSlideshowAsync(); break;
                 case "stop-slideshow": Viewer.Stop(); break;

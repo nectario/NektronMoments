@@ -66,7 +66,7 @@ canary passed on the fresh-install path. The side-by-side guard remains conditio
 and was not exercised on this host because no existing uninstall registration
 was visible. The user's running 0.1.3 EXE remained byte-identical to its original.
 Installer signature is valid, timestamped, and issued to Nektron, Inc.; exact
-SHA-256 and size are recorded in `installer/releases/0.1.5.json`.
+SHA-256 and size are recorded in `docs/releases/0.1.5.json`.
 
 Private build evidence remains under ignored `build/installer/0.1.4/`. Diagnostic
 artwork snapshots contain no user photos. No paid enrichment, cloud deployment,

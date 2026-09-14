@@ -6,6 +6,7 @@ public sealed class PixelScrollMotion
     public const double PixelsPerNotch = 48;
     public const double MaximumPendingPixels = 144;
     public const double MaximumPixelsPerSecond = 720;
+    public double WheelDistance { get; set; } = PixelsPerNotch;
     private int _direction;
     public double Position { get; private set; }
     public double Target { get; private set; }
@@ -24,12 +25,13 @@ public sealed class PixelScrollMotion
         if (wheelDelta == 0 || !double.IsFinite(actualPosition) || !double.IsFinite(maximum)) return;
         maximum = Math.Max(0, maximum);
         Position = Math.Clamp(actualPosition, 0, maximum);
-        var distance = -(double)wheelDelta / 120d * PixelsPerNotch; // Preserve high-resolution wheel fractions.
+        var rate = Math.Clamp(double.IsFinite(WheelDistance) ? WheelDistance : PixelsPerNotch, 12, 144);
+        var distance = -(double)wheelDelta / 120d * rate; // Preserve high-resolution wheel fractions.
         var direction = Math.Sign(distance);
         var basis = IsActive && direction == _direction ? Target : Position;
         // Reversing discards the old destination, so the photo never drifts the wrong way.
         Target = Math.Clamp(Math.Clamp(basis + distance,
-            Position - MaximumPendingPixels, Position + MaximumPendingPixels), 0, maximum);
+            Position - rate * 3, Position + rate * 3), 0, maximum);
         _direction = direction;
         IsActive = Math.Abs(Target - Position) > .01;
     }

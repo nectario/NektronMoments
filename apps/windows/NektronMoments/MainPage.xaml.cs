@@ -70,7 +70,14 @@ public sealed partial class MainPage : Page
             await VerifyUiAsync();
 #endif
     }
-    public void Shutdown() { _nativeWheel?.Dispose(); _pixelScroll?.Dispose(); _lifetime.Cancel(); _sizingFinished?.TrySetCanceled(); _search?.Cancel(); _thumbnailPrefetch?.Cancel(); _jobCancellation?.Cancel(); Viewer.Close(); _bridge.Dispose(); }
+    public void Shutdown() {
+        if (_pixelScroll is { } scroller) {
+            scroller.Scroll.UnregisterPropertyChangedCallback(ScrollViewer.ScrollableHeightProperty, _scrollExtentToken);
+            scroller.Scroll.UnregisterPropertyChangedCallback(ScrollViewer.ViewportHeightProperty, _scrollViewportToken);
+        }
+        _nativeWheel?.Dispose(); _pixelScroll?.Dispose(); _lifetime.Cancel(); _sizingFinished?.TrySetCanceled();
+        _search?.Cancel(); _thumbnailPrefetch?.Cancel(); _jobCancellation?.Cancel(); Viewer.Close(); _bridge.Dispose();
+    }
     private async Task ReloadAsync(bool refresh)
     {
         if (Viewer.IsOpen) ReturnToGallery();
@@ -376,14 +383,14 @@ public sealed partial class MainPage : Page
             if (_isThumbnailSizing) return;
             var width = Gallery.ActualWidth - Gallery.Padding.Left - Gallery.Padding.Right;
             if (width > 0) {
-                var columns = Math.Max(1, (int)((width - 8) / _thumbnailSize));
-                var itemWidth = Math.Max(100, (width - 16) / columns);
+                // Continuous tile dimensions let the grid rearrange as the slider moves.
+                var itemWidth = Math.Clamp(_thumbnailSize, 100, Math.Max(100, width - 16));
                 if (Math.Abs(wrap.ItemWidth - itemWidth) > .01) {
                     ++_thumbnailLayoutChanges;
                     wrap.ItemWidth = itemWidth;
                     wrap.ItemHeight = itemWidth * .72 + 54;
                 }
-                wrap.CacheLength = _thumbnailLayoutCommit ? .5 : _expandedViewportCache ? PerformanceProfile.Current.ViewportCache : 1;
+                wrap.CacheLength = _thumbnailLayoutCommit || _isThumbnailSizing ? .5 : _expandedViewportCache ? PerformanceProfile.Current.ViewportCache : 1;
             }
         }
     }

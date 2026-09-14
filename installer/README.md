@@ -26,8 +26,9 @@ the app EXE/DLL, verifies direct launch, compiles/signs the setup and uninstalle
 then tests a temporary install outside the checkout. It checks workspace reconnect,
 native launch, installed artwork rendering, signatures and uninstall before publishing the release.
 
-Output: `installer/NektronMoments.Setup.<version>.exe`,
-with JSON and SHA-256 sidecars. Completed versions are immutable; increment the
+Output: `installer/NektronMoments.Setup.<version>.exe` only.
+Generated JSON and SHA-256 records are stored separately in `artifacts/releases/metadata/`;
+tracked release summaries live in `docs/releases/`. Completed versions are immutable; increment the
 Windows project version, Inno fallback and changelog for each new installer.
 Failed attempts remain under ignored `build/installer/` and may be retried.
 Older completed installers remain in `artifacts/releases/installers/`; both
@@ -75,7 +76,8 @@ available until the standalone native backend connection replaces this adapter.
   canvas movement at all four thumbnail presets, intermediate positions,
   fractional wheel input, reversal, bounded bursts, cancellation and virtualization.
 - `Generate-InstallerBranding.ps1` follows the sibling installer layout and draws
-  the provided 256px/128px marks at native size; no logo redraw or bitmap upscaling.
+  the provided marks without redrawing them. The header uses the approved transparent
+  mark directly, filling its image area without a padded light square.
 - `shared/WindowFocus.iss` reuses the sibling's bounded foreground pulse. The
   wizard is not permanently topmost.
 - The installed app, app DLL, setup and uninstaller are timestamp-signed by

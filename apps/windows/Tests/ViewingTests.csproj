@@ -3,6 +3,7 @@
  <ItemGroup>
   <Compile Include="../NektronMoments/Models/ViewingPolicy.cs" Link="ViewingPolicy.cs"/>
   <Compile Include="../NektronMoments/Models/PixelScrollMotion.cs" Link="PixelScrollMotion.cs"/>
+  <Compile Include="../NektronMoments/Models/ScrollbarGlide.cs" Link="ScrollbarGlide.cs"/>
   <Compile Include="../NektronMoments/Services/WeightedCache.cs" Link="WeightedCache.cs"/>
  </ItemGroup>
 </Project>

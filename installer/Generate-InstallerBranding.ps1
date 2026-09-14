@@ -15,11 +15,12 @@ Add-Type -AssemblyName System.Drawing
 $identityRoot = Join-Path $RepoRoot 'Brand_Images\NektronMoments_Complete_Brand_Package_v1_3'
 $app256Path = Join-Path $identityRoot 'brand\app\light\png\256.png'
 $app128Path = Join-Path $identityRoot 'brand\app\light\png\128.png'
+$headerMarkPath = Join-Path $identityRoot 'brand\mark\light\png\128.png'
 $setupIconSource = Join-Path $identityRoot 'brand\app\NektronMoments.ico'
 $assetsRoot = Join-Path $PSScriptRoot 'assets'
 $sharedRoot = Join-Path $PSScriptRoot 'shared'
 
-foreach ($required in @($app256Path, $app128Path, $setupIconSource)) {
+foreach ($required in @($app256Path, $app128Path, $headerMarkPath, $setupIconSource)) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
         throw "Required Nektron Moments identity asset is missing: $required"
     }
@@ -137,20 +138,9 @@ try {
         $wizard.Dispose()
     }
 
-    # Header artwork: exact 128 px mark centered on the native 240 × 240 canvas.
-    $smallPair = New-GradientCanvas -Width 240 -Height 240 `
-        -Start ([System.Drawing.ColorTranslator]::FromHtml('#FFFFFF')) `
-        -End ([System.Drawing.ColorTranslator]::FromHtml('#E2F5FC'))
-    $small = $smallPair[0]
-    $smallGraphics = $smallPair[1]
-    try {
-        $smallGraphics.DrawImageUnscaled($app128, 56, 56)
-        Save-Png -Bitmap $small -Path (Join-Path $assetsRoot 'NektronMoments.SmallImage.Light.png')
-    }
-    finally {
-        $smallGraphics.Dispose()
-        $small.Dispose()
-    }
+    # Use the approved transparent mark directly. It fills the header image area
+    # instead of being reduced inside an opaque, padded square.
+    Copy-Item -LiteralPath $headerMarkPath -Destination (Join-Path $assetsRoot 'NektronMoments.SmallImage.Light.png') -Force
 
     # Full installer atmosphere: the 256 px identity remains unscaled.
     $backPair = New-GradientCanvas -Width 1242 -Height 900 `

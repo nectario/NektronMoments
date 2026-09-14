@@ -46,5 +46,22 @@ internal static class ScrollPolicyTests
         check(!PixelScrollMotion.HandlesInput(true, true, false, false, -120), "Horizontal wheel remains native");
         check(!PixelScrollMotion.HandlesInput(true, false, true, false, -120), "Control modifier remains native");
         check(!PixelScrollMotion.HandlesInput(true, false, false, true, -120), "Shift modifier remains native");
+        var custom = new PixelScrollMotion { WheelDistance = 12 }; custom.Queue(-120, 500, 10000); Settle(custom);
+        check(custom.Position == 512, "Independent slow wheel speed");
+        custom.WheelDistance = 144; custom.Queue(-120, 500, 10000); Settle(custom);
+        check(custom.Position == 644, "Independent fast wheel speed");
+        var glide = new ScrollbarGlide();
+        glide.Retarget(500, 4000, 10000, 120);
+        check(glide.Advance(.02, 10000) is > 500 and < 4000, "Absolute scrollbar target is smoothed");
+        glide.Retarget(glide.Position, 1500, 10000, 120);
+        glide.Advance(.03, 10000); glide.Retarget(glide.Position, 2500, 10000, 120);
+        glide.Advance(.2, 10000);
+        check(glide.Position == 2500 && !glide.IsActive, "Latest scrollbar target wins; bounded settling");
+        glide.Retarget(500, 20000, 10000, 0);
+        check(glide.Position == 10000 && !glide.IsActive, "Immediate mode and extent bounds");
+        glide.Retarget(500, -200, 10000, 120); glide.Advance(.2, 10000);
+        check(glide.Position == 0, "Scrollbar clamps its top boundary");
+        glide.Retarget(500, 4000, 10000, 120); glide.Stop();
+        check(!glide.IsActive, "Scrollbar glide cancellation");
     }
 }

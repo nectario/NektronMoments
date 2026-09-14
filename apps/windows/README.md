@@ -51,10 +51,12 @@ registration, Nektron Moments is also available through Windows Start.
 
 ### Adaptive budgets in 0.1.2
 
-As of 0.1.6, mouse-wheel movement is independent of these budgets and of thumbnail
-size: 48 logical pixels per notch, fractional deltas preserved, with bounded
-frame-based easing. Reversal discards pending travel. Direct touchpad/touch
-manipulation, scrollbar dragging and keyboard input retain native behavior.
+Mouse-wheel movement is independent of these budgets and of thumbnail size.
+View → Scrolling adjusts wheel pixels per notch (48 by default) separately from
+scrollbar glide time (120 ms by default). Thumb dragging retains the full-library
+position range and eases toward the latest target without queueing old positions.
+Thumbnail resizing now rearranges rows/columns during the gesture, with coalesced
+layout, short reposition animations and a bounded set of realized controls.
 
 These are ceilings and look-ahead targets, not upfront allocations:
 

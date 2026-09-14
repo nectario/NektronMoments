@@ -11,6 +11,7 @@ public sealed partial class MainPage
     {
         var original = _thumbnailSize;
         var starts = new List<double>();
+        var columnCounts = new HashSet<int>();
         var renderCosts = new List<double>();
         var completed = new TaskCompletionSource();
         var watch = Stopwatch.StartNew();
@@ -25,6 +26,8 @@ public sealed partial class MainPage
             var elapsed = watch.Elapsed.TotalMilliseconds;
             if (elapsed >= 4300) { completed.TrySetResult(); return; }
             ThumbnailSlider.Value = 112 + 368 * (.5 - .5 * Math.Cos(elapsed / 1800 * Math.PI));
+            if (Gallery.ItemsPanelRoot is Microsoft.UI.Xaml.Controls.ItemsWrapGrid wrap)
+                columnCounts.Add(Math.Max(1, (int)((Gallery.ActualWidth - Gallery.Padding.Left - Gallery.Padding.Right - 8) / wrap.ItemWidth)));
             if (elapsed >= 300) starts.Add(elapsed); // Initial setup isn't steady-state dragging.
         }
         void Rendered(object? sender, RenderedEventArgs args) {
@@ -49,6 +52,7 @@ public sealed partial class MainPage
             frameGapP95Ms = gaps.Length == 0 ? 0 : gaps[(int)(.95 * (gaps.Length - 1))],
             frameGapMaxMs = gaps.LastOrDefault(), renderCostMaxMs = renderCosts.Count == 0 ? 0 : renderCosts.Max(),
             mutationsDuringDrag, commitMs, galleryItems = Gallery.Items.Count, startQpcMs, endQpcMs, sliderEventsAttached = _sliderEventsAttached,
+            liveColumnCounts = _liveColumns.Order().ToArray(), liveReflowUpdates = _liveReflowUpdates,
             visibleContainers = Gallery.ItemsPanelRoot?.Children.Count,
             // This is app update/render instrumentation, not a hardware presentation trace.
             measurement = "Distinct XAML rendering targets and XAML frame costs; not display-present FPS",
@@ -68,6 +72,14 @@ public sealed partial class MainPage
         try {
             var result = await MeasureThumbnailSizingAsync();
             await File.WriteAllTextAsync(Path.Combine(output, "resize.json"), JsonSerializer.Serialize(result));
+            var savedSize = _thumbnailSize;
+            BeginThumbnailSizing();
+            foreach (var size in new[] { 144, 240, 336, 432 }) {
+                ThumbnailSlider.Value = size;
+                await Task.Delay(220);
+                await CaptureAssetShellAsync((FrameworkElement)App.MainWindowInstance!.Content, output, $"live-{size}.png");
+            }
+            CommitThumbnailSizing(); ApplyThumbnailSize(savedSize, false); Services.UserPreferences.Set("thumbnailSize", savedSize);
         } catch (Exception error) {
             CommitThumbnailSizing();
             await File.WriteAllTextAsync(Path.Combine(output, "resize.json"), JsonSerializer.Serialize(new { error = error.Message }));

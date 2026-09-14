@@ -1,0 +1,22 @@
+{
+  "product": "Nektron Moments",
+  "version": "0.1.9",
+  "file": "installer/NektronMoments.Setup.0.1.9.exe",
+  "bytes": 73266944,
+  "sha256": "E2DC9E4509BFAE876A23F6DBE33352FC07E42EE461A518165B40A50294369775",
+  "signature": "Valid",
+  "publisher": "Nektron, Inc.",
+  "timestamped": true,
+  "testsPassed": 414,
+  "nativePolicyAssertions": 95,
+  "assetFilesVerified": 739,
+  "renderedIconChecks": 38,
+  "installedGalleryItemsTested": 100000,
+  "independentWheelSpeeds": true,
+  "scrollbarLatestTargetGlide": "Passed",
+  "liveColumnCounts": [2, 3, 4, 5, 6, 7, 8, 9],
+  "nativeGridMutationsDuringDrag": 0,
+  "transparentHeaderCornerAlpha": 0,
+  "signedInstallLaunchUninstallCanary": "Passed",
+  "metadataLocation": "artifacts/releases/metadata"
+}

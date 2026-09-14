@@ -1,5 +1,17 @@
 # Nektron Moments Windows releases
 
+## [0.1.9] - 2026-09-14
+
+- Enlarge the installer header identity and remove the padded square using the
+  approved transparent mark directly.
+- Add independent wheel-distance and scrollbar-glide settings under View → Scrolling.
+- Smooth native scrollbar dragging toward the latest absolute position, without
+  queuing obsolete drag targets or applying wheel sensitivity to thumb seeking.
+- Rearrange visible photo surfaces into rows/columns live during thumbnail sizing,
+  using compositor surfaces/animations and committing native layout on release.
+- Keep only installer executables beside the installer sources; move generated
+  checksums/JSON to artifacts/releases/metadata and tracked history to docs/releases.
+
 ## [0.1.8] - 2026-09-13
 
 - Keep the wider scrollbar thumb after native indicator updates and thumbnail

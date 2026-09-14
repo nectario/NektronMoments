@@ -14,6 +14,8 @@ public sealed class PixelWheelScroller : IDisposable
     private readonly ScrollViewer _scroll;
     private readonly UIElement _content;
     private readonly PixelScrollMotion _motion = new();
+    private readonly ScrollbarGlide _glide = new();
+    private bool _usingGlide;
     private readonly PointerEventHandler _pressed;
     private readonly KeyEventHandler _key;
     private long _lastFrame;
@@ -21,6 +23,8 @@ public sealed class PixelWheelScroller : IDisposable
     public ScrollViewer Scroll => _scroll;
     public bool IsAnimating => _rendering;
     public string InputSurface => _content.GetType().Name;
+    public double WheelDistance { get => _motion.WheelDistance; set => _motion.WheelDistance = Math.Clamp(value, 12, 144); }
+    public double ScrollbarGlideMs { get; set; } = 120;
 
     public PixelWheelScroller(ScrollViewer scroll)
     {
@@ -52,6 +56,7 @@ public sealed class PixelWheelScroller : IDisposable
     public void QueueWheel(int delta)
     {
         if (_disposed) return;
+        if (_usingGlide) Stop();
         _motion.Queue(delta, _scroll.VerticalOffset, _scroll.ScrollableHeight);
         if (!_motion.IsActive) { Stop(); return; }
         if (_rendering) return;
@@ -59,20 +64,30 @@ public sealed class PixelWheelScroller : IDisposable
         CompositionTarget.Rendering += Frame;
         _rendering = true;
     }
+    public void SeekFromScrollbar(double target)
+    {
+        if (_disposed) return;
+        if (!_usingGlide) Stop();
+        _usingGlide = true;
+        _glide.Retarget(_scroll.VerticalOffset, target, _scroll.ScrollableHeight, ScrollbarGlideMs);
+        if (!_glide.IsActive) { _scroll.ChangeView(null, _glide.Position, null, true); Stop(); return; }
+        if (_rendering) return;
+        _lastFrame = Stopwatch.GetTimestamp(); CompositionTarget.Rendering += Frame; _rendering = true;
+    }
     private void Frame(object? sender, object args)
     {
         var now = Stopwatch.GetTimestamp();
         var seconds = (now - _lastFrame) / (double)Stopwatch.Frequency;
         _lastFrame = now;
-        var next = _motion.Advance(seconds, _scroll.ScrollableHeight);
+        var next = _usingGlide ? _glide.Advance(seconds, _scroll.ScrollableHeight) : _motion.Advance(seconds, _scroll.ScrollableHeight);
         // One bounded frame loop, with no additional native wheel animation or row snapping.
         _scroll.ChangeView(null, next, null, disableAnimation: true);
-        if (!_motion.IsActive) Stop();
+        if (_usingGlide ? !_glide.IsActive : !_motion.IsActive) Stop();
     }
     public void Stop()
     {
         if (_rendering) CompositionTarget.Rendering -= Frame;
-        _rendering = false; _motion.Reset(_scroll.VerticalOffset);
+        _rendering = false; _motion.Reset(_scroll.VerticalOffset); _glide.Stop(); _usingGlide = false;
     }
     private void ManipulationStarted(object? sender, object args) => Stop();
     private void Unloaded(object sender, RoutedEventArgs args) => Stop();

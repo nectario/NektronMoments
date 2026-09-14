@@ -51,6 +51,8 @@
                     <MenuFlyoutSeparator/>
                     <MenuFlyoutItem x:Name="ThemeMenu" Text="Switch to dark theme" Tag="theme" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsThemeImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
                     <MenuFlyoutItem Text="Full screen (F11)" Tag="fullscreen" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsFullscreenImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutSeparator/>
+                    <MenuFlyoutItem Text="Scrolling…" Tag="scroll-settings" Click="MenuAction"/>
                 </MenuBarItem>
                 <MenuBarItem Title="Playback">
                     <MenuFlyoutItem Text="Start slideshow" Tag="slideshow" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsPlayImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
@@ -188,12 +190,14 @@
                         <TextBlock x:Name="ResultCount" VerticalAlignment="Center" FontSize="13" Foreground="{ThemeResource MomentsMutedBrush}"/>
                         <Button x:Name="SortButton" Content="Newest first ↓" HorizontalAlignment="Right" Click="ToggleSort" Padding="12,6"/>
                     </Grid>
-                    <GridView x:Name="Gallery" Grid.Row="3" ItemsSource="{x:Bind Items}" SizeChanged="GalleryResized" Loaded="GalleryLoaded"
+                    <Grid x:Name="GalleryScrollHost" Grid.Row="3">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="24"/></Grid.ColumnDefinitions>
+                    <GridView x:Name="Gallery" ItemsSource="{x:Bind Items}" SizeChanged="GalleryResized" Loaded="GalleryLoaded"
                         DoubleTapped="GalleryDoubleTapped"
                         IsItemClickEnabled="True" ItemClick="MediaClicked" SelectionMode="Single"
                         ContainerContentChanging="GalleryContainerChanging"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        ScrollViewer.VerticalScrollBarVisibility="Visible" Padding="0,0,28,8">
+                        ScrollViewer.VerticalScrollBarVisibility="Hidden" Padding="0,0,8,8">
                         <GridView.Resources>
                             <x:Double x:Key="ScrollBarSize">24</x:Double>
                             <x:Double x:Key="ScrollBarVerticalThumbMinWidth">14</x:Double>
@@ -233,6 +237,11 @@
                             <Button x:Name="LoadMoreButton" Content="Load more photos" Click="LoadMore" Margin="0,12" HorizontalAlignment="Center" Visibility="Collapsed"/>
                         </GridView.Footer>
                     </GridView>
+                    <Grid x:Name="SizingCanvas" Background="{ThemeResource MomentsWindowBrush}" Visibility="Collapsed" IsHitTestVisible="False"/>
+                    <ScrollBar x:Name="GalleryScrollbar" Grid.Column="1" Orientation="Vertical" Width="24"
+                        IndicatorMode="MouseIndicator" Scroll="GalleryScrollbarChanged" Loaded="GalleryScrollbarLoaded"
+                        AutomationProperties.Name="Browse library position"/>
+                    </Grid>
                     <StackPanel x:Name="EmptyState" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12" MaxWidth="400">
                         <ContentControl Width="54" Height="54" HorizontalAlignment="Center" ContentTemplate="{ThemeResource MomentsIconLibrary}"/>
                         <TextBlock x:Name="EmptyTitle" Text="Bringing your library into view" FontSize="22" FontWeight="SemiBold" TextAlignment="Center"/>

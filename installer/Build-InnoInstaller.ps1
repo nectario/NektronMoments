@@ -119,8 +119,11 @@ try {
         canary='Install, reconnect, native launch, signatures and uninstall passed'
         dependency='Existing Ubuntu WSL / CLI workspace'; publishedUtc=[DateTime]::UtcNow.ToString('o')
     }
-    $record | ConvertTo-Json | Set-Content -LiteralPath "$final.json" -Encoding utf8
-    "$sha  $([IO.Path]::GetFileName($final))" | Set-Content -LiteralPath "$final.sha256" -Encoding ascii
+    $metadataRoot = Join-Path $repo 'artifacts/releases/metadata'
+    New-Item -ItemType Directory -Force -Path $metadataRoot | Out-Null
+    $metadataBase = Join-Path $metadataRoot ([IO.Path]::GetFileName($final))
+    $record | ConvertTo-Json | Set-Content -LiteralPath "$metadataBase.json" -Encoding utf8
+    "$sha  $([IO.Path]::GetFileName($final))" | Set-Content -LiteralPath "$metadataBase.sha256" -Encoding ascii
     Write-Output "Signed release: $final"
     Write-Output "SHA-256: $sha"
 } finally { Pop-Location }
