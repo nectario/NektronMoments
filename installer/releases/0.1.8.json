@@ -1,0 +1,22 @@
+{
+  "product": "Nektron Moments",
+  "version": "0.1.8",
+  "file": "installer/NektronMoments.Setup.0.1.8.exe",
+  "bytes": 73258904,
+  "sha256": "32A9C6E8F071C6CFC6C01A7EB28846706DE274060049AE6C30704820BF474612",
+  "signature": "Valid",
+  "publisher": "Nektron, Inc.",
+  "timestamped": true,
+  "testsPassed": 414,
+  "nativePolicyAssertions": 88,
+  "assetFilesVerified": 739,
+  "renderedIconChecks": 38,
+  "nativeInputWindows": 5,
+  "installedGalleryItemsTested": 100000,
+  "installedScrollbarActualWidth": 23.5472,
+  "installedThumbActualWidth": 13.5849,
+  "resizeGridMutationsDuringDrag": 0,
+  "hardMinimum50DisplayedFpsVerified": false,
+  "physicalInputGestureConfirmed": false,
+  "signedInstallLaunchUninstallCanary": "Passed"
+}

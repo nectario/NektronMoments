@@ -12,12 +12,30 @@ public sealed partial class MainPage
 {
     private readonly SemaphoreSlim _pagingGate = new(1);
     private PixelWheelScroller? _pixelScroll;
+    private NativeGalleryWheelBridge? _nativeWheel;
 
     private void GalleryLoaded(object sender, RoutedEventArgs e)
     {
         if (_pixelScroll is not null) return;
         var scroll = AssetDescendants(Gallery).OfType<ScrollViewer>().FirstOrDefault();
-        if (scroll?.Content is UIElement) _pixelScroll = new PixelWheelScroller(scroll);
+        if (scroll?.Content is UIElement) {
+            foreach (var bar in AssetDescendants(scroll).OfType<ScrollBar>().Where(bar => bar.Orientation == Orientation.Vertical)) {
+                bar.Width = bar.MinWidth = 24;
+                bar.ApplyTemplate();
+                foreach (var thumb in AssetDescendants(bar).OfType<Thumb>().Where(thumb => thumb.Name == "VerticalThumb")) {
+                    thumb.Width = thumb.MinWidth = 14; thumb.MinHeight = 48;
+                    thumb.Template = (ControlTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load("<ControlTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" TargetType=\"Thumb\"><Border CornerRadius=\"7\" Background=\"{TemplateBinding Background}\"/></ControlTemplate>");
+                }
+                foreach (var panning in AssetDescendants(bar).OfType<Border>().Where(part => part.Name == "VerticalPanningThumb")) {
+                    panning.Width = panning.MinWidth = 12; panning.MinHeight = 48; panning.Margin = new Thickness(6, 0, 6, 0);
+                }
+            }
+            _pixelScroll = new PixelWheelScroller(scroll);
+            if (App.MainWindowInstance is { } window)
+                _nativeWheel = new NativeGalleryWheelBridge(window, Gallery,
+                    () => !Viewer.IsOpen && !_dialog && LibraryCanvas.Visibility == Visibility.Visible,
+                    delta => { if (!_isThumbnailSizing) _pixelScroll.QueueWheel(delta); });
+        }
     }
     private bool _priming, _controlsReady, _settingSize;
     private bool _expandedViewportCache;
@@ -44,7 +62,7 @@ public sealed partial class MainPage
         var generation = _generation;
         try {
             await Task.Delay(80, _lifetime.Token);
-            while (generation == _generation && _hasMore && !Viewer.IsOpen &&
+            while (generation == _generation && _hasMore && !Viewer.IsOpen && !_isThumbnailSizing &&
                    Items.Count - _highestVisible < PerformanceProfile.Current.RecordBuffer) {
                 var before = Items.Count;
                 await LoadPageAsync(false);
@@ -60,7 +78,7 @@ public sealed partial class MainPage
     }
     private void ScheduleThumbnailWarm()
     {
-        if (!_ready || Viewer.IsOpen || Items.Count == 0) return;
+        if (!_ready || Viewer.IsOpen || _isThumbnailSizing || Items.Count == 0) return;
         var start = Math.Max(0, _highestVisible - 96);
         var end = Math.Min(Items.Count, _highestVisible + PerformanceProfile.Current.ThumbnailAhead);
         var pixels = MediaThumbnail.TargetPixels;
@@ -154,6 +172,7 @@ public sealed partial class MainPage
     }
     private void ThumbnailSizeChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
+        if (_isThumbnailSizing) { PreviewThumbnailSizing(e.NewValue); return; }
         if (_controlsReady && !_settingSize) ApplyThumbnailSize(e.NewValue, true);
     }
     private void ApplyThumbnailSize(double size, bool save)

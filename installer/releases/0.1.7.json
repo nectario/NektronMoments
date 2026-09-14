@@ -1,0 +1,14 @@
+{
+  "product": "Nektron Moments",
+  "version": "0.1.7",
+  "file": "installer/NektronMoments.Setup.0.1.7.exe",
+  "bytes": 73251944,
+  "sha256": "2F94C9D5F147436D103C6EDDF6B81DFAD02731699013E8CE3CFA4ECB12A3F46D",
+  "signature": "Valid",
+  "publisher": "Nektron, Inc.",
+  "timestamped": true,
+  "testsPassed": 414,
+  "nativePolicyAssertions": 88,
+  "supersededBy": "0.1.8",
+  "notes": "Later verification found native indicator updates could reset the thumb width."
+}

@@ -57,7 +57,7 @@ public sealed partial class MainPage
                 await Task.Delay(650);
                 shell.UpdateLayout();
                 CheckCommandSizes(RibbonBar, "ribbon", 24, 48, 9);
-                CheckCommandSizes(Viewer, "viewer", 32, 56, 5);
+                CheckCommandSizes(Viewer, "viewer", 24, 48, 5);
                 var icons = AssetDescendants(shell).OfType<ImageIcon>()
                     .Where(icon => icon.ActualWidth > 0 && icon.ActualHeight > 0 && icon.Visibility == Visibility.Visible).ToArray();
                 if (icons.Length < 17) errors.Add($"{theme}: missing expected shell/viewer icon controls ({icons.Length}).");

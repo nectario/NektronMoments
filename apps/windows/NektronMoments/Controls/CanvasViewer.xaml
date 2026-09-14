@@ -12,20 +12,20 @@
      Checked="UpscaleChanged" Unchecked="UpscaleChanged" ToolTipService.ToolTip="When off, one original image pixel is never stretched beyond one screen pixel."/>
    </CommandBar.Content>
    <AppBarButton Label="Back to library" Click="BackClick" ToolTipService.ToolTip="Back to library (Esc)">
-    <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsGridImage}"/></AppBarButton.Icon>
+    <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsGridImage}"/></AppBarButton.Icon>
    </AppBarButton>
    <AppBarSeparator/>
    <AppBarButton Label="Previous" Click="PreviousClick" ToolTipService.ToolTip="Previous photo (Left)">
-    <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsPreviousImage}"/></AppBarButton.Icon>
+    <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsPreviousImage}"/></AppBarButton.Icon>
    </AppBarButton>
    <AppBarButton Label="Next" Click="NextClick" ToolTipService.ToolTip="Next photo (Right)">
-    <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsNextImage}"/></AppBarButton.Icon>
+    <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsNextImage}"/></AppBarButton.Icon>
    </AppBarButton>
    <AppBarButton x:Name="PlayButton" Label="Start slideshow" Click="PlayClick" ToolTipService.ToolTip="Start or pause slideshow (Space)">
-    <AppBarButton.Icon><ImageIcon Width="32" Height="32" x:Name="PlayIcon" Source="{ThemeResource MomentsPlayImage}"/></AppBarButton.Icon>
+    <AppBarButton.Icon><ImageIcon Width="24" Height="24" x:Name="PlayIcon" Source="{ThemeResource MomentsPlayImage}"/></AppBarButton.Icon>
    </AppBarButton>
    <AppBarButton Label="Stop slideshow" Click="StopClick" ToolTipService.ToolTip="Stop slideshow">
-    <AppBarButton.Icon><ImageIcon Width="32" Height="32" Source="{ThemeResource MomentsStopImage}"/></AppBarButton.Icon>
+    <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsStopImage}"/></AppBarButton.Icon>
    </AppBarButton>
    <CommandBar.SecondaryCommands>
     <AppBarButton Label="3-second interval" Tag="3" Click="IntervalClick"/>
@@ -41,7 +41,7 @@
    <TextBlock x:Name="Unavailable" Visibility="Collapsed" TextWrapping="Wrap" MaxWidth="440"
     HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
     Foreground="{ThemeResource MomentsMutedBrush}"/>
-   <ProgressRing x:Name="LoadingIndicator" IsActive="False" Width="32" Height="32"
+   <ProgressRing x:Name="LoadingIndicator" IsActive="False" Width="24" Height="24"
     HorizontalAlignment="Right" VerticalAlignment="Top" Margin="12"/>
   </Grid>
   <Grid Grid.Row="2" Padding="18,10" Background="{ThemeResource MomentsSurfaceBrush}">

@@ -1,5 +1,25 @@
 # Nektron Moments Windows releases
 
+## [0.1.8] - 2026-09-13
+
+- Keep the wider scrollbar thumb after native indicator updates and thumbnail
+  reflow, with a rounded native Thumb template and a minimum layout width.
+- Pause metadata appends even when a slider drag starts during a batch update.
+- Verify the final, rendered scrollbar dimensions rather than only its initial setting.
+
+## [0.1.7] - 2026-09-13
+
+- Route native wheel input across the gallery, including the scrollbar and gutter,
+  before the built-in WinUI scroll path can add a row/page movement.
+- Preview thumbnail sizing with compositor transforms while dragging; defer
+  reflow, new decoding, metadata appends and preference writes until release.
+- Preserve the visible photo anchor during the release reflow and reuse sufficiently
+  detailed thumbnails when reducing size.
+- Widen the gallery scrollbar to 24 DIP with a 14-DIP thumb; reduce slideshow
+  icons to 24 DIP and icon buttons to 40 DIP.
+- Expand release checks to cover native routing scope, scrollbar dimensions,
+  resize layout churn and measured XAML update/render timing.
+
 ## [0.1.6] - 2026-09-13
 
 - Use gentle pixel-based gallery wheel scrolling: 48 DIP per notch, fractional

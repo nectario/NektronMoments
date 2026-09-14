@@ -63,12 +63,14 @@ public sealed partial class MainPage : Page
         await ReloadAsync(false);
         _libraryReadyMs = _startup.ElapsedMilliseconds;
         _ = ExpandViewportCacheAsync();
+        var resizeCheck = Environment.GetEnvironmentVariable("NEKTRON_MOMENTS_RESIZE_CHECK_DIR");
+        if (!string.IsNullOrWhiteSpace(resizeCheck)) await VerifyPhotoResizeAsync(resizeCheck);
 #if DEBUG
         if (File.Exists(Path.Combine(_bridge.Workspace, "build", "verify-windows-ui.flag")))
             await VerifyUiAsync();
 #endif
     }
-    public void Shutdown() { _pixelScroll?.Dispose(); _lifetime.Cancel(); _search?.Cancel(); _thumbnailPrefetch?.Cancel(); _jobCancellation?.Cancel(); Viewer.Close(); _bridge.Dispose(); }
+    public void Shutdown() { _nativeWheel?.Dispose(); _pixelScroll?.Dispose(); _lifetime.Cancel(); _sizingFinished?.TrySetCanceled(); _search?.Cancel(); _thumbnailPrefetch?.Cancel(); _jobCancellation?.Cancel(); Viewer.Close(); _bridge.Dispose(); }
     private async Task ReloadAsync(bool refresh)
     {
         if (Viewer.IsOpen) ReturnToGallery();
@@ -117,9 +119,12 @@ public sealed partial class MainPage : Page
                 mediaType = _activeMediaType, offset = _offset, limit = reset ? 120 : PerformanceProfile.Current.PageSize, ascending = _activeAscending,
             }, _lifetime.Token);
             if (generation != _generation) return;
+            if (_isThumbnailSizing && _sizingFinished is { } sizing) await sizing.Task.WaitAsync(_lifetime.Token);
+            if (generation != _generation) return;
             if (reset) Items.Clear();
             var added = 0;
             foreach (var item in page.Items) {
+                if (_isThumbnailSizing && _sizingFinished is { } activeSizing) await activeSizing.Task.WaitAsync(_lifetime.Token);
                 if (generation != _generation) return;
                 Items.Add(item);
                 if (++added % 64 == 0) await Task.Delay(1);
@@ -368,12 +373,17 @@ public sealed partial class MainPage : Page
     private void ResizeGallery()
     {
         if (Gallery.ItemsPanelRoot is ItemsWrapGrid wrap) {
-            var width = Gallery.ActualWidth;
+            if (_isThumbnailSizing) return;
+            var width = Gallery.ActualWidth - Gallery.Padding.Left - Gallery.Padding.Right;
             if (width > 0) {
                 var columns = Math.Max(1, (int)((width - 8) / _thumbnailSize));
-                wrap.ItemWidth = Math.Max(100, (width - 16) / columns);
-                wrap.ItemHeight = wrap.ItemWidth * .72 + 54;
-                wrap.CacheLength = _expandedViewportCache ? PerformanceProfile.Current.ViewportCache : 1;
+                var itemWidth = Math.Max(100, (width - 16) / columns);
+                if (Math.Abs(wrap.ItemWidth - itemWidth) > .01) {
+                    ++_thumbnailLayoutChanges;
+                    wrap.ItemWidth = itemWidth;
+                    wrap.ItemHeight = itemWidth * .72 + 54;
+                }
+                wrap.CacheLength = _thumbnailLayoutCommit ? .5 : _expandedViewportCache ? PerformanceProfile.Current.ViewportCache : 1;
             }
         }
     }
