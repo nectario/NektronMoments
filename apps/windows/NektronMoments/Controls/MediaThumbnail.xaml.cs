@@ -21,11 +21,18 @@ public sealed partial class MediaThumbnail : UserControl
     private static DispatcherQueue? _dispatcher;
     private static ThumbnailPresentationQueue? _presentation;
     private static readonly ThumbnailWorkGate BackgroundWork = new();
+    private static readonly Task NeverPromoted = new TaskCompletionSource().Task;
+    public static async Task WarmEncodedAsync(MediaItem item, uint pixels, CancellationToken token)
+    {
+        await BackgroundWork.WaitAsync(NeverPromoted, token).ConfigureAwait(false);
+        await ThumbnailService.Shared.LoadAsync(item, pixels, token, prefetch: true).ConfigureAwait(false);
+    }
     private static bool _thumbInputHeld;
     public static void NotifyScrollInput() => BackgroundWork.Pulse();
     public static bool IsInputActive => BackgroundWork.IsPaused;
     public static void SetThumbInput(bool held) {
         _thumbInputHeld = held; BackgroundWork.Hold(held || _resizePreview);
+        if (_presentation is not null) _presentation.InteractionActive = held;
     }
     private static long _preparationCount, _readyCacheHits, _uiDecodeAttempts;
     public static int PendingLoads => Preparing.Count;
@@ -68,7 +75,14 @@ public sealed partial class MediaThumbnail : UserControl
             if (!_dispatcher.HasThreadAccess) throw new InvalidOperationException("Thumbnail cache belongs to another UI thread.");
         }
         _dispatcher = dispatcher;
-        _presentation ??= new ThumbnailPresentationQueue(dispatcher);
+        _presentation ??= new ThumbnailPresentationQueue(dispatcher, () => IsInputActive);
+    }
+    public static async Task WarmDisplayAsync(PreparedThumbnail bitmap, CancellationToken token)
+    {
+        if (_presentation is null) return;
+        try { await _presentation.Enqueue(bitmap, () => !token.IsCancellationRequested, token, background: true); }
+        catch (OperationCanceledException) { }
+        catch (Exception) { /* Optional warming cannot fail a foreground photo. */ }
     }
     public static void ShutdownPresentation() => _presentation?.Close();
 

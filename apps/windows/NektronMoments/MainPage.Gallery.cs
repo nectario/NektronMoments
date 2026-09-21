@@ -13,6 +13,7 @@ public sealed partial class MainPage
     private readonly SemaphoreSlim _catalogGate = new(1);
     private PixelWheelScroller? _pixelScroll;
     private NativeGalleryWheelBridge? _nativeWheel;
+    private readonly CompositorRefreshLease _scrollRefresh = new();
 
     private void GalleryLoaded(object sender, RoutedEventArgs e)
     {
@@ -26,11 +27,13 @@ public sealed partial class MainPage
                 foreach (var thumb in AssetDescendants(bar).OfType<Thumb>().Where(thumb => thumb.Name == "VerticalThumb")) {
                     _galleryThumb = thumb;
                     thumb.DragStarted += (_, _) => {
+                        _scrollRefresh.Begin();
                         _browseThumbTracking = true; MediaThumbnail.SetThumbInput(true);
                         DiagnosticTrace.Thumb("Start", scroll.VerticalOffset);
                     };
                     thumb.DragDelta += (_, _) => DiagnosticTrace.Thumb("Delta", scroll.VerticalOffset);
                     thumb.DragCompleted += (_, _) => {
+                        _scrollRefresh.End();
                         DiagnosticTrace.Thumb("Stop", scroll.VerticalOffset);
                         _browseThumbTracking = false; MediaThumbnail.SetThumbInput(false); QueueGalleryWork();
                     };
@@ -52,7 +55,7 @@ public sealed partial class MainPage
             scroll.SizeChanged += (_, _) => QueueGalleryWork();
             if (App.MainWindowInstance is { } window)
                 _nativeWheel = new NativeGalleryWheelBridge(window, GalleryScrollHost,
-                    () => IsHitTestVisible && !Viewer.IsOpen && !_dialog && LibraryCanvas.Visibility == Visibility.Visible,
+                    () => IsHitTestVisible && !_settingsOpen && !Viewer.IsOpen && !_dialog && LibraryCanvas.Visibility == Visibility.Visible,
                     QueueGalleryWheel);
         }
     }
@@ -65,14 +68,26 @@ public sealed partial class MainPage
     private CancellationTokenSource? _thumbnailPrefetch, _sizeChange;
     private bool _galleryWorkQueued;
     private Microsoft.UI.Dispatching.DispatcherQueueTimer? _previewCounterTimer;
+    private readonly System.Collections.Concurrent.ConcurrentQueue<(PreparedThumbnail Bitmap, CancellationToken Token)> _displayWarm = new();
+    private int _previewCounterTicks;
+    private CancellationTokenSource? _displayWarmPlan;
+    private void CancelDisplayWarm()
+    {
+        _displayWarmPlan?.Cancel(); _displayWarmPlan?.Dispose(); _displayWarmPlan = null;
+        while (_displayWarm.TryDequeue(out _)) { }
+    }
     private void StartPreviewCounter()
     {
         if (_previewCounterTimer is null) {
             _previewCounterTimer = DispatcherQueue.CreateTimer();
-            _previewCounterTimer.Interval = TimeSpan.FromMilliseconds(500);
+            _previewCounterTimer.Interval = TimeSpan.FromMilliseconds(100);
             _previewCounterTimer.Tick += (_, _) => {
-                if (!_browseThumbTracking && !_isThumbnailSizing && _pixelScroll?.IsAnimating != true) UpdateBrowseCounter();
-                if (_lifetime.IsCancellationRequested || (_thumbnailPrefetch is null && MediaThumbnail.PendingLoads == 0))
+                if (!MediaThumbnail.IsInputActive && !_settingsOpen && !_isThumbnailSizing && !Viewer.IsOpen) {
+                    for (var index = 0; index < 16 && _displayWarm.TryDequeue(out var warm); index++)
+                        if (!warm.Token.IsCancellationRequested) _ = MediaThumbnail.WarmDisplayAsync(warm.Bitmap, warm.Token);
+                }
+                if (++_previewCounterTicks % 5 == 0 && !_browseThumbTracking && !_isThumbnailSizing && _pixelScroll?.IsAnimating != true) UpdateBrowseCounter();
+                if (_lifetime.IsCancellationRequested || (_thumbnailPrefetch is null && MediaThumbnail.PendingLoads == 0 && _displayWarm.IsEmpty))
                     _previewCounterTimer.Stop();
             };
         }
@@ -87,7 +102,7 @@ public sealed partial class MainPage
     }
     private async void QueueGalleryWork()
     {
-        if (_galleryWorkQueued || !_ready || !UsesBrowseProjection || Viewer.IsOpen || _browseThumbTracking || _isThumbnailSizing || _reorderActive || _orderCommitActive ||
+        if (_galleryWorkQueued || _settingsOpen || !_ready || !UsesBrowseProjection || Viewer.IsOpen || _browseThumbTracking || _isThumbnailSizing || _reorderActive || _orderCommitActive ||
             Items.Count == 0 || _lifetime.IsCancellationRequested) return;
         _galleryWorkQueued = true;
         var version = _browseVersion;
@@ -140,6 +155,9 @@ public sealed partial class MainPage
         _warmStart = first; _warmEnd = last; _warmPixels = pixels; _warmGeneration = _generation;
         _warmDirection = _browseDirection; _warmExposedCount = BrowseItems.Count;
         _thumbnailPrefetch?.Cancel();
+        CancelDisplayWarm();
+        _displayWarmPlan = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
+        var displayToken = _displayWarmPlan.Token;
         var cancellation = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
         _thumbnailPrefetch = cancellation;
         StartPreviewCounter();
@@ -152,15 +170,25 @@ public sealed partial class MainPage
         async Task WarmAsync() {
             try {
                 var indexes = BrowsingPolicy.PrefetchIndexes(catalog.Count, first, last, exposedCount, direction, maximum);
+                var displayIndexes = new HashSet<int>(indexes.Take(BrowsingPolicy.DisplayWarmCount(indexes.Length, PerformanceProfile.PhysicalBytes)));
+                var displayWarming = Environment.GetEnvironmentVariable("NEKTRON_MOMENTS_DISPLAY_WARMING") != "0";
                 await Parallel.ForEachAsync(indexes, new ParallelOptions {
                     MaxDegreeOfParallelism = profile.PrefetchWorkers,
                     CancellationToken = cancellation.Token,
                 }, async (index, token) => {
                     try {
                         var item = catalog[index];
+                        if (!displayIndexes.Contains(index)) {
+                            // Deep lookahead stays compressed. It must not create
+                            // thousands of native bitmap memory-pressure objects.
+                            await MediaThumbnail.WarmEncodedAsync(item, pixels, token);
+                            return;
+                        }
                         // Ready images are cached independently of XAML tile creation
                         // and independently of the 200-photo scrollbar projection.
-                        await MediaThumbnail.PrepareAsync(item, pixels, token, prefetch: true);
+                        var prepared = await MediaThumbnail.PrepareAsync(item, pixels, token, prefetch: true);
+                        if (prepared is not null && !token.IsCancellationRequested && !displayToken.IsCancellationRequested && displayWarming)
+                            _displayWarm.Enqueue((prepared, displayToken));
                     } catch (OperationCanceledException) { }
                     catch (Exception) { /* One unsupported original must not stop useful lookahead. */ }
                 });
@@ -183,6 +211,7 @@ public sealed partial class MainPage
     }
     private async Task OpenCanvasAsync(bool slideshow, MediaItem? requestedItem = null)
     {
+        CloseSettings();
         if (Items.Count == 0 || _reorderActive || _orderCommitActive) return;
         // Resolve the clicked identity before changing any layout. A recycled or
         // removed tile must never silently open the first photo instead.
@@ -195,11 +224,13 @@ public sealed partial class MainPage
         _selected = selected;
         _thumbnailPrefetch?.Cancel();
         DetailsSplit.IsPaneOpen = false;
+        CancelDisplayWarm();
         LibraryCanvas.Visibility = Visibility.Collapsed;
         await Viewer.OpenAsync(index, slideshow);
     }
     private async void ReturnToGallery()
     {
+        CloseSettings();
         _pixelScroll?.Stop();
         Viewer.Close(); LibraryCanvas.Visibility = Visibility.Visible;
         var version = _browseVersion;
@@ -222,11 +253,12 @@ public sealed partial class MainPage
     private async void StartSlideshow(object sender, RoutedEventArgs e) => await OpenCanvasAsync(true);
     private async void ToggleDetails(object sender, RoutedEventArgs e)
     {
+        CloseSettings();
         DetailsSplit.IsPaneOpen = !DetailsSplit.IsPaneOpen;
         if (DetailsSplit.IsPaneOpen && _selected is { } item) await LoadSelectedDetailsAsync(item);
         else CancelSelectionDetails();
     }
-    private bool ViewerOwnsKeys() => Viewer.IsOpen && !_dialog &&
+    private bool ViewerOwnsKeys() => Viewer.IsOpen && !_settingsOpen && !_dialog &&
         FocusManager.GetFocusedElement(XamlRoot) is not TextBox and not ComboBox;
     private async void ViewerPreviousKey(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) {
         if (ViewerOwnsKeys()) { args.Handled = true; await Viewer.MoveAsync(-1); }

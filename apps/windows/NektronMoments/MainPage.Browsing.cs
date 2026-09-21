@@ -29,6 +29,7 @@ public sealed partial class MainPage
             CancelScrollbarGesture();
             ++_browseVersion;
             _thumbnailPrefetch?.Cancel();
+            CancelDisplayWarm();
             _warmStart = -1; _warmGeneration = -1;
             _highestVisible = 0; _browseDirection = 1;
             BrowseItems.ReplaceAll(Items.Take(Math.Min(Items.PreparedPrefixCount, BrowsingPolicy.InitialCount(Items.Count, BrowsingBatch))));

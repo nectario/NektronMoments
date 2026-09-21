@@ -72,8 +72,8 @@ public sealed partial class MainPage
                     App.MainWindowInstance.AppWindow.Resize(new Windows.Graphics.SizeInt32(980, 780)); await Task.Delay(120);
                     App.MainWindowInstance.AppWindow.Resize(new Windows.Graphics.SizeInt32(1480, 960)); await Task.Delay(120);
                 });
-                await Measure("settings dialog", async () => {
-                    var show = ShowSettingsAsync(); await Task.Delay(120); _commonDialog?.Hide(); await show;
+                await Measure("settings workspace", async () => {
+                    var show = ShowSettingsAsync(); await Task.Delay(120); CloseSettings(); await show;
                 });
                 await Measure("menu open and close", async () => {
                     var menu = AssetDescendants(Root).OfType<MenuBarItem>().First();

@@ -52,6 +52,26 @@ public sealed partial class MainPage
         catch (Exception) { StatusText.Text = "Sort changed for this session; the preference could not be saved."; }
         await LoadCatalogAsync();
     }
+    private async void ResetOrderClick(object sender, RoutedEventArgs args)
+    {
+        try { await ResetOrderAsync(); }
+        catch (Exception error) { ShowError(error); }
+    }
+    private async Task ResetOrderAsync(Func<Task>? reloadForVerification = null)
+    {
+        if (_reorderActive || _orderCommitActive) return;
+        var scope = ArrangementScope;
+        ResetOrderButton.IsEnabled = false;
+        try {
+            await _orderStore.ResetAsync(scope);
+            if (scope != ArrangementScope) return;
+            _sortChoice = _activeSort = "newest"; _ascending = false;
+            _catalogSnapshots.Clear(); ++_catalogCacheEpoch;
+            if (reloadForVerification is null) await LoadCatalogAsync(); else await reloadForVerification();
+            UpdateArrangementChrome();
+            StatusText.Text = "Order reset · Newest first · Original files unchanged";
+        } finally { ResetOrderButton.IsEnabled = true; }
+    }
     private void GalleryDragStarting(object sender, DragItemsStartingEventArgs args)
     {
         if (_hideScreenshots || _loadingCatalog || _orderCommitActive || _isThumbnailSizing || Viewer.IsOpen || SearchBox.Text.Length != 0 || args.Items.Count != 1) { args.Cancel = true; return; }

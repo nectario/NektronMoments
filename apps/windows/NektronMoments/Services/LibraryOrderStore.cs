@@ -12,6 +12,7 @@ public sealed class LibraryOrderStore(string? directory = null)
     private readonly string _directory = directory ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NektronMoments", "arrangements");
     private readonly SemaphoreSlim _writes = new(1);
     private string FileFor(string scope) => Path.Combine(_directory, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(scope))) + ".json");
+    public Task ResetAsync(string scope) => SaveAsync(scope, "newest", [], [], "newest");
     public Task<LibraryArrangement> LoadAsync(string scope, CancellationToken token = default) => Task.Run(() => {
         token.ThrowIfCancellationRequested();
         try {

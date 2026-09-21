@@ -7,6 +7,7 @@ public sealed partial class MainPage
     private bool _suspendingGalleryMotion;
     private void CancelScrollbarGesture()
     {
+        _scrollRefresh.End();
         if (GalleryThumb is { IsDragging: true } thumb) thumb.CancelDrag();
         Controls.MediaThumbnail.SetThumbInput(false);
     }

@@ -7,6 +7,12 @@ public sealed record SceneModelOption(string Id, string Label, decimal InputRate
 
 public sealed record AiProcessingOptions(int Limit = 64, string Model = "gpt-5.6-terra")
 {
+    // Technical per-run guard only. Future subscription entitlements belong
+    // on the server and must not be inferred from the 64-asset request size.
+    public const int MaximumRunLimit = 1_000_000;
+    public const int CatchUpLimit = 10_000;
+    public static string RateSummary => "Standard rates per 1M tokens · " + string.Join("  |  ", Models.Select(model =>
+        $"{model.Label}: ${model.InputRate} input / ${model.OutputRate} output")) + " · Verified 2026-09-21";
     // Standard USD / million tokens, verified 2026-09-21. Flex can cost less.
     public static readonly SceneModelOption[] Models = [
         new("gpt-5.6-terra", "Terra — default", 2m, 12m),
@@ -15,8 +21,8 @@ public sealed record AiProcessingOptions(int Limit = 64, string Model = "gpt-5.6
     ];
     public void Validate()
     {
-        if (Limit is < 1 or > 64 || !Models.Any(item => item.Id == Model))
-            throw new ArgumentException("Choose 1–64 assets and a supported AI model.");
+        if (Limit is < 1 or > MaximumRunLimit || !Models.Any(item => item.Id == Model))
+            throw new ArgumentException("Choose 1–1,000,000 assets and a supported AI model.");
     }
     public static AiProcessingOptions Resolve(string? saved)
     {

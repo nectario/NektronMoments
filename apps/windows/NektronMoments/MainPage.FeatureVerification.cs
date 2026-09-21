@@ -83,41 +83,54 @@ public sealed partial class MainPage
 
             // Exercise the real job/window owner with a fake worker, never a CLI sync.
             Notice.IsOpen = false;
+            await ResetOrderAsync(() => { Items.ReplaceAll(items); return Task.CompletedTask; });
+            var resetArrangement = await _orderStore.LoadAsync(ArrangementScope);
+            check(resetArrangement.Keys.Length == 0 && resetArrangement.Sort == "newest" && _activeSort == "newest",
+                "Reset Order clears the current view's saved arrangement and restores the default sort");
             foreach (var option in new bool?[] { null, true, false }) {
                 var setup = ShowProcessingOptionsAsync(["Verification photos"]);
-                await WaitForAsync(() => _commonDialog?.Content is FrameworkElement { IsLoaded: true });
-                var checkbox = AssetDescendants((FrameworkElement)_commonDialog!.Content).OfType<CheckBox>().Single();
+                await WaitForAsync(() => _processingWindow is { IsPreparing: true } && _processingWindow.VisualRoot.IsLoaded);
+                var setupWindow = _processingWindow!;
+                var checkbox = AssetDescendants(setupWindow.VisualRoot).OfType<CheckBox>().Single(control => control.Name == "IncludeAiChoice");
                 check(checkbox.IsChecked == true && !_importing, "Process setup defaults to AI without starting work before Start");
-                if (option is null) _commonDialog.Hide();
+                check(!_dialog && _commonDialog is null, "Processing setup never opens a modal precursor");
+                await SaveFeatureImageAsync(setupWindow.VisualRoot, Path.Combine(output, "processing-setup.png"));
+                if (option is null) setupWindow.Hide();
                 else {
                     checkbox.IsChecked = option.Value;
-                    var start = AssetDescendants(_commonDialog).OfType<Button>().Single(button => button.Name == "PrimaryButton");
+                    var start = AssetDescendants(setupWindow.VisualRoot).OfType<Button>().Single(button => button.Name == "StartButton");
                     ((IInvokeProvider)new ButtonAutomationPeer(start).GetPattern(PatternInterface.Invoke)).Invoke();
                 }
-                check(await setup == option && !_importing,
+                check((await setup)?.IncludeAi == option && !_importing,
                     $"Process setup returns the requested choice ({option?.ToString() ?? "Cancel"}) without a live provider call");
+                if (option is not null) {
+                    await RunMetadataJobAsync(_ => Task.CompletedTask, () => Task.CompletedTask, sourceNames: ["Verification photos"], withEnrichment: option.Value);
+                    check(ReferenceEquals(setupWindow, _processingWindow) && setupWindow.IsVisible,
+                        "Start transitions to progress inside the exact same processing window");
+                }
+                setupWindow.Hide();
             }
             var settingsItem = (NavigationViewItem)Navigation.SettingsItem;
             Navigation.SelectedItem = settingsItem;
             for (var attempt = 0; attempt < 2; attempt++) {
                 var opening = ShowSettingsAsync();
-                await WaitForAsync(() => _commonDialog?.Content is FrameworkElement { IsLoaded: true });
-                check(_commonDialog?.Title?.ToString() == "Settings" &&
-                    AssetDescendants((FrameworkElement)_commonDialog!.Content).OfType<ComboBox>().Any(),
-                    $"Shared Settings command {attempt + 1} opens editable settings while sidebar Settings remains selected");
-                _commonDialog!.Hide(); await opening;
+                await WaitForAsync(() => SettingsHost.Visibility == Visibility.Visible && AssetDescendants(SettingsHost).OfType<ComboBox>().Any());
+                check(!_dialog && AssetDescendants(SettingsHost).OfType<ComboBox>().Any(),
+                    $"Settings command {attempt + 1} opens a nonmodal editable workspace");
+                CloseSettings(); await opening;
             }
             MenuAction(SettingsMenu, new RoutedEventArgs());
-            await WaitForAsync(() => _commonDialog?.Content is FrameworkElement { IsLoaded: true });
-            check(_commonDialog?.Title?.ToString() == "Settings", "Edit menu Settings opens the same dialog");
-            _commonDialog!.Hide(); await WaitForAsync(() => !_dialog);
+            await WaitForAsync(() => SettingsHost.Visibility == Visibility.Visible);
+            check(!_dialog && _settingsOpen, "Edit menu Settings opens the same nonmodal workspace");
+            CloseSettings();
             var startupModeBefore = _startupMode;
             var aiOptionsBefore = _aiOptions;
             try {
                 var savedModes = new List<StartupProcessingMode>();
                 var settings = ShowStartupProcessingSettingsAsync(mode => { savedModes.Add(mode); return Task.CompletedTask; });
-                await WaitForAsync(() => _commonDialog?.Content is FrameworkElement { IsLoaded: true });
-                var settingsContent = (FrameworkElement)_commonDialog!.Content;
+                await WaitForAsync(() => SettingsHost.Visibility == Visibility.Visible);
+                await Task.Delay(100);
+                var settingsContent = SettingsHost;
                 var picker = AssetDescendants(settingsContent).OfType<ComboBox>().Single(combo => combo.Name == "StartupModePicker");
                 var aiModel = AssetDescendants(settingsContent).OfType<ComboBox>().Single(combo => combo.Name == "AiModelPicker");
                 var aiLimit = AssetDescendants(settingsContent).OfType<NumberBox>().Single();
@@ -133,14 +146,20 @@ public sealed partial class MainPage
                     "Selecting Full saves the mode without starting a paid job immediately");
                 check(AssetDescendants(settingsContent).OfType<TextBlock>().Any(text => text.Text.Contains("older pending") && text.Text.Contains("64")),
                     "Full discloses pending-photo scope, API cost and the existing bounded pass");
-                await SaveFeatureImageAsync(_commonDialog, Path.Combine(output, "startup-full.png"));
+                await SaveFeatureImageAsync(SettingsHost, Path.Combine(output, "settings-workspace.png"));
+                var settingsTabs = AssetDescendants(SettingsHost).OfType<Pivot>().Single();
+                settingsTabs.SelectedIndex = 1; await Task.Delay(100);
+                var pricing = AssetDescendants(SettingsHost).OfType<StackPanel>().Single(panel => panel.Name == "SettingsPricing");
+                check(pricing.ActualHeight > 0 && pricing.Visibility == Visibility.Visible,
+                    "AI rates and cost remain visible when another Settings section is selected");
+                settingsTabs.SelectedIndex = 0; await Task.Delay(100);
                 picker.SelectedIndex = 1;
                 check(_startupMode == StartupProcessingMode.FileMetadata, "Metadata-only startup remains selectable");
                 picker.SelectedIndex = 2;
                 check(_startupMode == StartupProcessingMode.None && !_importing, "Off disables automatic processing without affecting a current job");
-                _commonDialog.Hide(); await settings;
+                CloseSettings(); await settings;
             } finally {
-                _commonDialog?.Hide(); _startupMode = startupModeBefore; _aiOptions = aiOptionsBefore; UpdateStartupProcessingLabel();
+                CloseSettings(); _startupMode = startupModeBefore; _aiOptions = aiOptionsBefore; UpdateStartupProcessingLabel();
             }
             check(HideScreenshotsCheck.Content?.ToString() == "Hide screenshots" && LibraryAutomationDisabled,
                 "Screenshot control is available and diagnostic launches suppress real startup processing");

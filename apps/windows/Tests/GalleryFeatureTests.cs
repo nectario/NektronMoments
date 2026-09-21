@@ -5,8 +5,21 @@ internal static class GalleryFeatureTests
 {
     public static async Task RunAsync(Action<bool, string> check)
     {
+        check(BrowsingPolicy.DisplayWarmCount(8192, 192UL << 30) == 1000, "Workstation display-ready lookahead prepares up to 1,000 images independently of the scrollbar range");
+        check(BrowsingPolicy.DisplayWarmCount(512, 8UL << 30) == 160 && BrowsingPolicy.DisplayWarmCount(64, 192UL << 30) == 64,
+            "Display warming respects machine capacity and the available image budget");
+        var refreshRequests = new List<bool>();
+        using (var refresh = new CompositorRefreshLease(enable => { refreshRequests.Add(enable); return 0; })) {
+            refresh.Begin(); refresh.Begin(); refresh.End(); refresh.End();
+            check(refreshRequests.SequenceEqual(new[] { true, false }), "High-refresh requests are balanced once per gesture");
+        }
+        using (var unavailable = new CompositorRefreshLease(_ => -1)) {
+            unavailable.Begin(); check(!unavailable.IsHeld, "Unsupported high-refresh APIs degrade safely");
+        }
         var ai = AiProcessingOptions.Resolve(null);
         check(ai.Limit == 64 && ai.Model == "gpt-5.6-terra", "AI defaults preserve Terra and 64");
+        check(AiProcessingOptions.Resolve("{\"Limit\":10000,\"Model\":\"gpt-5.6-terra\"}").Limit == 10000, "Catch-up allowance survives preference reload");
+        check(new AiProcessingOptions(10000).Estimate() == 63.2m, "Catch-up estimate scales to the full run, not a 64-photo request");
         check(AiProcessingOptions.Resolve("{\"Limit\":0,\"Model\":\"bad\"}") == ai, "Invalid AI preferences safely restore defaults");
         check(ai.Estimate() == .40448m && ai.Estimate(2) == .80896m, "Cost estimate uses model rates and number of sources");
         check(new AiProcessingOptions(64, "gpt-5.6-luna").Estimate() < ai.Estimate(), "Changing models changes the estimate");
@@ -113,6 +126,12 @@ internal static class GalleryFeatureTests
             check((await store.LoadAsync("account-b|photos")).Keys.Length == 0, "Arrangements are isolated by account and view");
             await Task.WhenAll(store.SaveAsync("account-a|photos", "custom", ["a", "b"]), store.SaveAsync("account-a|photos", "custom", ["b", "c"]));
             check((await store.LoadAsync("account-a|photos")).Keys.SequenceEqual(["b", "c"]), "Serialized atomic writes preserve the most recent arrangement");
+            await store.SaveAsync("account-b|photos", "custom", ["other"]);
+            await store.ResetAsync("account-a|photos");
+            stored = await store.LoadAsync("account-a|photos");
+            check(stored.Sort == "newest" && stored.BaseSort == "newest" && stored.Keys.Length == 0 && stored.Paths!.Length == 0,
+                "Reset Order clears keys and locator fallbacks and restores newest first");
+            check((await store.LoadAsync("account-b|photos")).Keys.SequenceEqual(["other"]), "Reset leaves other views unchanged");
             check(Directory.GetFiles(directory, "*.tmp").Length == 0, "Completed arrangement writes leave no temporary files");
         } finally {
             if (!string.Equals(Path.GetDirectoryName(directory), temporaryRoot, StringComparison.OrdinalIgnoreCase) ||

@@ -4,6 +4,8 @@ namespace NektronMoments.Models;
 public static class BrowsingPolicy
 {
     public const int BatchSize = 200;
+    public static int DisplayWarmCount(int available, ulong physicalBytes) => Math.Clamp(available, 0,
+        physicalBytes >= 96UL * 1024 * 1024 * 1024 ? 1000 : physicalBytes >= 24UL * 1024 * 1024 * 1024 ? 400 : 160);
     public static int BatchFor(double thumbnailWidth)
     {
         if (!double.IsFinite(thumbnailWidth) || thumbnailWidth <= 0) return BatchSize;

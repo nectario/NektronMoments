@@ -93,7 +93,7 @@ public sealed class MetadataProgress
             line.StartsWith("Processing media") ? "Extracting metadata and hashing" :
             line.StartsWith("Bulk metadata") ? "Updating indexed metadata" :
             line.StartsWith("Accepted manifest") || line.StartsWith("Resuming ") || line.StartsWith("Sending ") ? "Saving metadata" :
-            line.StartsWith("Preparing explicit enrichment") || line.StartsWith("Explicit enrichment prepared") ? "Preparing AI and address enrichment" :
+            line.StartsWith("Preparing explicit enrichment") || line.StartsWith("Explicit enrichment prepared") || line.StartsWith("Enrichment catch-up") ? "Preparing AI and address enrichment" :
             line.StartsWith("Preparing ") && line.Contains("scene preview") || line.StartsWith("Staged scene preview") || line.StartsWith("Scene preview") || line.StartsWith("Scene description") ? "Preparing scene descriptions" : null;
         if (phase is null) return; // Rich summary borders and unrelated output are not progress.
         var match = Counts.Match(line);

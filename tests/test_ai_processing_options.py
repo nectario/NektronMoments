@@ -43,13 +43,16 @@ def test_catchup_pages_without_exceeding_run_allowance(tmp_path, stop_at_quota):
     state = LocalState(tmp_path / "state.sqlite3")
     engine = SyncEngine(api, state, EmptyScanner(), device_id="device-test")
     flushed = []
-    def flush(binding, summary, *, limit):
+    reconciliations = []
+    def flush(binding, summary, *, limit, reconcile):
         flushed.append(limit)
+        reconciliations.append(reconcile)
         return not stop_at_quota
     engine._flush_description_outbox = flush
     engine.enrich(_binding(tmp_path), limit=150)
     assert flushed == ([64] if stop_at_quota else [64, 64, 22])
     assert [call[1]["limit"] for call in api.prepare_calls] == flushed
+    assert reconciliations == ([True] if stop_at_quota else [True, False, False])
     if not stop_at_quota:
         assert api.prepare_calls[1][1]["cursor"] == "page-1"
         assert len({call[2] for call in api.prepare_calls}) == 3

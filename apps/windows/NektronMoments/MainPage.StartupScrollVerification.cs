@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Automation.Provider;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using NektronMoments.Controls;
 
 namespace NektronMoments;
@@ -31,7 +32,7 @@ public sealed partial class MainPage
         var gcPauseBefore = GC.GetTotalPauseDuration();
         var gen2Before = GC.CollectionCount(2);
         using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
-        var timer = DispatcherQueue.CreateTimer();
+        EventHandler<object>? renderTick = null;
         Task? heartbeat = null;
         var nativeMoves = 0;
         var realizedMax = 0;
@@ -44,6 +45,14 @@ public sealed partial class MainPage
             await Task.Delay(200, _lifetime.Token);
             _browseThumbTracking = true;
             Gallery.UpdateLayout();
+            var idleWarmupSeconds = Environment.GetEnvironmentVariable("NEKTRON_MOMENTS_SCROLL_IDLE_WARMUP") == "1" ? 8 : 0;
+            if (idleWarmupSeconds > 0) {
+                MediaThumbnail.SetThumbInput(false);
+                ScheduleThumbnailWarm();
+                await Task.Delay(TimeSpan.FromSeconds(idleWarmupSeconds), _lifetime.Token);
+                // Keep the same range while isolating display-cache warming.
+                _browseThumbTracking = true;
+            }
             MediaThumbnail.SetThumbInput(true); // Window resize cancels native gestures; start the measured gesture afterwards.
             var scroll = _pixelScroll!.Scroll;
             _pixelScroll.YieldToNativeInput();
@@ -52,8 +61,8 @@ public sealed partial class MainPage
             var rangeBefore = BrowseItems.Count;
             watch.Start();
             Services.DiagnosticTrace.Marker("AutomatedScrubStart");
-            timer.Interval = TimeSpan.FromMilliseconds(16);
-            timer.Tick += (_, _) => {
+            _scrollRefresh.Begin();
+            renderTick = (_, _) => {
                 ticks.Add(watch.Elapsed.TotalMilliseconds);
                 // A bounded triangle-wave path over the initial browsing range.
                 var phase = watch.Elapsed.TotalSeconds % 4 / 2;
@@ -62,7 +71,14 @@ public sealed partial class MainPage
                 ++nativeMoves;
                 realizedMax = Math.Max(realizedMax, Gallery.ItemsPanelRoot?.Children.Count ?? 0);
             };
-            timer.Start();
+            CompositionTarget.Rendering += renderTick;
+            var warmupSeconds = Environment.GetEnvironmentVariable("NEKTRON_MOMENTS_SCROLL_WARMUP") == "1" ? 8 : 0;
+            if (warmupSeconds > 0) {
+                await Task.Delay(TimeSpan.FromSeconds(warmupSeconds), _lifetime.Token);
+                watch.Restart(); ticks.Clear(); nativeMoves = 0;
+                preparationBefore = MediaThumbnail.PreparationCount;
+                gcPauseBefore = GC.GetTotalPauseDuration(); gen2Before = GC.CollectionCount(2);
+            }
             heartbeat = Task.Run(async () => {
                 while (!cancellation.IsCancellationRequested) {
                     var queuedAt = Stopwatch.GetTimestamp();
@@ -76,7 +92,8 @@ public sealed partial class MainPage
                 }
             });
             await Task.Delay(8000, _lifetime.Token);
-            timer.Stop();
+            CompositionTarget.Rendering -= renderTick; renderTick = null;
+            var refreshRequestAccepted = _scrollRefresh.IsHeld; _scrollRefresh.End();
             Services.DiagnosticTrace.Marker("AutomatedScrubStop");
             cancellation.Cancel();
             try { await heartbeat; } catch (OperationCanceledException) { }
@@ -90,6 +107,12 @@ public sealed partial class MainPage
                 completed = errors.Count == 0, errors, catalogCount = Items.Count, browsingCount = BrowseItems.Count,
                 materializedCatalogItems = Items.MaterializedCount, managedHeapBytes = GC.GetTotalMemory(false),
                 durationMs = watch.Elapsed.TotalMilliseconds, nativeMoves, realizedMax, contentExtent,
+                galleryCacheLength = (Gallery.ItemsPanelRoot as ItemsWrapGrid)?.CacheLength,
+                expandedViewportCache = _expandedViewportCache, profileName = Services.PerformanceProfile.Current.Name,
+                renderCallbackHz = gaps.Length > 0 ? 1000 / gaps.Average() : 0,
+                warmupSeconds,
+                idleWarmupSeconds,
+                refreshRequestAccepted, timingSource = "XAML Rendering callbacks, not GPU-present FPS",
                 thumbnailSize = _thumbnailSize, newPreparations = MediaThumbnail.PreparationCount - preparationBefore,
                 overlappedPreparation = MediaThumbnail.PreparationCount > preparationBefore,
                 cachedPreviews = MediaThumbnail.Decoded.Count, decodedBytes = MediaThumbnail.Decoded.Bytes,
@@ -111,7 +134,8 @@ public sealed partial class MainPage
             errors.Add(error.GetType().Name + ": " + error.Message);
             await File.WriteAllTextAsync(Path.Combine(output, "startup-scroll.json"), JsonSerializer.Serialize(new { completed = false, errors }));
         } finally {
-            timer.Stop(); cancellation.Cancel();
+            if (renderTick is not null) CompositionTarget.Rendering -= renderTick;
+            _scrollRefresh.End(); cancellation.Cancel();
             if (heartbeat is not null) try { await heartbeat; } catch (OperationCanceledException) { }
             if (!_lifetime.IsCancellationRequested) {
                 _browseThumbTracking = trackingBefore;

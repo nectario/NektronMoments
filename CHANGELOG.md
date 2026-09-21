@@ -1,5 +1,45 @@
 # Nektron Moments Windows releases
 
+## [0.1.28] - 2026-09-21
+
+- Separate the user-selected enrichment run allowance (1–1,000,000 per source)
+  from the internal 64-asset server request size. Add a 10,000-photo catch-up
+  shortcut in Settings and the processing window, with full-run cost estimates.
+- Page through older pending photos, persist each page before preview staging,
+  and stop paging on quota deferral. Preserve existing saved preferences and
+  server spending controls; installing does not automatically increase spending.
+- Subscription entitlements remain a separate future server-side policy, not
+  the technical request batch size. No paid enrichment is run by release tests.
+
+## [0.1.27] - 2026-09-21
+
+- Add an idle, foreground-prioritized display-ready cache: up to 1,000 nearby
+  thumbnails on workstation-class machines, 400 on enhanced machines and 160 on
+  balanced machines, further bounded by the existing image-byte budget.
+- Keep deeper lookahead compressed instead of allocating native bitmaps for all
+  8,192 lookahead positions. This reduces startup native-memory/GC pressure.
+- Overlap up to four asynchronous image uploads while retaining one upload start
+  per input frame. Cancel stale warming plans and pause optional uploads during
+  scrolling; background work never increases the scrollbar's browsing range.
+- Retain original 200/500 browsing ranges, direct native scrollbar ownership,
+  captions, and explicit reorder/resize animations. Larger control caches,
+  plain pixel-buffer storage and caption-phase experiments were rejected.
+
+## [0.1.26] - 2026-09-21
+
+- Replace modal Settings with a full in-app workspace: AI & processing,
+  Appearance, and Browsing. Keep model rates and the current estimate pinned
+  above all sections; preserve the library view when returning.
+- Put AI inclusion, model, limit, pricing and Start into the existing resizable
+  processing window. The same window transitions to progress and remains
+  available through Activity; canceling before Start launches no work.
+- Add Reset Order for the current library/source view: clear saved custom keys
+  and locator order, restore newest first, and leave original media unchanged.
+- Request the compositor high-refresh mode during native scrollbar drags where
+  supported, releasing it on completion/cancel/deactivation. Keep direct native
+  scrolling and publish fewer thumbnail updates per render frame during input.
+  This is not a guarantee of 120 GPU-present FPS.
+
 ## [0.1.25] - 2026-09-21
 
 - Repair repeated Settings opening; add Edit → Settings and separate About/help.

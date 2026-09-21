@@ -58,10 +58,10 @@ public sealed partial class MainPage
                 StatusText.Text = "Startup setting saved · Applies on the next launch";
             } catch (Exception) { StatusText.Text = "The startup preference could not be saved."; }
         };
-        var content = new StackPanel { Spacing = 14, Width = 420 };
+        var content = new StackPanel { Spacing = 14, MaxWidth = 720, HorizontalAlignment = HorizontalAlignment.Left };
         content.Children.Add(new TextBlock { Text = "When Nektron Moments opens", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
         content.Children.Add(picker); content.Children.Add(note);
-        var limit = new NumberBox { Name = "AiAssetLimit", Header = "AI assets per source per run", Minimum = 1, Maximum = 64,
+        var limit = new NumberBox { Name = "AiAssetLimit", Header = "AI assets per source per run", Minimum = 1, Maximum = AiProcessingOptions.MaximumRunLimit,
             SmallChange = 1, LargeChange = 8, Value = _aiOptions.Limit, SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact };
         var model = new ComboBox { Name = "AiModelPicker", Header = "Scene description model", HorizontalAlignment = HorizontalAlignment.Stretch,
             ItemsSource = AiProcessingOptions.Models.Select(item => item.Label).ToArray(),
@@ -69,8 +69,8 @@ public sealed partial class MainPage
         var cost = new TextBlock { Text = _aiOptions.Preview(), TextWrapping = TextWrapping.Wrap, FontSize = 12 };
         async Task SaveAiAsync()
         {
-            if (!double.IsFinite(limit.Value) || limit.Value != Math.Truncate(limit.Value) || limit.Value < 1 || limit.Value > 64 || model.SelectedIndex < 0) {
-                cost.Text = "Enter a whole number from 1 to 64. The previous setting is still saved."; return;
+            if (!double.IsFinite(limit.Value) || limit.Value != Math.Truncate(limit.Value) || limit.Value < 1 || limit.Value > AiProcessingOptions.MaximumRunLimit || model.SelectedIndex < 0) {
+                cost.Text = "Enter a whole number from 1 to 1,000,000. The previous setting is still saved."; return;
             }
             var selected = new AiProcessingOptions((int)limit.Value, AiProcessingOptions.Models[model.SelectedIndex].Id);
             try {
@@ -81,10 +81,14 @@ public sealed partial class MainPage
         }
         limit.ValueChanged += async (_, _) => await SaveAiAsync();
         model.SelectionChanged += async (_, _) => await SaveAiAsync();
-        content.Children.Add(limit); content.Children.Add(model); content.Children.Add(cost);
-        content.Children.Add(new HyperlinkButton { Content = "OpenAI pricing", NavigateUri = new Uri("https://developers.openai.com/api/docs/pricing") });
+        content.Children.Add(limit); content.Children.Add(model);
+        var catchUp = new Button { Content = "Catch up: 10,000 per source" };
+        catchUp.Click += (_, _) => limit.Value = AiProcessingOptions.CatchUpLimit;
+        content.Children.Add(catchUp);
+        content.Children.Add(new TextBlock { Text = "Includes older photos awaiting enrichment. Runs use small resumable batches; the existing server spending cap still applies. This is a run allowance, not a subscription quota.", TextWrapping = TextWrapping.Wrap, FontSize = 12 });
         content.Children.Add(new TextBlock { Text = "Saved automatically. Changing this setting does not start or alter the current processing job.", TextWrapping = TextWrapping.Wrap, FontSize = 12 });
-        await ShowDialogAsync("Settings", new ScrollViewer { Content = content, MaxHeight = 520, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
+        PresentSettings(content, cost);
+        await Task.CompletedTask;
     }
     private void StartLibraryAutomation()
     {
@@ -96,7 +100,7 @@ public sealed partial class MainPage
         var aiOptions = _aiOptions;
         // Let the initial gallery render; the CLI/scan runs on its own worker process.
         DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, async () => {
-            if (_lifetime.IsCancellationRequested || _importing || _overview is null || _startupMode != mode) return;
+            if (_lifetime.IsCancellationRequested || _importing || _processingWindow?.IsPreparing == true || _overview is null || _startupMode != mode) return;
             var sources = _overview.Sources.ToArray();
             if (sources.Length == 0) return;
             await RunMetadataJobAsync(async token => {
@@ -107,7 +111,7 @@ public sealed partial class MainPage
                     _metadataProgress.CompleteSource();
                 }
             }, sourceNames: sources.Select(source => source.Name).ToArray(), showWindow: false,
-                withEnrichment: mode == StartupProcessingMode.Full);
+                withEnrichment: mode == StartupProcessingMode.Full, aiOptions: aiOptions);
         });
     }
     private void StartScreenshotLookup()

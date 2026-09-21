@@ -16,12 +16,24 @@
    <TitleBar.IconSource><ImageIconSource ImageSource="{ThemeResource MomentsActivityImage}"/></TitleBar.IconSource>
   </TitleBar>
   <Grid Grid.Row="1" Padding="20,14,20,12">
+   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
    <StackPanel Spacing="4">
     <TextBlock x:Name="Heading" Text="Processing metadata" FontSize="23" FontWeight="SemiBold" Foreground="{ThemeResource MomentsTextBrush}"/>
     <TextBlock x:Name="SessionText" Text="Preparing your library…" FontSize="13" Foreground="{ThemeResource MomentsMutedBrush}" TextTrimming="CharacterEllipsis"/>
    </StackPanel>
    <TextBlock x:Name="ElapsedText" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" FontSize="13" Foreground="{ThemeResource MomentsMutedBrush}"/>
+   <StackPanel x:Name="SetupPanel" Grid.Row="1" Grid.ColumnSpan="2" Spacing="8" Margin="0,12,0,0" Visibility="Collapsed">
+    <Grid ColumnSpacing="16">
+     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="180"/></Grid.ColumnDefinitions>
+     <CheckBox x:Name="IncludeAiChoice" Content="Include AI enrichment" IsChecked="True" VerticalAlignment="Center" Checked="SetupChanged" Unchecked="SetupChanged"/>
+     <ComboBox x:Name="ModelChoice" Grid.Column="1" Header="Scene model · this run" HorizontalAlignment="Stretch" SelectionChanged="SetupChanged"/>
+     <NumberBox x:Name="LimitChoice" Grid.Column="2" Header="Assets per source" Minimum="1" Maximum="1000000" Value="64" SmallChange="1" SpinButtonPlacementMode="Compact" ValueChanged="LimitChanged"/>
+    </Grid>
+    <Button Content="Catch up: 10,000 per source" Click="CatchUpClicked"/>
+    <TextBlock x:Name="SetupPricing" TextWrapping="Wrap" FontSize="12"/>
+    <TextBlock x:Name="SetupEstimate" TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource MomentsMutedBrush}"/>
+   </StackPanel>
   </Grid>
   <Grid Grid.Row="2" Margin="20,0,20,12">
    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
@@ -78,6 +90,7 @@
    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
     <Button x:Name="SavedQueuesButton" Content="Saved queues" Click="SavedQueuesClick"/>
     <Button x:Name="HideButton" Content="Hide" MinWidth="90" Click="HideClick"/>
+    <Button x:Name="StartButton" Content="Start" MinWidth="100" Click="StartClick" Visibility="Collapsed"/>
     <Button x:Name="StopButton" Content="Stop processing" MinWidth="132" Click="StopClick"/>
    </StackPanel>
   </Grid>

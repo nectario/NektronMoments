@@ -9,6 +9,7 @@ public sealed partial class MainPage
     private ProcessingWindow? _processingWindow;
     private Microsoft.UI.Dispatching.DispatcherQueueTimer? _processingTimer;
     private ProcessingSnapshot? _lastProgressPaint;
+    private AiProcessingOptions _jobAiOptions = new();
     private void StartProcessingPresentation(IReadOnlyList<string>? sourceNames = null, bool showWindow = true, bool withEnrichment = false)
     {
         _metadataProgress = new(); _metadataProgress.ConfigureSources(sourceNames ?? [], withEnrichment); _lastProgressPaint = null;
@@ -28,14 +29,18 @@ public sealed partial class MainPage
     private Task ShowProcessingProgressAsync()
     {
         if (_metadataProgress is null || _lifetime.IsCancellationRequested || App.MainWindowInstance is null) return Task.CompletedTask;
-        if (_processingWindow is null) {
+        EnsureProcessingWindow();
+        _processingWindow!.VisualRoot.IsHitTestVisible = IsHitTestVisible;
+        _processingWindow.Show(_metadataProgress, _jobCancellation is not null, ActualTheme, _jobAiOptions);
+        return Task.CompletedTask;
+    }
+    private void EnsureProcessingWindow()
+    {
+        if (_processingWindow is null && App.MainWindowInstance is not null) {
             var window = new ProcessingWindow(App.MainWindowInstance, ActualTheme); _processingWindow = window;
             window.StopRequested += () => { CancelProcessing(this, new RoutedEventArgs()); PaintProcessingProgress(); };
             window.SavedQueuesRequested += async () => { App.MainWindowInstance.Activate(); await ShowSavedActivityAsync(); };
             window.Closed += (_, _) => { if (ReferenceEquals(_processingWindow, window)) _processingWindow = null; };
         }
-        _processingWindow.VisualRoot.IsHitTestVisible = IsHitTestVisible;
-        _processingWindow.Show(_metadataProgress, _jobCancellation is not null, ActualTheme);
-        return Task.CompletedTask;
     }
 }

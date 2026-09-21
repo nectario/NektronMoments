@@ -23,42 +23,28 @@ public sealed partial class MainPage
         var sources = _overview.Sources.Where(s => _sourceId.Length == 0 || s.Id == _sourceId).ToArray();
         if (sources.Length == 0) { StatusText.Text = "Add a local folder to process its metadata."; return; }
         var aiOptions = _aiOptions;
-        var includeAi = await ShowProcessingOptionsAsync(sources.Select(source => source.Name).ToArray(), aiOptions);
-        if (includeAi is null || _lifetime.IsCancellationRequested) return;
+        var selection = await ShowProcessingOptionsAsync(sources.Select(source => source.Name).ToArray(), aiOptions);
+        if (selection is null || _lifetime.IsCancellationRequested) return;
         await RunMetadataJobAsync(async token => {
             for (var index = 0; index < sources.Length; index++) {
                 var source = sources[index];
                 _metadataProgress!.Source(source.Name, index + 1, sources.Length);
                 PaintProcessingProgress();
-                await RunSyncAsync(source.Id, false, token, withEnrichment: includeAi.Value, aiOptions: aiOptions);
+                await RunSyncAsync(source.Id, false, token, withEnrichment: selection.IncludeAi, aiOptions: selection.Options);
                 _metadataProgress.CompleteSource();
             }
-        }, sourceNames: sources.Select(source => source.Name).ToArray(), withEnrichment: includeAi.Value);
+        }, sourceNames: sources.Select(source => source.Name).ToArray(), withEnrichment: selection.IncludeAi, aiOptions: selection.Options);
     }
-    private async Task<bool?> ShowProcessingOptionsAsync(IReadOnlyList<string> sources, Models.AiProcessingOptions? options = null)
+    private Task<Models.ProcessingSelection?> ShowProcessingOptionsAsync(IReadOnlyList<string> sources, Models.AiProcessingOptions? options = null)
     {
-        if (_dialog) return null;
-        _dialog = true;
-        try {
-            var includeAi = new CheckBox { Content = "Include AI enrichment", IsChecked = true };
-            var content = new StackPanel { Spacing = 14, MaxWidth = 460 };
-            content.Children.Add(new TextBlock { Text = string.Join(" · ", sources), TextWrapping = TextWrapping.Wrap });
-            content.Children.Add(new TextBlock { Text = "Read file metadata and update your library. Include AI to describe new photos and older photos still awaiting descriptions, and look up addresses.", TextWrapping = TextWrapping.Wrap });
-            content.Children.Add(includeAi);
-            var estimate = new TextBlock { Text = (options ?? _aiOptions).Preview(sources.Count), TextWrapping = TextWrapping.Wrap, FontSize = 12 };
-            includeAi.Checked += (_, _) => estimate.Text = (options ?? _aiOptions).Preview(sources.Count);
-            includeAi.Unchecked += (_, _) => estimate.Text = "File metadata only: no new AI enrichment requested.";
-            content.Children.Add(estimate);
-            content.Children.Add(new TextBlock { Text = "Change the limit or model in Settings. Completed results are reused; existing queued jobs retain their model and server quotas still apply.", TextWrapping = TextWrapping.Wrap, FontSize = 12 });
-            var dialog = new ContentDialog { XamlRoot = XamlRoot, Title = "Process photos", Content = content,
-                PrimaryButtonText = "Start", CloseButtonText = "Cancel", DefaultButton = ContentDialogButton.Primary, RequestedTheme = ActualTheme };
-            _commonDialog = dialog;
-            return await dialog.ShowAsync() == ContentDialogResult.Primary ? includeAi.IsChecked == true : null;
-        } finally { _commonDialog = null; _dialog = false; }
+        if (_lifetime.IsCancellationRequested) return Task.FromResult<Models.ProcessingSelection?>(null);
+        EnsureProcessingWindow();
+        return _processingWindow!.ShowSetup(sources, options ?? _aiOptions, ActualTheme);
     }
-    private async Task RunMetadataJobAsync(Func<CancellationToken, Task> work, Func<Task>? refreshForVerification = null, IReadOnlyList<string>? sourceNames = null, bool showWindow = true, bool withEnrichment = false)
+    private async Task RunMetadataJobAsync(Func<CancellationToken, Task> work, Func<Task>? refreshForVerification = null, IReadOnlyList<string>? sourceNames = null, bool showWindow = true, bool withEnrichment = false, Models.AiProcessingOptions? aiOptions = null)
     {
         if (_importing) return;
+        _jobAiOptions = aiOptions ?? _aiOptions;
         _importing = true; AddFolderButton.IsEnabled = false; ProcessButton.IsEnabled = false;
         CancelProcessingButton.Visibility = Visibility.Visible; CancelProcessingButton.IsEnabled = true;
         _jobCancellation = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
@@ -159,7 +145,8 @@ public sealed partial class MainPage
                         Text = $"{profile.Name} profile · {PerformanceProfile.PhysicalBytes / (1024d * 1024 * 1024):N0} GB RAM\n\n" +
                         $"{Items.Count:N0} catalog positions · {BrowseItems.Count:N0} in the browsing range\n" +
                         $"{Controls.MediaThumbnail.Decoded.Count:N0} prepared previews cached\n" +
-                        $"Up to {Models.BrowsingPolicy.WarmCount(profile.ThumbnailAhead, Controls.MediaThumbnail.TargetPixels, profile.DecodedBytes / 2):N0} previews prepared around your position\n" +
+                        $"Up to {Models.BrowsingPolicy.WarmCount(profile.ThumbnailAhead, Controls.MediaThumbnail.TargetPixels, profile.DecodedBytes / 2):N0} compressed previews ahead\n" +
+                        $"Up to {Models.BrowsingPolicy.DisplayWarmCount(Models.BrowsingPolicy.WarmCount(profile.ThumbnailAhead, Controls.MediaThumbnail.TargetPixels, profile.DecodedBytes / 2), PerformanceProfile.PhysicalBytes):N0} nearby previews decoded and display-warmed\n" +
                         $"{profile.ViewportCache:N0} viewport cache length\n{profile.DecodedBytes / 1048576:N0} MiB decoded-image budget\n" +
                         $"{profile.EncodedBytes / 1048576:N0} MiB thumbnail-byte budget\n{profile.DiskBytes / 1073741824:N0} GiB disk-thumbnail budget\n\n" +
                         "Budgets are ceilings, not upfront allocations. Only nearby media is decoded; original photos are never loaded en masse." });

@@ -54,16 +54,23 @@ public sealed partial class MainPage
         Point Position() => ((FrameworkElement)Gallery.ContainerFromIndex(BrowseItems.IndexOf(peer))).TransformToVisual(Gallery).TransformPoint(new Point());
         var start = Position();
         var offsetBefore = _pixelScroll!.Scroll.VerticalOffset;
-        PreviewReorder(columns + 2, true);
-        Gallery.UpdateLayout();
         var samples = new List<object>();
         var positions = new List<Point>();
         var clock = Stopwatch.StartNew();
-        for (var frame = 0; frame < 16; frame++) {
-            await Task.Delay(20);
+        var sampling = true;
+        void SampleFrame(object? sender, object args) {
+            if (!sampling) return;
             var point = Position(); positions.Add(point);
             samples.Add(new { elapsedMs = clock.Elapsed.TotalMilliseconds, x = point.X, y = point.Y });
         }
+        // Query independent-animation transforms on rendering ticks, not an
+        // unrelated dispatcher timer that can observe only the final layout.
+        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += SampleFrame;
+        try {
+        PreviewReorder(columns + 2, true);
+        Gallery.UpdateLayout();
+        await Task.Delay(400);
+        sampling = false;
         await Task.Delay(200);
         var finish = Position();
         static double Distance(Point a, Point b) => Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
@@ -73,7 +80,8 @@ public sealed partial class MainPage
         await File.WriteAllTextAsync(Path.Combine(output, "reorder-motion.json"), JsonSerializer.Serialize(new {
             systemAnimationsEnabled = new Windows.UI.ViewManagement.UISettings().AnimationsEnabled,
             windowVisible = App.MainWindowInstance.AppWindow.IsVisible,
-            columns, start, finish, intermediate, distinctPositions, offsetBefore, offsetAfter = _pixelScroll.Scroll.VerticalOffset, samples
+            columns, start, finish, intermediate, distinctPositions, offsetBefore, offsetAfter = _pixelScroll.Scroll.VerticalOffset, samples,
+            timingSource = "XAML Rendering callbacks; not GPU-present FPS"
         }, new JsonSerializerOptions { WriteIndented = true }));
         check(moved && intermediate >= 2 && distinctPositions >= 3, "A rendered peer thumbnail traverses intermediate positions while crossing a row during drag preview");
         check(_reorderMotion?.ActiveCount == 0, "Finished reorder animation releases its transforms and storyboard ownership");
@@ -98,5 +106,6 @@ public sealed partial class MainPage
         await SaveFeatureImageAsync(Gallery, Path.Combine(output, "reorder-moving.png"), 0);
         RestoreDragOrder(before); await Task.Delay(400);
         await SaveFeatureImageAsync(Gallery, Path.Combine(output, "reorder-restored.png"), 0);
+        } finally { Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= SampleFrame; }
     }
 }

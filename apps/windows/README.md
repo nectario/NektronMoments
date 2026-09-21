@@ -24,6 +24,46 @@ registration, Nektron Moments is also available through Windows Start.
 
 ## Implemented in this milestone
 
+### Display-ready lookahead (0.1.27)
+
+The 200/500-item browsing range is independent from thumbnail caching. The nearest
+up to 1,000 (Workstation), 400 (Enhanced), or 160 (Balanced) previews are decoded
+on workers and made display-ready in paced idle UI batches. The existing byte
+budget can reduce these counts at larger resolutions. Farther lookahead remains
+compressed, avoiding thousands of native bitmap allocations during startup.
+Input pauses optional warming; foreground image uploads remain prioritized and
+can overlap without starting a large batch in any input frame. View changes
+cancel stale plans. No original media is modified and no paid work is required.
+
+The automatic probe reports XAML callback cadence, not display-present FPS.
+See [0.1.27 measurements](../../docs/releases/0.1.27.md) for observed gains and
+remaining limitations. A true mouse-drag trace can be captured using
+`scripts/trace-windows-startup.ps1 -Mode manual-light -Seconds 30`.
+
+### Settings and processing workspace (0.1.26)
+
+The sidebar gear and Edit → Settings open a full nonmodal workspace, not a
+ContentDialog. AI & processing, Appearance, and Browsing have separate native
+sections. AI rates and the estimated cost remain pinned above every section;
+opening the pricing website is optional. Escape or Back returns to the library.
+
+Process metadata opens the final processing window directly. AI inclusion, model,
+per-source limit, pricing, Cancel and Start live there. Start changes that same
+window into progress; it does not open a second dialog. Selections apply only to
+that run, while Settings saves the defaults. Hiding active progress never stops
+the job; canceling setup runs nothing. Existing production AI pause is unchanged.
+
+Reset Order clears saved custom keys and path fallbacks for the current view,
+restores newest first and does not touch other views or original media files.
+
+Scrollbar drag retains native Windows input with no application 60-Hz timer.
+On Windows 11+, a balanced `DCompositionBoostCompositorClock` request is held
+during the gesture and released on completion/cancellation. Unsupported systems
+continue native scrolling. Thumbnail publication during drag is render-aligned,
+one new source at a time, with a 0.75 ms scheduling budget. Windows/display/GPU
+still determine delivered cadence; 120 FPS is not guaranteed or inferred from
+render callbacks. Reference: [Microsoft compositor clock](https://learn.microsoft.com/en-us/windows/win32/directcomp/compositor-clock/compositor-clock).
+
 - Settings opens from the sidebar gear or **Edit → Settings…**, including repeated
   clicks after closing it. Both expose the saved startup processing choices;
   About and keyboard help remain separate under Help.
@@ -93,7 +133,7 @@ layout, short reposition animations and a bounded set of realized controls.
 
 These are ceilings and look-ahead targets, not upfront allocations:
 
-| Profile | RAM | Thumbnails ahead | Encoded / decoded cache | Disk cache |
+| Profile | RAM | Compressed thumbnails ahead | Encoded / decoded cache | Disk cache |
 | --- | --- | ---: | --- | --- |
 | Balanced | Below 24 GiB | Up to 512 | 128 / 384 MiB | 1 GiB |
 | Enhanced | 24–95 GiB | Up to 2,048 | 512 MiB / 2 GiB | 4 GiB |
@@ -110,10 +150,11 @@ Live XAML buffers are budgeted separately (about 240 offscreen controls, with a
 half-viewport minimum), so maximizing does not multiply thousands of live tiles.
 Visible thumbnail decodes have reserved capacity; cached bitmaps remain immediate.
 
-Look-ahead decodes and materializes pixels on background workers without creating
-XAML image sources or posting a UI callback per preview. Near-viewport tiles
-publish through a small paced SoftwareBitmapSource queue; distant prefetch yields
-to active scrolling, while promoted visible requests continue.
+Nearby look-ahead decodes on background workers without posting a UI callback per
+preview. A bounded idle pump then creates display sources ahead of the viewport;
+farther look-ahead stays compressed. Near-viewport tiles take priority in the paced
+SoftwareBitmapSource queue. Optional warming yields to active scrolling, while
+promoted visible requests continue.
 Visible photos come first, then the next 200 in the direction of travel, then
 farther look-ahead with a reverse-side reserve. Its count is resolution-aware and
 uses at most half the decoded-cache budget, leaving room for recently viewed images.

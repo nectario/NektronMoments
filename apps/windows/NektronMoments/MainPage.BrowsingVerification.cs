@@ -206,6 +206,18 @@ public sealed partial class MainPage
             var reused = await MediaThumbnail.PrepareAsync(preparedItem, requestedPixels, _lifetime.Token, prefetch: false);
             reusedReadyObject = prepared is not null && ReferenceEquals(prepared, reused);
             Check(reusedReadyObject, "A foreground request reuses the same already-prepared bitmap object");
+            using (var abandonedWarm = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token)) {
+                MediaThumbnail.SetThumbInput(true);
+                try {
+                    var warming = MediaThumbnail.WarmDisplayAsync(prepared!, abandonedWarm.Token);
+                    await Task.Delay(160, _lifetime.Token);
+                    Check(!warming.IsCompleted && prepared!.Source is null, "Optional display warming yields while the scrollbar is held");
+                    abandonedWarm.Cancel(); await warming;
+                } finally { MediaThumbnail.SetThumbInput(false); }
+            }
+            await MediaThumbnail.WarmDisplayAsync(prepared!, _lifetime.Token).WaitAsync(TimeSpan.FromSeconds(20));
+            Check(prepared!.Source is not null && Gallery.ContainerFromItem(preparedItem) is null && BrowseItems.Count == 200,
+                "Idle warming creates a reusable display source without creating a tile or changing the scrollbar extent");
             var decodesBeforeSmaller = MediaThumbnail.PreparationCount;
             var smaller = await MediaThumbnail.PrepareAsync(preparedItem, Math.Max(1, requestedPixels / 2), _lifetime.Token, prefetch: false);
             Check(ReferenceEquals(prepared, smaller) && MediaThumbnail.PreparationCount == decodesBeforeSmaller,
@@ -285,7 +297,7 @@ public sealed partial class MainPage
             var warmTimer = Stopwatch.StartNew();
             ScheduleThumbnailWarm();
             var scheduledKey = ThumbnailService.Shared.Key(warmCatalog[250], MediaThumbnail.TargetPixels);
-            while (!MediaThumbnail.Decoded.TryGet(scheduledKey, out _) && warmTimer.Elapsed < TimeSpan.FromSeconds(20))
+            while ((!MediaThumbnail.Decoded.TryGet(scheduledKey, out var candidate) || candidate.Source is null) && warmTimer.Elapsed < TimeSpan.FromSeconds(20))
                 await Task.Delay(25, _lifetime.Token);
             warmMilliseconds = warmTimer.Elapsed.TotalMilliseconds;
             _thumbnailWarmingSuspended = true;
@@ -296,8 +308,8 @@ public sealed partial class MainPage
                 "The real page look-ahead scheduler prepares display-ready photos outside the first 200 positions");
             Check(BrowseItems.Count == 200 && Items.Count == 420 && Gallery.ContainerFromItem(warmCatalog[250]) is null,
                 "Background look-ahead leaves the browsing extent unchanged and does not create off-range UI controls");
-            Check(MediaThumbnail.Decoded.TryGet(scheduledKey, out var scheduled) && scheduled.Source is null,
-                "Background look-ahead creates no XAML source for unexposed previews");
+            Check(MediaThumbnail.Decoded.TryGet(scheduledKey, out var scheduled) && scheduled.Source is not null && scheduled.DecodeThreadId != Environment.CurrentManagedThreadId,
+                "The scheduler pairs worker decoding with idle UI display warming before an off-range tile exists");
 
             // Exercise the production compact store, not only array-backed test
             // fixtures. It must preserve identity while rows arrive from workers.

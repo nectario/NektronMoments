@@ -151,6 +151,7 @@
                 <NavigationViewItemSeparator/>
                 <NavigationViewItemHeader Content="LOCAL SOURCES"/>
             </NavigationView.MenuItems>
+            <Grid>
             <SplitView x:Name="DetailsSplit" PanePlacement="Right" OpenPaneLength="320"
                 DisplayMode="Inline" IsPaneOpen="False" PaneBackground="{ThemeResource MomentsSurfaceBrush}">
                 <SplitView.Pane>
@@ -192,7 +193,7 @@
                     </StackPanel>
                     <InfoBar x:Name="Notice" Grid.Row="1" IsOpen="False" IsClosable="True" Severity="Warning" Margin="0,0,0,12"/>
                     <Grid Grid.Row="2" Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                         <TextBlock x:Name="ResultCount" VerticalAlignment="Center" FontSize="13" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource MomentsMutedBrush}"/>
                         <CheckBox x:Name="HideScreenshotsCheck" Grid.Column="1" Content="Hide screenshots" Margin="12,0,16,0" FontSize="13" Checked="ScreenshotFilterChanged" Unchecked="ScreenshotFilterChanged" ToolTipService.ToolTip="Hide screenshots and text-based digital captures, including website excerpts, identified in existing descriptions. Unclassified photos stay visible. No files are deleted."/>
                         <Button x:Name="SortButton" Grid.Column="2" Content="Newest first ↓" HorizontalAlignment="Right" Padding="12,6" ToolTipService.ToolTip="Choose date sorting or your saved arrangement">
@@ -202,6 +203,7 @@
                                 <MenuFlyoutItem Text="Custom order" Tag="custom" Click="ChooseSort"/>
                             </MenuFlyout></Button.Flyout>
                         </Button>
+                        <Button x:Name="ResetOrderButton" Grid.Column="3" Content="Reset Order" Margin="8,0,0,0" Click="ResetOrderClick" ToolTipService.ToolTip="Remove the saved custom order for this view and return to newest first. Original files stay in place."/>
                     </Grid>
                     <Grid x:Name="GalleryScrollHost" Grid.Row="3">
                     <GridView x:Name="Gallery" ItemsSource="{x:Bind BrowseItems}" SizeChanged="GalleryResized" Loaded="GalleryLoaded"
@@ -267,6 +269,8 @@
                 <controls:CanvasViewer x:Name="Viewer" Visibility="Collapsed"/>
                 </Grid>
             </SplitView>
+            <Grid x:Name="SettingsHost" Visibility="Collapsed" Background="{ThemeResource MomentsWindowBrush}"/>
+            </Grid>
         </NavigationView>
         <Grid Grid.Row="3" Background="{ThemeResource MomentsTitlebarBrush}" Padding="18,8">
             <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>

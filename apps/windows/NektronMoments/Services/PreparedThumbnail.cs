@@ -3,7 +3,7 @@ using Windows.Graphics.Imaging;
 
 namespace NektronMoments.Services;
 
-/// <summary>Worker-decoded pixels; a XAML source is created only when a tile needs it.</summary>
+/// <summary>Worker-decoded pixels; XAML presentation is paced for visible tiles or nearby idle warming.</summary>
 public sealed class PreparedThumbnail
 {
     private SoftwareBitmap? _pixels;

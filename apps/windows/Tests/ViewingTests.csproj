@@ -22,6 +22,7 @@
   <Compile Include="../NektronMoments/Models/ReorderPolicy.cs" Link="ReorderPolicy.cs"/>
   <Compile Include="../NektronMoments/Models/StartupProcessing.cs" Link="StartupProcessing.cs"/>
   <Compile Include="../NektronMoments/Models/AiProcessingOptions.cs" Link="AiProcessingOptions.cs"/>
+  <Compile Include="../NektronMoments/Services/CompositorRefreshLease.cs" Link="CompositorRefreshLease.cs"/>
   <Compile Include="../NektronMoments/Services/LibraryOrderStore.cs" Link="LibraryOrderStore.cs"/>
   <Compile Include="../NektronMoments/Services/WeightedCache.cs" Link="WeightedCache.cs"/>
  </ItemGroup>

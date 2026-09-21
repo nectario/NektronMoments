@@ -343,7 +343,8 @@ class SyncEngine:
         while remaining > 0:
             batch = min(ENRICHMENT_REQUEST_SIZE, remaining)
             prepared = self._prepare_enrichment(binding, summary, limit=batch, cursor=cursor)
-            can_continue = self._flush_description_outbox(binding, summary, limit=batch)
+            can_continue = self._flush_description_outbox(
+                binding, summary, limit=batch, reconcile=cursor is None)
             # Charge a full page against this run's allowance even when old
             # saved previews, rather than newly prepared ones, were staged.
             remaining -= batch
@@ -1221,9 +1222,11 @@ class SyncEngine:
         summary: SyncSummary | EnrichmentSummary,
         *,
         limit: int,
+        reconcile: bool = True,
     ) -> bool:
-        self._reconcile_sent_descriptions(binding)
-        self._recover_supported_description_skips(binding, summary)
+        if reconcile:
+            self._reconcile_sent_descriptions(binding)
+            self._recover_supported_description_skips(binding, summary)
         tasks = self.state.due_description_tasks(
             binding.source_id,
             limit=limit,

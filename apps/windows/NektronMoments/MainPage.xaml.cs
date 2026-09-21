@@ -119,6 +119,7 @@ public sealed partial class MainPage : Page
         finally { if (!_lifetime.IsCancellationRequested) IsHitTestVisible = hitTestBefore; }
     }
     public void Shutdown() {
+        CancelDisplayWarm();
         _reorderMotion?.Dispose();
         _lifetime.Cancel(); _sizeChange?.Cancel(); _catalogRequest?.Cancel();
         if (_isThumbnailSizing) CommitThumbnailSizing();
@@ -260,7 +261,7 @@ public sealed partial class MainPage : Page
     private async void RefreshLibrary(object sender, RoutedEventArgs e) => await ReloadAsync(true);
     private async void RefreshKey(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) { args.Handled = true; await ReloadAsync(true); }
     private void FocusSearch(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) { SearchBox.Focus(FocusState.Keyboard); args.Handled = true; }
-    private void EscapeKey(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) { if (_dialog) return; if (Viewer.IsOpen) ReturnToGallery(); else DetailsSplit.IsPaneOpen = false; args.Handled = true; }
+    private void EscapeKey(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) { if (_dialog) return; if (_settingsOpen) CloseSettings(); else if (Viewer.IsOpen) ReturnToGallery(); else DetailsSplit.IsPaneOpen = false; args.Handled = true; }
     private void CloseDetails(object sender, RoutedEventArgs e) => DetailsSplit.IsPaneOpen = false;
     private void GalleryContainerChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
     {
@@ -325,9 +326,12 @@ public sealed partial class MainPage : Page
     }
     private async void NavigationChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
+        if (_restoringSettingsSelection) return;
         if (!_ready) return;
         if (args.IsSettingsSelected) return;
         if (args.SelectedItem is not NavigationViewItem item) return;
+        CloseSettings(restoreSelection: false);
+        _lastLibraryNavigation = item;
         var tag = item.Tag?.ToString() ?? "all";
         _sortChoice = null;
         ReturnToGallery();
@@ -389,6 +393,7 @@ public sealed partial class MainPage : Page
     private async void AddFolder(object sender, RoutedEventArgs e) => await AddFolderAsync();
     private async void ShowActivity(object sender, RoutedEventArgs e)
     {
+        if (_processingWindow?.IsPreparing == true) { _processingWindow.Activate(); return; }
         if (_metadataProgress is not null) { await ShowProcessingProgressAsync(); return; }
         await ShowSavedActivityAsync();
     }
