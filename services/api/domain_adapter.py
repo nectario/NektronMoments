@@ -536,6 +536,7 @@ class DomainServiceAdapter:
                 domain.EnrichmentPrepareCommand(
                     types=tuple(str(item) for item in payload.types),
                     limit=payload.limit,
+                    description_model=payload.description_model,
                 ),
                 _domain_mutation(mutation),
             )

@@ -445,6 +445,7 @@ class ManifestResponse(ApiModel):
 
 
 class EnrichmentPrepareRequest(ApiModel):
+    description_model: Literal["gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol"] | None = None
     types: list[EnrichmentKind] = Field(
         default_factory=lambda: [
             EnrichmentKind.GEOCODE,

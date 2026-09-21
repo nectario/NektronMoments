@@ -3331,6 +3331,12 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "descriptionModel": {
+            "type": "string",
+            "nullable": true,
+            "enum": ["gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol", null],
+            "description": "Model for newly prepared descriptions. Omitted uses the configured server default. Completed descriptions and queued jobs are not reprocessed."
+          },
           "types": {
             "type": "array",
             "minItems": 1,

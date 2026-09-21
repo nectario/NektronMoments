@@ -291,6 +291,7 @@ class ManifestResult:
 class EnrichmentPrepareCommand:
     types: tuple[Literal["Geocode", "Description"], ...]
     limit: int
+    description_model: str | None = None
 
 
 @dataclass(frozen=True)

@@ -114,6 +114,7 @@ class SyncEngine:
         hash_file: Callable[[Path], str] = stream_sha256,
         sleep: Callable[[float], None] = time.sleep,
         device_id: str | None = None,
+        description_model: str | None = None,
     ):
         self.api = api
         self.state = state
@@ -123,6 +124,9 @@ class SyncEngine:
         self.hash_file = hash_file
         self.sleep = sleep
         self.device_id = device_id
+        if description_model not in (None, "gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol"):
+            raise ValueError("Unsupported scene description model")
+        self.description_model = description_model
 
     def sync(
         self,
@@ -343,6 +347,8 @@ class SyncEngine:
         prepare_setting = (
             f"enrichment-prepare-key:{binding.source_id}:{limit}"
         )
+        if self.description_model is not None:
+            prepare_setting += ":" + self.description_model
         prepare_key = self.state.get_setting(prepare_setting)
         if not prepare_key:
             prepare_key = (
@@ -354,6 +360,7 @@ class SyncEngine:
             {
                 "types": ["Geocode", "Description"],
                 "limit": limit,
+                **({"descriptionModel": self.description_model} if self.description_model else {}),
             },
             device_id=device_id,
             key=prepare_key,

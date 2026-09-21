@@ -13,6 +13,7 @@ from services.enrichment.models import (
     ReverseGeocoder,
 )
 from services.enrichment.normalization import LocationNormalizer
+from services.enrichment.model_options import SCENE_MODEL_RATES
 from services.enrichment.openai_scene import (
     OpenAISceneDescriptionProvider,
     SceneDescriptionProviderError,
@@ -193,6 +194,7 @@ class DescriptionMessageProcessor:
         cached_input_usd_per_million: Decimal = Decimal("0.200000"),
         output_usd_per_million: Decimal = Decimal("12.000000"),
         preview_url_ttl_seconds: int = 300,
+        model_providers: Mapping[str, OpenAISceneDescriptionProvider] | None = None,
     ) -> None:
         if monthly_call_limit < 0:
             raise ValueError("The monthly scene-description limit cannot be negative")
@@ -223,6 +225,7 @@ class DescriptionMessageProcessor:
             raise ValueError("The preview URL lifetime must be from 1 through 900 seconds")
         self._repository = repository
         self._provider = provider
+        self._model_providers = dict(model_providers or {})
         self._preview_store = preview_store
         self._monthly_call_limit = monthly_call_limit
         (
@@ -248,19 +251,26 @@ class DescriptionMessageProcessor:
         if job is None:
             return MessageDisposition.ACK
 
+        provider = self._provider
+        input_rate, cached_rate, output_rate, reservation = (
+            self._input_usd_per_million, self._cached_input_usd_per_million,
+            self._output_usd_per_million, self._reserved_usd_per_request)
+        if job.model != provider.model and job.model in self._model_providers and job.model in SCENE_MODEL_RATES:
+            provider = self._model_providers[job.model]
+            input_rate, cached_rate, output_rate, reservation = SCENE_MODEL_RATES[job.model]
         if (
-            job.model != self._provider.model
-            or job.prompt_version != self._provider.prompt_version
-            or job.detail != self._provider.detail
-            or job.service_tier != self._provider.service_tier
-            or job.max_words != self._provider.max_words
+            job.model != provider.model
+            or job.prompt_version != provider.prompt_version
+            or job.detail != provider.detail
+            or job.service_tier != provider.service_tier
+            or job.max_words != provider.max_words
             or job.monthly_call_limit != self._monthly_call_limit
             or job.monthly_usd_limit != self._monthly_usd_limit
-            or job.reserved_usd_per_request != self._reserved_usd_per_request
-            or job.input_usd_per_million != self._input_usd_per_million
+            or job.reserved_usd_per_request != reservation
+            or job.input_usd_per_million != input_rate
             or job.cached_input_usd_per_million
-            != self._cached_input_usd_per_million
-            or job.output_usd_per_million != self._output_usd_per_million
+            != cached_rate
+            or job.output_usd_per_million != output_rate
         ):
             outcome = self._repository.fail_description(
                 job=job,
@@ -323,7 +333,7 @@ class DescriptionMessageProcessor:
             return MessageDisposition.ACK
 
         try:
-            result = self._provider.describe(preview_url)
+            result = provider.describe(preview_url)
         except SceneDescriptionProviderError as exc:
             return self._handle_failure(
                 job=job,

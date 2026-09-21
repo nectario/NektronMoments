@@ -18,6 +18,7 @@ from sqlalchemy import Numeric, and_, case, cast, func, or_, select, update
 from sqlalchemy.orm import Session, aliased, sessionmaker
 
 from services.data.database import transaction_scope
+from services.enrichment.model_options import SCENE_MODEL_RATES
 from services.data.models import (
     Device,
     MediaAsset,
@@ -904,6 +905,8 @@ class Phase1DomainService:
                 "Enrichment processing is paused; metadata sync remains available",
             )
         selected_types = tuple(dict.fromkeys(command.types))
+        if command.description_model is not None and command.description_model not in SCENE_MODEL_RATES:
+            raise ConflictError("InvalidDescriptionModel", "Choose a supported scene description model")
         if (
             not selected_types
             or len(selected_types) != len(command.types)
@@ -1160,11 +1163,17 @@ class Phase1DomainService:
                             now=now,
                         )
                         new_jobs.append(selected_description_job)
+                        if command.description_model is not None:
+                            selected_description_job.request_json = self._description_request(
+                                asset=asset, source=source, model=command.description_model)
                         changed_jobs.append(selected_description_job)
                     else:
+                        if selected_description_job.status != "Preparing":
+                            continue  # Never change the model/rates of already queued work.
                         configured_request = self._description_request(
                             asset=asset,
                             source=source,
+                            model=command.description_model,
                         )
                         if selected_description_job.request_json != configured_request:
                             selected_description_job.request_json = configured_request
@@ -1928,8 +1937,9 @@ class Phase1DomainService:
         *,
         asset: MediaAsset,
         source: MediaSource,
+        model: str | None = None,
     ) -> dict[str, object]:
-        return {
+        request = {
             "assetRevision": asset.content_sha256.lower(),
             "sourceId": source.public_id,
             "model": self._scene_description_model,
@@ -1952,6 +1962,12 @@ class Phase1DomainService:
                 self._scene_description_output_usd_per_million
             ),
         }
+        if model is not None and model != self._scene_description_model:
+            input_rate, cached_rate, output_rate, reservation = SCENE_MODEL_RATES[model]
+            request.update(model=model, inputUsdPerMillion=str(input_rate),
+                           cachedInputUsdPerMillion=str(cached_rate), outputUsdPerMillion=str(output_rate),
+                           reservedUsdPerRequest=str(reservation))
+        return request
 
     def _new_description_job(
         self,

@@ -598,6 +598,8 @@ def _print_enrichment(summary: EnrichmentSummary) -> None:
 
 @app.command()
 def sync(
+    enrichment_limit: Annotated[int, typer.Option("--enrichment-limit", min=1, max=64, help="Maximum assets per source for this enrichment pass.")] = DEFAULT_ENRICHMENT_LIMIT,
+    description_model: Annotated[Literal["gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol"] | None, typer.Option("--description-model", help="Scene description model for newly prepared jobs.")] = None,
     source: Annotated[str | None, typer.Argument(help="Source ID, name, or local path.")] = None,
     dry_run: Annotated[bool, typer.Option("--dry-run", help="Scan and hash without changing the service.")] = False,
     watch: Annotated[bool, typer.Option("--watch", help="Keep watching and synchronize changes.")] = False,
@@ -688,6 +690,7 @@ def sync(
                     runtime.api,
                     runtime.state,
                     progress=progress,
+                    description_model=description_model,
                     device_id=(
                         _registered_device_id(runtime)
                         if with_enrichment
@@ -701,7 +704,7 @@ def sync(
                     scan_workers=scan_workers,
                     fast_add=fast_add,
                     with_enrichment=with_enrichment,
-                    enrichment_limit=DEFAULT_ENRICHMENT_LIMIT,
+                    enrichment_limit=enrichment_limit,
                     transport=transport,
                     bulk_max_rows=bulk_max_rows,
                 )

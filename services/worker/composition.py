@@ -112,6 +112,12 @@ def build_default_processor(
         return DescriptionMessageProcessor(
             repository=repository,
             provider=scene_provider,
+            model_providers={model: OpenAISceneDescriptionProvider(
+                openai_api_key, model=model, detail=selected_settings.scene_description_detail,
+                service_tier=selected_settings.scene_description_service_tier,
+                max_words=selected_settings.scene_description_max_words,
+                api_key_loader=openai_resolver.resolve, api_key_invalidator=openai_resolver.clear,
+            ) for model in ("gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol")},
             preview_store=S3ScenePreviewStore(
                 boto3.client("s3", region_name=selected_settings.aws_region),
                 allowed_bucket=selected_settings.media_bucket,
