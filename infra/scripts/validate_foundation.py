@@ -51,9 +51,9 @@ REQUIRED_MARKERS = {
     "processing queue": "Type: AWS::SQS::Queue",
     "dead-letter policy": "RedrivePolicy:",
     "maintenance schedules": "Type: AWS::Events::Rule",
-    "disabled general retry default": "retryScheduleState: ${param:retryScheduleState, 'DISABLED'}",
+    "enabled general retry default": "retryScheduleState: ${param:retryScheduleState, 'ENABLED'}",
     "enabled manifest retry default": "manifestImportRetryScheduleState: ${param:manifestImportRetryScheduleState, 'ENABLED'}",
-    "disabled enrichment API default": "NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED: 'false'",
+    "authorized enrichment API default": "NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED: 'true'",
     "disabled schedule default": "maintenanceSchedulesState: ${param:maintenanceSchedulesState, 'DISABLED'}",
     "SSM parameter prefix": "NEKTRON_MOMENTS_CONFIG_PARAMETER_PREFIX:",
     "incremental budget": "Type: AWS::Budgets::Budget",
@@ -115,8 +115,8 @@ def _validate_packaged_template(path: Path) -> list[str]:
     if api_lambda.get("Timeout") != 28:
         failures.append("packaged API Lambda timeout is not 28 seconds")
     api_environment = api_lambda.get("Environment", {}).get("Variables", {})
-    if api_environment.get("NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED") != "false":
-        failures.append("packaged API must reject enrichment while processing is paused")
+    if api_environment.get("NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED") != "true":
+        failures.append("packaged API must allow authorized bounded enrichment")
 
     worker_lambda = resources.get("WorkerLambdaFunction", {}).get("Properties", {})
     if worker_lambda.get("Runtime") != "python3.12":
@@ -174,9 +174,9 @@ def _validate_packaged_template(path: Path) -> list[str]:
             failures.append("packaged worker does not report partial SQS batch failures")
         if "ProcessingQueue" not in json.dumps(worker_mapping.get("EventSourceArn")):
             failures.append("packaged worker event source is not ProcessingQueue")
-        if worker_mapping.get("Enabled") is not False:
+        if worker_mapping.get("Enabled") is not True:
             failures.append(
-                "packaged general enrichment worker event source must be disabled"
+                "packaged general enrichment worker event source must be enabled"
             )
 
     bulk_mappings = [
@@ -237,9 +237,9 @@ def _validate_packaged_template(path: Path) -> list[str]:
         failures.append("Cognito SES SourceArn is not scoped to info@nektron.ai")
 
     retry_state = resources.get("RetrySchedule", {}).get("Properties", {}).get("State")
-    if retry_state != "DISABLED":
+    if retry_state != "ENABLED":
         failures.append(
-            "RetrySchedule must package as DISABLED while enrichment is paused"
+            "RetrySchedule must package as ENABLED for authorized enrichment recovery"
         )
     bulk_retry_state = (
         resources.get("ManifestImportRetrySchedule", {})

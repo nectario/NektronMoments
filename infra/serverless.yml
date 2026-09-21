@@ -6,7 +6,7 @@ configValidationMode: error
 
 custom:
   parameterPrefix: /imagetracker/${sls:stage}
-  retryScheduleState: ${param:retryScheduleState, 'DISABLED'}
+  retryScheduleState: ${param:retryScheduleState, 'ENABLED'}
   manifestImportRetryScheduleState: ${param:manifestImportRetryScheduleState, 'ENABLED'}
   maintenanceSchedulesState: ${param:maintenanceSchedulesState, 'DISABLED'}
   monthlyBudgetUsd: ${param:monthlyBudgetUsd, 50}
@@ -85,7 +85,7 @@ provider:
       Fn::GetAtt:
         - ProcessingQueue
         - Arn
-    NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED: 'false'
+    NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED: 'true'
     NEKTRON_MOMENTS_MANIFEST_IMPORT_QUEUE_URL:
       Ref: ManifestImportQueue
     NEKTRON_MOMENTS_LOCATION_NORMALIZATION_RULES_PATH: /var/task/location_normalization_rules.json
@@ -218,7 +218,7 @@ functions:
             Fn::GetAtt:
               - ProcessingQueue
               - Arn
-          enabled: false
+          enabled: true
           batchSize: 1
           functionResponseType: ReportBatchItemFailures
   manifestImportWorker:

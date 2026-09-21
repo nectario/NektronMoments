@@ -4,6 +4,12 @@ This directory defines the small, independent Nektron Moments AWS stack. It is
 safe to package without contacting the database or reading application secrets.
 Nothing here deploys automatically.
 
+Production enrichment was explicitly authorized to resume on 2026-09-21.
+The API enrichment gate, single-message SQS worker and due-job retry schedule
+are enabled in the deployment source. The $230 monthly scene-description cap,
+100,000-call ceiling, 1,000 geocode-call limit and worker concurrency of one
+are unchanged. General maintenance schedules remain disabled.
+
 ## What the stack creates
 
 - A Python 3.12 Lambda behind an API Gateway HTTP API. `GET /v1/health` is
@@ -204,18 +210,19 @@ the stack succeeds:
 npm run deploy -- --budget-email info@nektron.ai
 ```
 
-The staged metadata rollout declares both the general enrichment event-source
-mapping and `RetryDueJobs` rule disabled, and sets
-`NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED=false`. The manifest-import worker
-and its recovery rule remain enabled. Enabling enrichment later is a deliberate
-release that must change all three controls together; the API otherwise rejects
-preparation before creating jobs or provider reservations.
+The authorized enrichment rollout enables the general enrichment event-source
+mapping and `RetryDueJobs` rule, and sets
+`NEKTRON_MOMENTS_ENRICHMENT_PROCESSING_ENABLED=true`. The manifest-import worker
+and its recovery rule remain enabled. An emergency pause should disable all
+three enrichment controls together; the API pause rejects preparation before
+creating jobs or provider reservations. Pausing does not cancel a provider call
+that has already started.
 
 Other supported parameters are:
 
 - `monthlyBudgetUsd` (default `50`)
 - `allowedOrigin` (default `*`; native clients do not depend on browser CORS)
-- `retryScheduleState` (`DISABLED` while general enrichment is paused)
+- `retryScheduleState` (default `ENABLED` for enrichment recovery)
 - `manifestImportRetryScheduleState` (`ENABLED` for bulk-import recovery)
 - `maintenanceSchedulesState` (`DISABLED` for deferred maintenance jobs)
 
