@@ -30,5 +30,3 @@ try:
         print(f"{model}: schema verified; invalid zero limit prevented job creation")
 finally:
     runtime.api.close()
-    if runtime.local_state is not None:
-        runtime.local_state.close()
