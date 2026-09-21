@@ -199,3 +199,17 @@ def test_geocode_only_pages_still_consume_the_selected_run_allowance(tmp_path):
     api=LocationApi(); p=Provider(); r=runner(tmp_path,api,p,include_geocode=True)
     r.run(SimpleNamespace(source_id='source'),1)
     assert api.preparations==1 and p.calls==0
+
+
+def test_changing_original_is_rejected_before_ai(tmp_path, monkeypatch):
+    from PIL import Image
+    from cli.nektron_moments_cli.scene_preview import prepare_scene_preview, ScenePreviewError
+    photo=tmp_path/'changing.jpg'
+    Image.new('RGB',(80,80),'blue').save(photo)
+    original_save=Image.Image.save
+    def changed_save(image,*args,**kwargs):
+        result=original_save(image,*args,**kwargs)
+        with photo.open('ab') as stream:stream.write(b'changed')
+        return result
+    monkeypatch.setattr(Image.Image,'save',changed_save)
+    with pytest.raises(ScenePreviewError):prepare_scene_preview(photo)

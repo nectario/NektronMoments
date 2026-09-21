@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import os
 from dataclasses import dataclass
 from io import BytesIO
 from pathlib import Path
@@ -97,6 +98,7 @@ def prepare_scene_preview(
     try:
         source_path = Path(path)
         with source_path.open("rb") as source:
+            before = os.fstat(source.fileno())
             source_digest = hashlib.sha256()
             while chunk := source.read(1024 * 1024):
                 source_digest.update(chunk)
@@ -130,6 +132,9 @@ def prepare_scene_preview(
                 )
                 content = output.getvalue()
                 width, height = clean.size
+            after = os.fstat(source.fileno())
+            if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
+                raise ScenePreviewError("The photo changed while its preview was being prepared.")
 
         digest = hashlib.sha256(content).digest()
         return ScenePreview(
