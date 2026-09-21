@@ -156,6 +156,8 @@ class SceneDescriptionProviderError(RuntimeError):
         super().__init__(failure.user_message)
         self.failure = failure
         self.provider_called = provider_called
+        self.provider_error_code: str | None = None
+        self.retry_after_seconds: int | None = None
 
 
 @dataclass(frozen=True)
@@ -371,6 +373,9 @@ class OpenAISceneDescriptionProvider:
         try:
             self._raise_for_http_status(response)
         except SceneDescriptionProviderError as exc:
+            code = response.error_code
+            exc.provider_error_code = code if isinstance(code, str) and re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", code) else None
+            exc.retry_after_seconds = response.retry_after_seconds
             if exc.failure.failure_class is ProviderFailureClass.AUTHENTICATION:
                 if self._api_key_invalidator is not None:
                     self._api_key_invalidator()
@@ -498,9 +503,19 @@ class OpenAISceneDescriptionProvider:
                 retryable=False,
             )
         if status_code == 429:
+            if (response.error_code or "").casefold() == "credit_balance_exhausted":
+                raise _failure(
+                    ProviderFailureClass.QUOTA,
+                    "OpenAICreditsExhausted",
+                    "Your OpenAI API credit balance is exhausted. Add credits in OpenAI billing before resuming.",
+                    retryable=False,
+                )
             if (response.error_code or "").casefold() not in {
                 "insufficient_quota",
                 "billing_hard_limit_reached",
+                "organization_spend_limit_exceeded",
+                "project_spend_limit_exceeded",
+                "organization_usage_limit_exceeded",
             }:
                 raise _failure(
                     ProviderFailureClass.TRANSIENT,

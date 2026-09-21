@@ -35,6 +35,12 @@ internal static class GalleryFeatureTests
         try { StartupProcessing.Arguments(StartupProcessingMode.None, "source"); check(false, "Off must not create a job"); }
         catch (InvalidOperationException) { check(true, "Off cannot create a processing command"); }
         var fullProgress = new MetadataProgress(); fullProgress.ConfigureSources(["Photos"], withEnrichment: true);
+        var byokProgress = new MetadataProgress(); byokProgress.ConfigureSources(["Photos"], withEnrichment: true);
+        byokProgress.Source("Photos", 1, 1); byokProgress.Report("BYOK analyzed · 1/10 descriptions completed · saved locally");
+        byokProgress.Report("BYOK synchronized · description saved to your library");
+        check(byokProgress.Snapshot.Completed == 1 && byokProgress.Snapshot.Total == 10, "BYOK preserves actual completion progress while synchronizing");
+        byokProgress.Finish(false, false);
+        check(byokProgress.Snapshot.Message.StartsWith("BYOK pass complete"), "BYOK completion is not presented as an AI job still queued");
         fullProgress.Source("Photos", 1, 1); fullProgress.Report("Preparing explicit enrichment for up to 64 media asset(s)");
         check(fullProgress.Snapshot.EnrichmentEnabled && fullProgress.Snapshot.Phase == "Preparing AI and address enrichment", "Full progress exposes enrichment rather than only metadata");
         fullProgress.Report("Staged scene preview for photo.jpg");

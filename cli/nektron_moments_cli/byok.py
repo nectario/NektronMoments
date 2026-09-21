@@ -134,10 +134,13 @@ class ByokRunner:
             result = self.provider.describe_bytes(preview.content)
         except SceneDescriptionProviderError as error:
             # No blind retry of an ambiguous paid request. Keep the reservation.
-            state = 'Ready' if error.failure.code == 'OpenAIRateLimited' else 'NeedsAttention' if not error.provider_called else 'Uncertain'
+            rejected = error.failure.code in {'OpenAIRateLimited', 'OpenAICreditsExhausted', 'OpenAIQuotaDeferred', 'OpenAIAuthenticationFailed'}
+            state = 'Ready' if rejected else 'NeedsAttention' if not error.provider_called else 'Uncertain'
             self.journal.set(row['JobId'], state, error.failure.code,
-                cost=Decimal(0) if error.failure.code == 'OpenAIRateLimited' or not error.provider_called else None)
-            self.pause_reason = error.failure.code
+                cost=Decimal(0) if rejected or not error.provider_called else None)
+            self.pause_reason = error.failure.code + (f' ({error.provider_error_code})' if error.provider_error_code else '')
+            if error.retry_after_seconds is not None:
+                self.pause_reason += f' · retry after {error.retry_after_seconds}s'
             self.stop.set()
             return
         except Exception:
@@ -158,7 +161,7 @@ class ByokRunner:
         while rows := self.journal.rows(binding.source_id, ('ResultReady',)):
             for row in rows:
                 self.sync_result(row)
-        cursor, used = None, 0
+        cursor, used, completed_count = None, 0, 0
         seen = set()
         with self.worker_pool() as pool:
             while used < limit and not self.stop.is_set():
@@ -200,7 +203,8 @@ class ByokRunner:
                     futures.append(pool.submit(self.analyze, row))
                 for future in as_completed(futures):
                     if future.result():
-                        self.progress('BYOK analyzed · description saved locally')
+                        completed_count += 1
+                        self.progress(f'BYOK analyzed · {completed_count:,}/{limit:,} descriptions completed · saved locally')
                         for completed in self.journal.rows(binding.source_id, ('ResultReady',)):
                             self.sync_result(completed)
                 # Provider threads never use the shared backend auth session.

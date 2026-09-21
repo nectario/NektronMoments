@@ -76,6 +76,35 @@ def test_provider_accepts_inline_jpeg_without_weakening_url_validation():
     with pytest.raises(ValueError):p.describe('data:image/jpeg;base64,AA==')
 
 
+def test_provider_exposes_only_safe_failure_code_and_retry_delay():
+    from services.enrichment.openai_scene import SceneDescriptionProviderError
+    class Transport:
+        def post_json(self,*args,**kw):
+            return JsonHttpResponse(429,None,error_code='rate_limit_exceeded',retry_after_seconds=60)
+    p=OpenAISceneDescriptionProvider('test-only',transport=Transport())
+    with pytest.raises(SceneDescriptionProviderError) as caught:p.describe_bytes(b'\xff\xd8test')
+    assert caught.value.provider_error_code=='rate_limit_exceeded'
+    assert caught.value.retry_after_seconds==60
+
+
+def test_exhausted_credits_pause_without_retrying_or_consuming_local_budget(tmp_path):
+    from services.enrichment.openai_scene import SceneDescriptionProviderError
+    from services.enrichment.models import ProviderFailureClass
+    class Transport:
+        def post_json(self,*args,**kw):
+            return JsonHttpResponse(429,None,error_code='credit_balance_exhausted')
+    p=OpenAISceneDescriptionProvider('test-only',transport=Transport())
+    with pytest.raises(SceneDescriptionProviderError) as caught:p.describe_bytes(b'\xff\xd8test')
+    assert caught.value.failure.failure_class==ProviderFailureClass.QUOTA
+    assert not caught.value.failure.retryable
+    class RejectedProvider:
+        def describe_bytes(self,value): raise caught.value
+    r=runner(tmp_path,Api(),RejectedProvider())
+    assert r.run(SimpleNamespace(source_id='source'),1)=={'Ready':1}
+    assert r.pause_reason.startswith('OpenAICreditsExhausted')
+    assert Decimal(r.journal.rows('source')[0]['CostUsd'])==0
+
+
 def test_owned_claim_and_result_are_idempotent_and_do_not_charge_managed_budget(session_factory):
     service=Phase1DomainService(session_factory,clock=lambda:NOW)
     user,source,_=setup_photo(service)

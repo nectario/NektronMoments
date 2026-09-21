@@ -111,6 +111,7 @@ public sealed class MetadataProgress
         lock (_gate) {
             if (_current.State != "Running") return;
             if (line.StartsWith("BYOK ")) _byok = true;
+            if (_byok && phase == _current.Phase && done is null) { done = _current.Completed; total = _current.Total; }
             _current = _current with { Phase = phase, Message = line, Completed = done, Total = total, ItemsPerSecond = rate };
             UpdateOperation("Running"); AddLog(phase, line);
         }

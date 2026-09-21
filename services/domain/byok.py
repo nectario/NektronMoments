@@ -37,10 +37,12 @@ async def save_byok_result(service, user_id, device_id, job_id, claim_id, descri
             raise ConflictError("ByokAssetUnavailable", "This photo is no longer active")
         now = service._now()
         if description is None:
-            if existing is None:
+            if existing is None or request.get("serviceTier") != "default":
                 job.provider = "OpenAI-BYOK"
                 request["byokClaimId"] = str(claim_id)
                 request["executionMode"] = "BYOK"
+                request["serviceTier"] = "default"
+                request["billingMode"] = "UserProvidedKey"
                 job.request_json = request
                 job.updated_at_utc = now
                 service._add_job_change(session, job=job, now=now)
