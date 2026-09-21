@@ -1745,6 +1745,30 @@
         }
       }
     },
+    "/v1/jobs/{jobId}/byok": {
+      "post": {
+        "tags": ["Jobs"], "operationId": "submitByokResult",
+        "summary": "Claim a device-owned analysis or synchronize its completed description",
+        "description": "No image or provider key is accepted. A durable claimId makes claim and completion replay safe. Omit description to claim; supply it to complete. Already queued cloud jobs are not taken over.",
+        "parameters": [
+          {"$ref": "#/components/parameters/JobIdPath"},
+          {"$ref": "#/components/parameters/DeviceIdHeader"},
+          {"$ref": "#/components/parameters/IdempotencyKeyHeader"}
+        ],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ByokResultRequest"}}}},
+        "responses": {
+          "200": {"description": "Claim or completed result acknowledged.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ByokResultResponse"}}}},
+          "400": {"$ref": "#/components/responses/BadRequest"},
+          "401": {"$ref": "#/components/responses/Unauthorized"},
+          "403": {"$ref": "#/components/responses/Forbidden"},
+          "404": {"$ref": "#/components/responses/NotFound"},
+          "409": {"$ref": "#/components/responses/Conflict"},
+          "422": {"$ref": "#/components/responses/Unprocessable"},
+          "500": {"$ref": "#/components/responses/ServerError"},
+          "503": {"$ref": "#/components/responses/ServiceUnavailable"}
+        }
+      }
+    },
     "/v1/jobs/{jobId}/retry": {
       "post": {
         "tags": [
@@ -3327,10 +3351,22 @@
           "Description"
         ]
       },
+      "ByokResultRequest": {
+        "type": "object", "additionalProperties": false, "required": ["claimId"],
+        "properties": {
+          "claimId": {"type": "string", "format": "uuid"},
+          "description": {"type": "string", "nullable": true, "minLength": 1, "maxLength": 2000}
+        }
+      },
+      "ByokResultResponse": {
+        "type": "object", "additionalProperties": false, "required": ["status"],
+        "properties": {"status": {"type": "string", "enum": ["Claimed", "Succeeded"]}}
+      },
       "EnrichmentPrepareRequest": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "executionMode": {"type": "string", "enum": ["Managed", "BYOK"], "default": "Managed"},
           "cursor": { "type": "string", "nullable": true, "maxLength": 1024, "description": "Continuation from the previous preparation page for this source." },
           "descriptionModel": {
             "type": "string",

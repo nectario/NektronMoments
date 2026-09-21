@@ -522,6 +522,12 @@ class DomainServiceAdapter:
         )
         return _mutation_result(value, _manifest)
 
+    async def byok_result(self, user_id, device_id, job_id, payload):
+        from services.domain.byok import save_byok_result
+        status = await _domain_call(save_byok_result(
+            self._service, user_id, device_id, job_id, payload.claim_id, payload.description))
+        return api.ByokResultResponse(status=status)
+
     async def prepare_enrichment(
         self,
         user_id: UUID,
@@ -540,6 +546,7 @@ class DomainServiceAdapter:
                     limit=payload.limit,
                     description_model=payload.description_model,
                     cursor=payload.cursor,
+                    execution_mode=payload.execution_mode,
                 ),
                 _domain_mutation(mutation),
             )

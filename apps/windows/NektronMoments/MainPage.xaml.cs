@@ -405,7 +405,7 @@ public sealed partial class MainPage : Page
             var activity = await _bridge.CallAsync<JsonElement>(new { command = "activity" }, _lifetime.Token);
             var lines = new List<string> { "Saved CLI processing activity", "" };
             foreach (var queue in activity.GetProperty("queues").EnumerateObject()) {
-                lines.Add(queue.Name switch { "ManifestOutbox" => "Metadata batches", "BulkManifestOutbox" => "Bulk imports", _ => "Scene previews" });
+                lines.Add(queue.Name switch { "ManifestOutbox" => "Metadata batches", "BulkManifestOutbox" => "Bulk imports", "ByokAnalysis" => "Direct AI (BYOK)", _ => "Legacy scene previews" });
                 foreach (var count in queue.Value.EnumerateObject()) lines.Add($"  {count.Name}: {count.Value}");
                 if (!queue.Value.EnumerateObject().Any()) lines.Add("  No saved work");
                 lines.Add("");

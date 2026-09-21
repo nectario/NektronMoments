@@ -10,10 +10,10 @@ public static class StartupProcessing
         options.Validate();
         return ["sync", sourceId, "--with-enrichment", "--enrichment-limit",
             options.Limit.ToString(System.Globalization.CultureInfo.InvariantCulture),
-            "--description-model", options.Model, "--no-input"];
+            "--description-model", options.Model, "--byok", "--no-input"];
     }
     public static string[] Arguments(StartupProcessingMode mode, string sourceId) => mode switch {
-        StartupProcessingMode.Full => ["sync", sourceId, "--with-enrichment", "--no-input"],
+        StartupProcessingMode.Full => ["sync", sourceId, "--with-enrichment", "--byok", "--no-input"],
         StartupProcessingMode.FileMetadata => ["sync", sourceId, "--no-input"],
         _ => throw new InvalidOperationException("Off does not start a processing job."),
     };

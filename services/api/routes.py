@@ -24,6 +24,8 @@ from services.api.models import (
     DeviceRegistrationRequest,
     EnrichmentPrepareRequest,
     EnrichmentPrepareResponse,
+    ByokResultRequest,
+    ByokResultResponse,
     HealthStatus,
     ManifestRequest,
     ManifestResponse,
@@ -330,6 +332,15 @@ def create_phase1_router() -> APIRouter:
             response, result, allowed_statuses={200}, default_status=200
         )
         return result.value
+
+    @router.post("/jobs/{job_id}/byok", response_model=ByokResultResponse)
+    async def byok_result(
+        job_id: UUID, payload: ByokResultRequest, requesting_device_id: DeviceId,
+        idempotency_key: IdempotencyKey,
+        user: CurrentUser = Depends(get_current_user),
+        service: Phase1Service = Depends(get_phase1_service),
+    ) -> ByokResultResponse:
+        return await service.byok_result(user.user_id, requesting_device_id, job_id, payload)
 
     @router.post("/uploads/plan", response_model=UploadPlan)
     async def create_upload_plan(

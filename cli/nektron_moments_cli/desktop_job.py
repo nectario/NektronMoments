@@ -9,6 +9,8 @@ from .sync import MAX_ENRICHMENT_RUN_LIMIT
 
 
 def permitted(arguments: list[str]) -> bool:
+    if len(arguments) in (5, 7, 9) and arguments[-2:] == ["--byok", "--no-input"]:
+        return permitted(arguments[:-2] + ["--no-input"])
     if len(arguments) in (6, 8) and arguments[0] == "sync":
         try:
             UUID(arguments[1])

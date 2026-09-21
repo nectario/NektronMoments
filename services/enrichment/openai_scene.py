@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import base64
 from decimal import Decimal, ROUND_CEILING
 import json
 import re
@@ -328,6 +329,15 @@ class OpenAISceneDescriptionProvider:
 
     def describe(self, preview_url: str) -> SceneDescriptionResult:
         self._validate_preview_url(preview_url)
+        return self._describe_image(preview_url)
+
+    def describe_bytes(self, preview: bytes) -> SceneDescriptionResult:
+        """Device-side BYOK: send a bounded JPEG directly, without S3 staging."""
+        if not isinstance(preview, bytes) or not preview.startswith(b"\xff\xd8") or len(preview) > 4_000_000:
+            raise ValueError("A JPEG preview smaller than 4 MB is required")
+        return self._describe_image("data:image/jpeg;base64," + base64.b64encode(preview).decode("ascii"))
+
+    def _describe_image(self, preview_url: str) -> SceneDescriptionResult:
         api_key = self._current_api_key()
         response = self._transport.post_json(
             OPENAI_RESPONSES_URL,

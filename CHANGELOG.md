@@ -1,5 +1,19 @@
 # Nektron Moments Windows releases
 
+## [0.1.30] - 2026-09-21
+
+- Personal BYOK: previews are prepared on the source device and sent directly to
+  OpenAI with the existing local key, using four concurrent Standard-tier calls.
+  No S3 preview staging or managed AI worker is involved. Legacy queued work is
+  left alone. Address lookup remains a separate existing backend service.
+- Durable device claims and a local result journal make backend synchronization
+  independently resumable. Interrupted calls with unknown outcomes require review
+  rather than automatic repeat billing. Add `byok` CLI catch-up without rescanning.
+- Full Windows processing selects BYOK, displays its progress and reads completed
+  local descriptions even while backend synchronization is pending. Personal
+  usage has a conservative device-local monthly US$230 guard, separate from the
+  existing managed-service budget. NektronAI-managed gateway is future work.
+
 ## [0.1.29] - 2026-09-21
 
 - Replace dense Settings pricing prose with a native three-column model/rate

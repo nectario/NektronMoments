@@ -899,7 +899,9 @@ class Phase1DomainService:
         registered device.
         """
 
-        if not self._enrichment_processing_enabled:
+        if command.execution_mode not in {"Managed", "BYOK"}:
+            raise ConflictError("InvalidExecutionMode", "Choose Managed or BYOK")
+        if not self._enrichment_processing_enabled and (command.execution_mode != "BYOK" or "Geocode" in command.types):
             raise ConflictError(
                 "EnrichmentProcessingPaused",
                 "Enrichment processing is paused; metadata sync remains available",
@@ -943,7 +945,7 @@ class Phase1DomainService:
                     "SourceDeviceMismatch",
                     "Local enrichment must be requested by the source device",
                 )
-            if source.storage_mode != "Local":
+            if source.storage_mode != "Local" and command.execution_mode != "BYOK":
                 raise ConflictError(
                     "LocalEnrichmentRequired",
                     "This enrichment preparation flow currently supports Local sources",
@@ -989,6 +991,7 @@ class Phase1DomainService:
                 )
                 description_actionable = and_(
                     supported_photo,
+                    or_(description_job.provider.is_(None), description_job.provider != "OpenAI-BYOK"),
                     or_(
                         description_job.id.is_(None),
                         description_job.status == "Preparing",
@@ -1071,6 +1074,7 @@ class Phase1DomainService:
                     )
                     .order_by(MediaAsset.id, MediaOccurrence.id)
                     .limit(command.limit)
+                    .with_for_update()
                 ).all()
 
                 now = self._now()
@@ -1158,6 +1162,8 @@ class Phase1DomainService:
                     ):
                         continue
                     selected_description_job = existing_description_job
+                    if selected_description_job is not None and selected_description_job.provider == "OpenAI-BYOK":
+                        continue  # A geocode-eligible row must not overwrite a device claim.
                     if selected_description_job is None:
                         selected_description_job = self._new_description_job(
                             account=account,
@@ -2820,6 +2826,7 @@ class Phase1DomainService:
                 job = JobRepository(session).require(
                     user_id=account.id, job_public_id=command.processing_job_id
                 )
+                session.refresh(job, with_for_update=True)
                 if job.media_asset_id != asset.id or job.job_type != "Description":
                     raise ConflictError(
                         "ProcessingJobMismatch",
@@ -2842,6 +2849,8 @@ class Phase1DomainService:
                     job.failure_message = None
                     job.completed_at_utc = None
                     job.updated_at_utc = now
+                if job.provider == "OpenAI-BYOK":
+                    raise ConflictError("ByokRequiresDirectProcessing", "BYOK previews must not be staged in cloud storage")
                 if job.status != "Preparing":
                     raise ConflictError(
                         "ProcessingJobNotPreparing",
@@ -3085,6 +3094,7 @@ class Phase1DomainService:
                 job = self._job_for_upload_session(
                     session=session, account=account, upload=upload
                 )
+                session.refresh(job, with_for_update=True)
                 if job.status == "Preparing":
                     self._release_description_provider_request(
                         session=session, job=job, now=now
@@ -3160,6 +3170,9 @@ class Phase1DomainService:
                     raise ConflictError(
                         "UploadLeaseExpired", "The temporary upload lease has expired"
                     )
+                session.refresh(job, with_for_update=True)
+                if job.provider == "OpenAI-BYOK":
+                    raise ConflictError("ByokRequiresDirectProcessing", "BYOK results must be submitted by the source device")
                 if job.status != "Preparing":
                     raise ConflictError(
                         "ProcessingJobNotPreparing",

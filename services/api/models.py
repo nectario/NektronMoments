@@ -444,7 +444,17 @@ class ManifestResponse(ApiModel):
     results: list[ManifestEntryResult]
 
 
+class ByokResultRequest(ApiModel):
+    claim_id: UUID
+    description: str | None = Field(default=None, min_length=1, max_length=2000)
+
+
+class ByokResultResponse(ApiModel):
+    status: Literal["Claimed", "Succeeded"]
+
+
 class EnrichmentPrepareRequest(ApiModel):
+    execution_mode: Literal["Managed", "BYOK"] = "Managed"
     cursor: str | None = Field(default=None, max_length=1024)
     description_model: Literal["gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol"] | None = None
     types: list[EnrichmentKind] = Field(

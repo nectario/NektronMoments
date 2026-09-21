@@ -47,6 +47,7 @@ public sealed class MetadataProgress
     private static readonly Regex Ansi = new(@"\x1B\[[0-?]*[ -/]*[@-~]", RegexOptions.Compiled);
     private static readonly Regex Rate = new(@"(?<rate>[\d,.]+)\s+(?:files|rows)/s", RegexOptions.Compiled | RegexOptions.CultureInvariant);
     private readonly object _gate = new();
+    private bool _byok;
     private readonly Queue<ProcessingLogEntry> _log = new();
     private ProcessingSnapshot _current = new("Running", "Starting", "Preparing metadata processing…", "", 0, 0, null, null, DateTimeOffset.UtcNow, null);
     public ProcessingSnapshot Snapshot { get { lock (_gate) return _current; } }
@@ -93,6 +94,7 @@ public sealed class MetadataProgress
             line.StartsWith("Processing media") ? "Extracting metadata and hashing" :
             line.StartsWith("Bulk metadata") ? "Updating indexed metadata" :
             line.StartsWith("Accepted manifest") || line.StartsWith("Resuming ") || line.StartsWith("Sending ") ? "Saving metadata" :
+            line.StartsWith("BYOK ") ? "Direct AI analysis (your key)" :
             line.StartsWith("Preparing explicit enrichment") || line.StartsWith("Explicit enrichment prepared") || line.StartsWith("Enrichment catch-up") ? "Preparing AI and address enrichment" :
             line.StartsWith("Preparing ") && line.Contains("scene preview") || line.StartsWith("Staged scene preview") || line.StartsWith("Scene preview") || line.StartsWith("Scene description") ? "Preparing scene descriptions" : null;
         if (phase is null) return; // Rich summary borders and unrelated output are not progress.
@@ -108,6 +110,7 @@ public sealed class MetadataProgress
         }
         lock (_gate) {
             if (_current.State != "Running") return;
+            if (line.StartsWith("BYOK ")) _byok = true;
             _current = _current with { Phase = phase, Message = line, Completed = done, Total = total, ItemsPerSecond = rate };
             UpdateOperation("Running"); AddLog(phase, line);
         }
@@ -121,6 +124,7 @@ public sealed class MetadataProgress
             _current = _current with { State = state,
             Phase = failed ? "Needs attention" : stopped ? "Stopped safely" : _current.EnrichmentEnabled ? "Processing pass complete" : "Metadata pass complete",
             Message = failed ? "The operation could not finish. Saved progress is retained; retry when ready." : stopped ? "Completed work is saved. Queued server-side jobs may continue; unfinished local work remains resumable." :
+                _byok ? "BYOK pass complete. Finished descriptions are saved locally and synchronized. Remaining photos can be resumed; separate address jobs may still be queued." :
                 _current.EnrichmentEnabled ? "Library refreshed. Requested AI/address jobs may still be queued, processing or quota-deferred. Older pending photos remain eligible for later bounded passes." :
                 "Library refreshed. Saved or server-side work may still appear in the processing queues. No paid enrichment was started.",
             Completed = failed || stopped ? _current.Completed : 1, Total = failed || stopped ? _current.Total : 1, Ended = DateTimeOffset.UtcNow, ItemsPerSecond = null };

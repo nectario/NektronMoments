@@ -597,8 +597,29 @@ def _print_enrichment(summary: EnrichmentSummary) -> None:
     console.print(table)
 
 
+@app.command("byok")
+def byok_analyze(
+    source: Annotated[str | None, typer.Argument(help="Registered source name or ID.")] = None,
+    limit: Annotated[int, typer.Option(min=1, max=MAX_ENRICHMENT_RUN_LIMIT)] = 10000,
+    workers: Annotated[int, typer.Option(min=1, max=16)] = 4,
+    model: Annotated[Literal["gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol"], typer.Option()] = "gpt-5.6-terra",
+) -> None:
+    """Analyze pending indexed photos directly; no rescan or S3 preview upload."""
+    with command_errors(interrupt_message="Stopped. Completed BYOK results are saved; ambiguous in-flight calls require review."):
+        from .byok import ByokRunner
+        runtime = _runtime()
+        binding = runtime.state.resolve_binding(source)
+        with runtime.state.source_sync_lock(binding.source_id):
+            runner = ByokRunner(runtime.api, runtime.state, _registered_device_id(runtime),
+                model=model, workers=workers, progress=lambda message: console.print(escape(message)))
+            counts = runner.run(binding, limit)
+            if runner.stop.is_set() or counts.get('Uncertain', 0) or counts.get('NeedsAttention', 0):
+                _error("BYOK paused or needs attention. Completed results are saved; review the BYOK status before resuming.", ExitCode.PARTIAL_SYNC)
+
+
 @app.command()
 def sync(
+    byok: Annotated[bool, typer.Option("--byok", help="Analyze previews directly from this machine using your OpenAI key.")] = False,
     enrichment_limit: Annotated[int, typer.Option("--enrichment-limit", min=1, max=MAX_ENRICHMENT_RUN_LIMIT, help="Total assets per source for this run; sent in resumable batches of 64.")] = DEFAULT_ENRICHMENT_LIMIT,
     description_model: Annotated[Literal["gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol"] | None, typer.Option("--description-model", help="Scene description model for newly prepared jobs.")] = None,
     source: Annotated[str | None, typer.Argument(help="Source ID, name, or local path.")] = None,
@@ -680,6 +701,8 @@ def sync(
             raise ValueError("--fast-add cannot be combined with --force-rehash")
         if dry_run and with_enrichment:
             raise ValueError("--with-enrichment cannot be combined with --dry-run")
+        if byok and (not with_enrichment or fast_add):
+            raise ValueError("--byok requires --with-enrichment and a normal metadata sync")
         runtime = _runtime()
         binding = runtime.state.resolve_binding(source)
         with runtime.state.source_sync_lock(binding.source_id):
@@ -698,19 +721,28 @@ def sync(
                         else None
                     ),
                 )
+                byok_runner = None
+                if byok:
+                    from .byok import ByokRunner
+                    byok_runner = ByokRunner(runtime.api, runtime.state, _registered_device_id(runtime),
+                        model=description_model or 'gpt-5.6-terra', progress=progress, include_geocode=True)
                 summary = engine.sync(
                     binding,
                     dry_run=dry_run,
                     force_rehash=force_rehash,
                     scan_workers=scan_workers,
                     fast_add=fast_add,
-                    with_enrichment=with_enrichment,
+                    with_enrichment=with_enrichment and not byok,
                     enrichment_limit=enrichment_limit,
                     transport=transport,
                     bulk_max_rows=bulk_max_rows,
                 )
+                byok_counts = None
+                if byok_runner is not None and not summary.failed and not summary.queued_batches:
+                    byok_counts = byok_runner.run(binding, enrichment_limit)
+                    summary.failed += byok_counts.get('Uncertain', 0) + byok_counts.get('NeedsAttention', 0) + int(byok_runner.stop.is_set())
                 if json_output:
-                    _emit(summary.as_dict())
+                    _emit({**summary.as_dict(), **({'byok': byok_counts} if byok_counts is not None else {})})
                 else:
                     _print_sync(summary)
                 if summary.failed > 0:

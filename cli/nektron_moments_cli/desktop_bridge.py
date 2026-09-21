@@ -183,6 +183,11 @@ class DesktopCatalog:
                     self.db.execute("SELECT Description,Address,AssetId,DetailJson,Hash FROM Media WHERE Hash<>'' AND (Description<>'' OR DetailJson<>'')"))
             if self.db.execute("SELECT 1 FROM sqlite_master WHERE name='Screenshot'").fetchone():
                 fresh.executemany("INSERT INTO Screenshot VALUES(?)", self.db.execute("SELECT Hash FROM Screenshot"))
+            with closing(self._source_db()) as local:
+                if local.execute("SELECT 1 FROM sqlite_master WHERE name='ByokAnalysis'").fetchone():
+                    fresh.executemany("UPDATE Media SET Description=? WHERE Hash=?", (
+                        (json.loads(row['ResultJson'])['description'], row['ContentHash'])
+                        for row in local.execute("SELECT ContentHash,ResultJson FROM ByokAnalysis WHERE State IN ('ResultReady','Synced') AND ResultJson IS NOT NULL")))
             projected_sources = [{
                 "id": s["SourceId"], "name": s["DisplayName"], "path": windows_path(s["RootPath"]),
             } for s in sources]
@@ -377,10 +382,17 @@ class DesktopCatalog:
         )
         self.db.commit()
 
+    def byok_description(self, content_hash):
+        with closing(self._source_db()) as source:
+            if not source.execute("SELECT 1 FROM sqlite_master WHERE name='ByokAnalysis'").fetchone():
+                return None
+            row = source.execute("SELECT ResultJson,State FROM ByokAnalysis WHERE ContentHash=? AND State IN ('ResultReady','Synced') AND ResultJson IS NOT NULL LIMIT 1", (content_hash,)).fetchone()
+            return (json.loads(row['ResultJson'])['description'], row['State']) if row else None
+
     def activity(self):
         with closing(self._source_db()) as source:
             counts = {}
-            for table in ("ManifestOutbox", "BulkManifestOutbox", "DescriptionOutbox"):
+            for table in ("ManifestOutbox", "BulkManifestOutbox", "DescriptionOutbox", "ByokAnalysis"):
                 exists = source.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)).fetchone()
                 counts[table] = dict(source.execute(f"SELECT State,COUNT(*) FROM {table} GROUP BY State")) if exists else {}
             scans = [dict(row) for row in source.execute(
@@ -510,6 +522,11 @@ class Bridge:
         if command == "detail":
             item = self.catalog.get(str(request.get("key", "")))
             result = {"item": item, "remote": None, "notice": ""}
+            byok = self.catalog.byok_description(item['hash']) if item['hash'] else None
+            if byok:
+                item['description'] = byok[0]
+                result['notice'] = 'AI completed on this device' + (' · Saved locally; backend synchronization pending' if byok[1] == 'ResultReady' else ' · Synchronized')
+                return result
             if not item["hash"]:
                 result["notice"] = "Content hashing is pending. This item has not yet been deduplicated."
                 return result

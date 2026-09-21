@@ -46,6 +46,18 @@ def test_windows_paths(source, expected):
     assert windows_path(source) == expected
 
 
+def test_saved_byok_description_is_visible_without_backend(catalog):
+    with sqlite3.connect(catalog.state_path) as db:
+        db.execute('CREATE TABLE ByokAnalysis(ContentHash TEXT,ResultJson TEXT,State TEXT)')
+        db.execute('INSERT INTO ByokAnalysis VALUES(?,?,?)', ('a'*64,json.dumps({'description':'A garden at sunset.'}),'ResultReady'))
+    def offline(): raise AssertionError('Local BYOK result must not need a network call')
+    result=Bridge(catalog,offline).dispatch({'command':'detail','key':'a'*64})
+    assert result['item']['description']=='A garden at sunset.'
+    assert 'synchronization pending' in result['notice']
+    catalog.refresh()
+    assert catalog.get('a'*64)['description']=='A garden at sunset.'
+
+
 def test_relative_locator_is_not_accepted_as_native_path():
     with pytest.raises(ValueError):
         windows_path("relative/a.jpg")

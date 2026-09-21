@@ -17,6 +17,8 @@ from services.api.models import (
     DeviceRegistrationRequest,
     EnrichmentPrepareRequest,
     EnrichmentPrepareResponse,
+    ByokResultRequest,
+    ByokResultResponse,
     ManifestRequest,
     ManifestResponse,
     MediaAssetDetail,
@@ -226,6 +228,9 @@ class Phase1Service(Protocol):
         payload: ManifestRequest,
         mutation: MutationContext,
     ) -> MutationResult[ManifestResponse]: ...
+
+    async def byok_result(self, user_id: UUID, device_id: UUID, job_id: UUID,
+                          payload: ByokResultRequest) -> ByokResultResponse: ...
 
     async def prepare_enrichment(
         self,

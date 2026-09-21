@@ -26,11 +26,11 @@ internal static class GalleryFeatureTests
         check(ai.Estimate() == .40448m && ai.Estimate(2) == .80896m, "Cost estimate uses model rates and number of sources");
         check(new AiProcessingOptions(64, "gpt-5.6-luna").Estimate() < ai.Estimate(), "Changing models changes the estimate");
         check(StartupProcessing.Arguments(StartupProcessingMode.Full, "source", new AiProcessingOptions(7, "gpt-5.6-sol")).SequenceEqual(
-            new[] { "sync", "source", "--with-enrichment", "--enrichment-limit", "7", "--description-model", "gpt-5.6-sol", "--no-input" }), "Full passes the selected model and limit");
+            new[] { "sync", "source", "--with-enrichment", "--enrichment-limit", "7", "--description-model", "gpt-5.6-sol", "--byok", "--no-input" }), "Full passes the selected model and limit through direct BYOK");
         check(StartupProcessing.Resolve(null, true) == StartupProcessingMode.FileMetadata, "Existing enabled startup setting migrates to metadata only, never paid Full mode");
         check(StartupProcessing.Resolve(null, false) == StartupProcessingMode.None, "Existing disabled startup setting stays off");
         check(StartupProcessing.Resolve("Full") == StartupProcessingMode.Full, "Full mode requires an explicit saved selection");
-        check(StartupProcessing.Arguments(StartupProcessingMode.Full, "source").SequenceEqual(new[] { "sync", "source", "--with-enrichment", "--no-input" }), "Full explicitly requests existing bounded enrichment");
+        check(StartupProcessing.Arguments(StartupProcessingMode.Full, "source").SequenceEqual(new[] { "sync", "source", "--with-enrichment", "--byok", "--no-input" }), "Full explicitly requests bounded direct BYOK enrichment");
         check(StartupProcessing.Arguments(StartupProcessingMode.FileMetadata, "source").SequenceEqual(new[] { "sync", "source", "--no-input" }), "Metadata mode cannot request enrichment");
         try { StartupProcessing.Arguments(StartupProcessingMode.None, "source"); check(false, "Off must not create a job"); }
         catch (InvalidOperationException) { check(true, "Off cannot create a processing command"); }

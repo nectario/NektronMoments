@@ -293,6 +293,7 @@ class EnrichmentPrepareCommand:
     limit: int
     description_model: str | None = None
     cursor: str | None = None
+    execution_mode: str = "Managed"
 
 
 @dataclass(frozen=True)
