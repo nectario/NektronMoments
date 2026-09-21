@@ -34,6 +34,8 @@ from .state import (
 
 MANIFEST_BATCH_SIZE = 100
 DEFAULT_ENRICHMENT_LIMIT = 64
+MAX_ENRICHMENT_RUN_LIMIT = 1_000_000
+ENRICHMENT_REQUEST_SIZE = 64
 BULK_AUTO_BATCH_THRESHOLD = 10
 BULK_AUTO_ROW_THRESHOLD = 1_000
 BULK_RESULT_APPLY_PAGE_SIZE = 500
@@ -239,8 +241,7 @@ class SyncEngine:
             self.progress("Library is already in sync")
             if not dry_run:
                 if with_enrichment:
-                    self._prepare_enrichment(binding, summary, limit=enrichment_limit)
-                    self._flush_description_outbox(
+                    self._run_enrichment(
                         binding,
                         summary,
                         limit=enrichment_limit,
@@ -287,8 +288,7 @@ class SyncEngine:
             )
             return summary
         if with_enrichment:
-            self._prepare_enrichment(binding, summary, limit=enrichment_limit)
-            self._flush_description_outbox(
+            self._run_enrichment(
                 binding,
                 summary,
                 limit=enrichment_limit,
@@ -318,8 +318,7 @@ class SyncEngine:
             root_path=binding.root_path,
             limit=limit,
         )
-        self._prepare_enrichment(binding, summary, limit=limit)
-        self._flush_description_outbox(binding, summary, limit=limit)
+        self._run_enrichment(binding, summary, limit=limit)
         self._add_description_attention_counts(
             binding,
             summary,
@@ -327,13 +326,47 @@ class SyncEngine:
         )
         return summary
 
+    def _run_enrichment(
+        self, binding: SourceBinding, summary: SyncSummary | EnrichmentSummary, *, limit: int
+    ) -> None:
+        """A user run is independent of the bounded server transaction size.
+
+        Each page is persisted before staging. Restarting is safe: queued or
+        completed server jobs are excluded, and interrupted uploads reuse the
+        existing outbox/idempotency machinery. The cursor moves past unreadable
+        photos so they cannot trap a catch-up run on its first page.
+        """
+        cursor = None
+        visited: set[str] = set()
+        remaining = limit
+        considered = 0
+        while remaining > 0:
+            batch = min(ENRICHMENT_REQUEST_SIZE, remaining)
+            prepared = self._prepare_enrichment(binding, summary, limit=batch, cursor=cursor)
+            can_continue = self._flush_description_outbox(binding, summary, limit=batch)
+            # Charge a full page against this run's allowance even when old
+            # saved previews, rather than newly prepared ones, were staged.
+            remaining -= batch
+            considered += int(prepared.get("assetsConsidered") or 0)
+            self.progress(f"Enrichment catch-up · {considered:,} assets prepared · {summary.descriptions_staged:,} previews staged · allowance {limit:,}")
+            next_cursor = prepared.get("nextCursor")
+            if remaining > 0 and "assetsConsidered" not in prepared:
+                self.progress("This server supports one enrichment batch only; update the server to continue catch-up beyond 64 assets.")
+            if can_continue is False or not next_cursor:
+                break
+            if not isinstance(next_cursor, str) or next_cursor in visited:
+                raise ValueError("Enrichment pagination did not advance; saved progress is retained")
+            visited.add(next_cursor)
+            cursor = next_cursor
+
     def _prepare_enrichment(
         self,
         binding: SourceBinding,
         summary: SyncSummary | EnrichmentSummary,
         *,
         limit: int,
-    ) -> None:
+        cursor: str | None = None,
+    ) -> dict[str, Any]:
         self.progress(
             f"Preparing explicit enrichment for up to {limit:,} media asset(s)"
         )
@@ -349,6 +382,8 @@ class SyncEngine:
         )
         if self.description_model is not None:
             prepare_setting += ":" + self.description_model
+        if cursor:
+            prepare_setting += ":" + cursor
         prepare_key = self.state.get_setting(prepare_setting)
         if not prepare_key:
             prepare_key = (
@@ -360,6 +395,7 @@ class SyncEngine:
             {
                 "types": ["Geocode", "Description"],
                 "limit": limit,
+                **({"cursor": cursor} if cursor else {}),
                 **({"descriptionModel": self.description_model} if self.description_model else {}),
             },
             device_id=device_id,
@@ -398,6 +434,7 @@ class SyncEngine:
             f"{geocode_jobs:,} location job(s) · "
             f"{description_jobs:,} scene job(s)"
         )
+        return prepared
 
     def _deliver_pending(
         self,
@@ -1184,7 +1221,7 @@ class SyncEngine:
         summary: SyncSummary | EnrichmentSummary,
         *,
         limit: int,
-    ) -> None:
+    ) -> bool:
         self._reconcile_sent_descriptions(binding)
         self._recover_supported_description_skips(binding, summary)
         tasks = self.state.due_description_tasks(
@@ -1264,6 +1301,7 @@ class SyncEngine:
                         message="Scene preview staging is temporarily unavailable.",
                     )
                     self.progress(f"Scene preview for {task.file_name} will retry later")
+                    return False  # Do not prepare more pages during a service/network failure.
                 continue
 
             if outcome == "Sent":
@@ -1271,9 +1309,10 @@ class SyncEngine:
                 self.progress(f"Staged scene preview for {task.file_name}")
             elif outcome == "QuotaDeferred":
                 self.progress(f"Scene preview for {task.file_name} is waiting for quota")
-                break
+                return False
             elif outcome == "Pending":
                 self.progress(f"Scene preview for {task.file_name} will retry later")
+        return True
 
     def _recover_supported_description_skips(
         self,
@@ -1729,9 +1768,9 @@ class SyncEngine:
     def _validate_enrichment_limit(limit: int) -> None:
         if isinstance(limit, bool) or not isinstance(limit, int):
             raise ValueError("Scene-preview limit must be an integer")
-        if not 1 <= limit <= DEFAULT_ENRICHMENT_LIMIT:
+        if not 1 <= limit <= MAX_ENRICHMENT_RUN_LIMIT:
             raise ValueError(
-                f"Enrichment limit must be between 1 and {DEFAULT_ENRICHMENT_LIMIT}"
+                f"Enrichment run limit must be between 1 and {MAX_ENRICHMENT_RUN_LIMIT}"
             )
 
     @staticmethod

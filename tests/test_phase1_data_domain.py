@@ -162,13 +162,14 @@ def prepare_enrichment(
     key: str,
     types: tuple[str, ...] = ("Geocode", "Description"),
     limit: int = 64,
+    cursor: str | None = None,
 ):
     return run(
         service.prepare_enrichment(
             user_id,
             device_id,
             source_id,
-            EnrichmentPrepareCommand(types=types, limit=limit),  # type: ignore[arg-type]
+            EnrichmentPrepareCommand(types=types, limit=limit, cursor=cursor),  # type: ignore[arg-type]
             context(key),
         )
     )
@@ -682,8 +683,9 @@ def test_hash_manifest_batch_does_not_select_once_per_entry(
         assert all(change.media_asset_id is not None for change in occurrence_changes)
 
 
+@pytest.mark.parametrize("queue_first", [True, False])
 def test_bounded_enrichment_prepare_is_set_oriented_and_advances(
-    session_factory,
+    session_factory, queue_first,
 ) -> None:
     service = Phase1DomainService(session_factory, clock=lambda: FIXED_NOW)
     user = bootstrap(service)
@@ -747,6 +749,7 @@ def test_bounded_enrichment_prepare_is_set_oriented_and_advances(
         event.remove(engine, "before_cursor_execute", record_select)
 
     assert first.description_jobs_prepared == 64
+    assert first.assets_considered == 64 and first.next_cursor
     assert len(first.scene_description_tasks) == 64
     assert len(selects) <= 8, "\n\n".join(selects)
     with transaction_scope(session_factory) as session:
@@ -759,7 +762,8 @@ def test_bounded_enrichment_prepare_is_set_oriented_and_advances(
         )
         assert len(jobs) == 64
         for job in jobs:
-            job.status = "Queued"
+            if queue_first:
+                job.status = "Queued"
 
     second = prepare_enrichment(
         service,
@@ -769,8 +773,13 @@ def test_bounded_enrichment_prepare_is_set_oriented_and_advances(
         key="bounded-prepare-second",
         types=("Description",),
         limit=64,
+        cursor=first.next_cursor,
     ).value
     assert second.description_jobs_prepared == 1
+    assert second.assets_considered == 1 and second.next_cursor is None
+    replay = prepare_enrichment(service, user.user_id, device.device_id, source.source_id,
+        key="bounded-prepare-second", types=("Description",), limit=64, cursor=first.next_cursor)
+    assert replay.value == second
     assert len(second.scene_description_tasks) == 1
     with transaction_scope(session_factory) as session:
         assert session.scalar(select(func.count()).select_from(ProcessingJob)) == 65

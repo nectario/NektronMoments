@@ -445,6 +445,7 @@ class ManifestResponse(ApiModel):
 
 
 class EnrichmentPrepareRequest(ApiModel):
+    cursor: str | None = Field(default=None, max_length=1024)
     description_model: Literal["gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol"] | None = None
     types: list[EnrichmentKind] = Field(
         default_factory=lambda: [
@@ -477,6 +478,8 @@ class SceneDescriptionTask(ApiModel):
 
 
 class EnrichmentPrepareResponse(ApiModel):
+    assets_considered: int = Field(default=0, ge=0, le=64)
+    next_cursor: str | None = None
     source_id: UUID
     geocode_jobs_queued: int = Field(ge=0)
     description_jobs_prepared: int = Field(ge=0)

@@ -275,6 +275,8 @@ def _enrichment_preparation(
     value: domain.EnrichmentPreparation,
 ) -> api.EnrichmentPrepareResponse:
     return api.EnrichmentPrepareResponse(
+        assets_considered=value.assets_considered,
+        next_cursor=value.next_cursor,
         source_id=value.source_id,
         geocode_jobs_queued=value.geocode_jobs_queued,
         description_jobs_prepared=value.description_jobs_prepared,
@@ -537,6 +539,7 @@ class DomainServiceAdapter:
                     types=tuple(str(item) for item in payload.types),
                     limit=payload.limit,
                     description_model=payload.description_model,
+                    cursor=payload.cursor,
                 ),
                 _domain_mutation(mutation),
             )

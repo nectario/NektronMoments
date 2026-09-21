@@ -5,6 +5,7 @@ import signal
 import sys
 import threading
 from uuid import UUID
+from .sync import MAX_ENRICHMENT_RUN_LIMIT
 
 
 def permitted(arguments: list[str]) -> bool:
@@ -15,7 +16,7 @@ def permitted(arguments: list[str]) -> bool:
         except ValueError:
             return False
         return (arguments[2:4] == ["--with-enrichment", "--enrichment-limit"]
-                and 1 <= limit <= 64 and arguments[-1] == "--no-input"
+                and 1 <= limit <= MAX_ENRICHMENT_RUN_LIMIT and arguments[-1] == "--no-input"
                 and (len(arguments) == 6 or (arguments[5] == "--description-model"
                      and arguments[6] in {"gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol"})))
     # No arbitrary CLI execution or destructive operations. Full startup mode

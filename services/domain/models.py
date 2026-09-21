@@ -292,6 +292,7 @@ class EnrichmentPrepareCommand:
     types: tuple[Literal["Geocode", "Description"], ...]
     limit: int
     description_model: str | None = None
+    cursor: str | None = None
 
 
 @dataclass(frozen=True)
@@ -311,6 +312,8 @@ class EnrichmentPreparation:
     geocode_jobs_queued: int
     description_jobs_prepared: int
     scene_description_tasks: tuple[SceneDescriptionTaskRecord, ...]
+    assets_considered: int = 0
+    next_cursor: str | None = None
 
 
 @dataclass(frozen=True)

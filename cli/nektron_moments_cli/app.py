@@ -25,6 +25,7 @@ from .media import MediaScanner
 from .runtime import Runtime, boto3_session, build_runtime, cloudformation_client
 from .sync import (
     DEFAULT_ENRICHMENT_LIMIT,
+    MAX_ENRICHMENT_RUN_LIMIT,
     EnrichmentSummary,
     SyncEngine,
     SyncSummary,
@@ -598,7 +599,7 @@ def _print_enrichment(summary: EnrichmentSummary) -> None:
 
 @app.command()
 def sync(
-    enrichment_limit: Annotated[int, typer.Option("--enrichment-limit", min=1, max=64, help="Maximum assets per source for this enrichment pass.")] = DEFAULT_ENRICHMENT_LIMIT,
+    enrichment_limit: Annotated[int, typer.Option("--enrichment-limit", min=1, max=MAX_ENRICHMENT_RUN_LIMIT, help="Total assets per source for this run; sent in resumable batches of 64.")] = DEFAULT_ENRICHMENT_LIMIT,
     description_model: Annotated[Literal["gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol"] | None, typer.Option("--description-model", help="Scene description model for newly prepared jobs.")] = None,
     source: Annotated[str | None, typer.Argument(help="Source ID, name, or local path.")] = None,
     dry_run: Annotated[bool, typer.Option("--dry-run", help="Scan and hash without changing the service.")] = False,
@@ -638,7 +639,7 @@ def sync(
             "--with-enrichment",
             help=(
                 "After metadata sync, explicitly queue location enrichment and "
-                f"prepare up to {DEFAULT_ENRICHMENT_LIMIT} scene previews. "
+                "prepare scene previews up to --enrichment-limit. "
                 "Provider usage may incur cost; default sync is metadata-only."
             ),
         ),
@@ -736,7 +737,7 @@ def enrich(
         typer.Option(
             "--limit",
             min=1,
-            max=DEFAULT_ENRICHMENT_LIMIT,
+            max=MAX_ENRICHMENT_RUN_LIMIT,
             help="Maximum media assets to prepare for location and scene enrichment.",
         ),
     ] = DEFAULT_ENRICHMENT_LIMIT,

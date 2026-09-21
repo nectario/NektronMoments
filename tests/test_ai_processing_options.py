@@ -22,13 +22,52 @@ from sqlalchemy import select
 
 SOURCE = "10000000-0000-4000-8000-000000000001"
 
+
+@pytest.mark.parametrize("limit", [65, 10000, 1000000])
+def test_larger_run_is_allowed_but_server_batch_stays_bounded(limit):
+    assert permitted(["sync", SOURCE, "--with-enrichment", "--enrichment-limit", str(limit), "--no-input"])
+    SyncEngine._validate_enrichment_limit(limit)
+    with pytest.raises(ValidationError):
+        EnrichmentPrepareRequest(limit=limit)
+
+
+@pytest.mark.parametrize("stop_at_quota", [False, True])
+def test_catchup_pages_without_exceeding_run_allowance(tmp_path, stop_at_quota):
+    class PagedApi(UploadApi):
+        def prepare_enrichment(self, source_id, payload, **kwargs):
+            result = super().prepare_enrichment(source_id, payload, **kwargs)
+            result["nextCursor"] = f"page-{len(self.prepare_calls)}"
+            result["assetsConsidered"] = payload["limit"]
+            return result
+    api = PagedApi()
+    state = LocalState(tmp_path / "state.sqlite3")
+    engine = SyncEngine(api, state, EmptyScanner(), device_id="device-test")
+    flushed = []
+    def flush(binding, summary, *, limit):
+        flushed.append(limit)
+        return not stop_at_quota
+    engine._flush_description_outbox = flush
+    engine.enrich(_binding(tmp_path), limit=150)
+    assert flushed == ([64] if stop_at_quota else [64, 64, 22])
+    assert [call[1]["limit"] for call in api.prepare_calls] == flushed
+    if not stop_at_quota:
+        assert api.prepare_calls[1][1]["cursor"] == "page-1"
+        assert len({call[2] for call in api.prepare_calls}) == 3
+
+
+def test_old_server_ends_catchup_safely(tmp_path):
+    api = UploadApi()
+    engine = SyncEngine(api, LocalState(tmp_path / "state.sqlite3"), EmptyScanner(), device_id="device-test")
+    engine.enrich(_binding(tmp_path), limit=10000)
+    assert len(api.prepare_calls) == 1  # No cursor, no unbounded request/repeat.
+
 @pytest.mark.parametrize("model", SCENE_MODEL_RATES)
 def test_model_contract_and_desktop_arguments(model):
     payload = EnrichmentPrepareRequest(descriptionModel=model, limit=17)
     assert payload.description_model == model
     assert permitted(["sync", SOURCE, "--with-enrichment", "--enrichment-limit", "17", "--description-model", model, "--no-input"])
 
-@pytest.mark.parametrize("limit", ["0", "65", "100000", "1.5", "NaN"])
+@pytest.mark.parametrize("limit", ["0", "1000001", "1.5", "NaN"])
 def test_invalid_desktop_limit(limit):
     assert not permitted(["sync", SOURCE, "--with-enrichment", "--enrichment-limit", limit, "--no-input"])
 

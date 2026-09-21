@@ -925,6 +925,8 @@ class Phase1DomainService:
                 f"Enrichment limit must be between 1 and {MAX_ENRICHMENT_PREPARE}",
             )
 
+        cursor_kind = f"enrichment:{source_id}"
+        after_id = _decode_single_id(self._cursor, command.cursor, kind=cursor_kind) or 0
         geocode_job_ids: list[UUID] = []
         with transaction_scope(self._session_factory) as session:
             account = self._account(session, user_id)
@@ -1065,6 +1067,7 @@ class Phase1DomainService:
                         MediaAsset.user_id == account.id,
                         MediaAsset.lifecycle_state == "Active",
                         or_(*eligibility),
+                        MediaAsset.id > after_id,
                     )
                     .order_by(MediaAsset.id, MediaOccurrence.id)
                     .limit(command.limit)
@@ -1222,6 +1225,9 @@ class Phase1DomainService:
                         geocode_jobs_queued=len(geocode_jobs),
                         description_jobs_prepared=len(tasks),
                         scene_description_tasks=tasks,
+                        assets_considered=len(rows),
+                        next_cursor=(self._cursor.encode(cursor_kind, [rows[-1][0].id])
+                                     if len(rows) == command.limit else None),
                     ),
                     200,
                 )
@@ -6119,6 +6125,8 @@ class Phase1DomainService:
                 value.get("description_jobs_prepared", 0)
             ),
             scene_description_tasks=tasks,
+            assets_considered=int(value.get("assets_considered", 0)),
+            next_cursor=value.get("next_cursor"),
         )
 
     @staticmethod

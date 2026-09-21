@@ -891,6 +891,8 @@ def test_enrichment_prepare_is_explicit_bounded_idempotent_and_device_scoped():
         "sourceId": str(SOURCE_ID),
         "geocodeJobsQueued": 1,
         "descriptionJobsPrepared": 1,
+        "assetsConsidered": 0,
+        "nextCursor": None,
         "sceneDescriptionTasks": [
             {
                 "jobId": str(JOB_ID),

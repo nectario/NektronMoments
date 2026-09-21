@@ -19,7 +19,7 @@ try:
             headers={"Authorization": f"Bearer {tokens.access_token}",
                      "Idempotency-Key": f"schema-check:{uuid4()}",
                      "X-Nektron-Moments-Device-Id": str(uuid4())},
-            json={"limit": 0, "descriptionModel": model},
+            json={"limit": 0, "descriptionModel": model, "cursor": "schema-check-only"},
         )
         if response.status_code != 422:
             raise RuntimeError(f"Unexpected schema-check status: {response.status_code}")
