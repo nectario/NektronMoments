@@ -3,7 +3,7 @@
 #endif
 #include "shared\NektronMoments.Branding.iss"
 #ifndef AppVersion
-  #define AppVersion "0.1.28"
+  #define AppVersion "0.1.29"
 #endif
 #ifndef SourcePublishDir
   #error SourcePublishDir is required. Use scripts/build-installer.ps1.

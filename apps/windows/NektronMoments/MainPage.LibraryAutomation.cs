@@ -43,7 +43,7 @@ public sealed partial class MainPage
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(picker, "Processing on startup");
         var note = new TextBlock { TextWrapping = TextWrapping.Wrap };
         void UpdateNote() => note.Text = modes[Math.Max(0, picker.SelectedIndex)] switch {
-            StartupProcessingMode.Full => "Read file metadata, then request AI scene descriptions and address lookup for new photos and older pending photos. API charges apply. Uses the limit and model below (server ceiling: 64), subject to service quotas. Completed results are reused; this does not reprocess the entire library.",
+            StartupProcessingMode.Full => "Read file metadata, then request AI scene descriptions and address lookup for new photos and older pending photos. API charges apply. Uses the run allowance and model below, in resumable batches of 64, subject to service quotas. Completed results are reused; this does not reprocess the entire library.",
             StartupProcessingMode.None => "Open your library without automatically processing photos. You can still process metadata manually.",
             _ => "Read dates, GPS, dimensions and file hashes, then sync metadata. No paid AI enrichment is requested.",
         };
@@ -66,7 +66,7 @@ public sealed partial class MainPage
         var model = new ComboBox { Name = "AiModelPicker", Header = "Scene description model", HorizontalAlignment = HorizontalAlignment.Stretch,
             ItemsSource = AiProcessingOptions.Models.Select(item => item.Label).ToArray(),
             SelectedIndex = Array.FindIndex(AiProcessingOptions.Models, item => item.Id == _aiOptions.Model) };
-        var cost = new TextBlock { Text = _aiOptions.Preview(), TextWrapping = TextWrapping.Wrap, FontSize = 12 };
+        var cost = new TextBlock { Name = "SettingsRunEstimate", Text = _aiOptions.EstimateSummary(), TextWrapping = TextWrapping.Wrap };
         async Task SaveAiAsync()
         {
             if (!double.IsFinite(limit.Value) || limit.Value != Math.Truncate(limit.Value) || limit.Value < 1 || limit.Value > AiProcessingOptions.MaximumRunLimit || model.SelectedIndex < 0) {
@@ -76,7 +76,7 @@ public sealed partial class MainPage
             try {
                 if (saveAiForVerification is not null) await saveAiForVerification(selected);
                 else if (saveForVerification is null) await UserPreferences.SetAsync("aiProcessing", JsonSerializer.Serialize(selected));
-                _aiOptions = selected; cost.Text = selected.Preview();
+                _aiOptions = selected; cost.Text = selected.EstimateSummary();
             } catch (Exception) { cost.Text = "AI settings could not be saved. Please try again."; }
         }
         limit.ValueChanged += async (_, _) => await SaveAiAsync();

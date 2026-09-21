@@ -37,10 +37,27 @@ public sealed partial class MainPage
         back.Click += (_, _) => CloseSettings(); header.Children.Add(back); page.Children.Add(header);
         // Pricing is deliberately outside the tab/scroll content. It stays visible
         // while customizing any section, without opening a link or expander.
-        var pricing = new StackPanel { Name = "SettingsPricing", Spacing = 5 };
-        pricing.Children.Add(new TextBlock { Text = "AI pricing · USD", FontSize = 17, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
-        pricing.Children.Add(SettingsText(AiProcessingOptions.RateSummary, 13));
-        estimate.FontSize = 12; pricing.Children.Add(estimate);
+        var pricing = new StackPanel { Name = "SettingsPricing", Spacing = 10 };
+        pricing.Children.Add(new TextBlock { Text = "AI pricing · USD · Standard rates", FontSize = 17, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
+        var comparison = new Grid { ColumnSpacing = 32, RowSpacing = 12 };
+        comparison.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star) });
+        comparison.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star) });
+        comparison.RowDefinitions.Add(new() { Height = GridLength.Auto });
+        comparison.RowDefinitions.Add(new() { Height = GridLength.Auto });
+        comparison.Children.Add(BuildPricingTable());
+        var run = new StackPanel { Spacing = 8 };
+        run.Children.Add(SettingsText("YOUR SELECTED RUN", 12));
+        estimate.FontSize = 20; estimate.FontWeight = Microsoft.UI.Text.FontWeights.SemiBold;
+        run.Children.Add(estimate);
+        run.Children.Add(SettingsText("Assumes 2,560 input + 100 output tokens per photo. Rates verified 21 Sep 2026.", 13));
+        run.Children.Add(SettingsText("Illustrative estimate, not a quote or spending cap. Actual usage and retries vary; Flex and caching can cost less. Address lookup and AWS costs are excluded.", 13));
+        Grid.SetColumn(run, 1); comparison.Children.Add(run);
+        comparison.SizeChanged += (_, e) => {
+            var stacked = e.NewSize.Width < 760;
+            comparison.ColumnDefinitions[1].Width = stacked ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
+            Grid.SetColumn(run, stacked ? 0 : 1); Grid.SetRow(run, stacked ? 1 : 0);
+        };
+        pricing.Children.Add(comparison);
         pricing.Children.Add(new HyperlinkButton { Content = "Official pricing details", NavigateUri = new Uri("https://developers.openai.com/api/docs/pricing"), Padding = new Thickness(0), MinHeight = 24 });
         Grid.SetRow(pricing, 1); page.Children.Add(pricing);
         var sections = new Pivot { Name = "SettingsSections" };
@@ -51,6 +68,32 @@ public sealed partial class MainPage
         SettingsHost.Children.Add(page);
     }
     private static ScrollViewer SettingsScroll(UIElement content) => new() { Content = content, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Padding = new Thickness(0, 14, 16, 16) };
+    private static Grid BuildPricingTable()
+    {
+        var table = new Grid { Name = "SettingsPricingTable", ColumnSpacing = 24, RowSpacing = 12, VerticalAlignment = VerticalAlignment.Top };
+        table.ColumnDefinitions.Add(new() { Width = new GridLength(1.4, GridUnitType.Star) });
+        table.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star) });
+        table.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star) });
+        void Cell(string text, int row, int column, bool header = false, string? accessibleName = null) {
+            var cell = SettingsText(text, header ? 12 : 15);
+            cell.FontWeight = header ? Microsoft.UI.Text.FontWeights.SemiBold : Microsoft.UI.Text.FontWeights.Normal;
+            cell.TextAlignment = column == 0 ? TextAlignment.Left : TextAlignment.Right;
+            if (accessibleName is not null) Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(cell, accessibleName);
+            Grid.SetRow(cell, row); Grid.SetColumn(cell, column); table.Children.Add(cell);
+        }
+        table.RowDefinitions.Add(new() { Height = GridLength.Auto });
+        Cell("Model", 0, 0, true); Cell("Input\nper 1M tokens", 0, 1, true); Cell("Output\nper 1M tokens", 0, 2, true);
+        for (var index = 0; index < AiProcessingOptions.Models.Length; index++) {
+            var model = AiProcessingOptions.Models[index]; var row = index + 1;
+            table.RowDefinitions.Add(new() { Height = GridLength.Auto });
+            Cell(model.Label, row, 0);
+            Cell(model.InputRate.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US")), row, 1,
+                accessibleName: $"{model.Label}, input, {model.InputRate} US dollars per million tokens");
+            Cell(model.OutputRate.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US")), row, 2,
+                accessibleName: $"{model.Label}, output, {model.OutputRate} US dollars per million tokens");
+        }
+        return table;
+    }
     private StackPanel BuildAppearanceSettings()
     {
         var section = SettingsSection("Appearance");

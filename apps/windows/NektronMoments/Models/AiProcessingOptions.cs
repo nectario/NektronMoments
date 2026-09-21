@@ -38,6 +38,7 @@ public sealed record AiProcessingOptions(int Limit = 64, string Model = "gpt-5.6
         var model = Models.Single(item => item.Id == Model);
         return Limit * (decimal)sources * (2560 * model.InputRate + 100 * model.OutputRate) / 1_000_000m;
     }
+    public string EstimateSummary() => $"US${Estimate().ToString(Estimate() < .01m ? "F4" : "F2", CultureInfo.InvariantCulture)} estimated per source\n{Model} · Up to {Limit:N0} photos";
     public string Preview(int sources = 1) => $"{Model} · Up to {Limit:N0} assets per source\n" +
         $"Illustrative AI cost for {Limit * (long)sources:N0} descriptions: US${Estimate(sources).ToString("F3", CultureInfo.InvariantCulture)}. " +
         "Assumes 2,560 input + 100 output tokens per image at standard rates (2026-09-21). " +

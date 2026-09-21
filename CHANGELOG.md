@@ -1,5 +1,14 @@
 # Nektron Moments Windows releases
 
+## [0.1.29] - 2026-09-21
+
+- Replace dense Settings pricing prose with a native three-column model/rate
+  table and a prominent, live per-source run estimate. Keep assumptions and
+  exclusions separate, visible, and wrapped. Stack the estimate below the table
+  at narrower widths; retain theme-aware text and accessible rate labels.
+- Prices, spending controls and estimate arithmetic are unchanged. Correct
+  obsolete startup text that described 64 as a server run ceiling.
+
 ## [0.1.28] - 2026-09-21
 
 - Separate the user-selected enrichment run allowance (1–1,000,000 per source)

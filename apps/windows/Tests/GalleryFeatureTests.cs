@@ -20,6 +20,8 @@ internal static class GalleryFeatureTests
         check(ai.Limit == 64 && ai.Model == "gpt-5.6-terra", "AI defaults preserve Terra and 64");
         check(AiProcessingOptions.Resolve("{\"Limit\":10000,\"Model\":\"gpt-5.6-terra\"}").Limit == 10000, "Catch-up allowance survives preference reload");
         check(new AiProcessingOptions(10000).Estimate() == 63.2m, "Catch-up estimate scales to the full run, not a 64-photo request");
+        check(new AiProcessingOptions(10000).EstimateSummary().Contains("US$63.20 estimated per source"), "Readable pricing summary retains the existing estimate and explicit USD units");
+        check(new AiProcessingOptions(1, "gpt-5.6-luna").EstimateSummary().Contains("US$0.0006"), "Sub-cent estimates do not misleadingly round to free");
         check(AiProcessingOptions.Resolve("{\"Limit\":0,\"Model\":\"bad\"}") == ai, "Invalid AI preferences safely restore defaults");
         check(ai.Estimate() == .40448m && ai.Estimate(2) == .80896m, "Cost estimate uses model rates and number of sources");
         check(new AiProcessingOptions(64, "gpt-5.6-luna").Estimate() < ai.Estimate(), "Changing models changes the estimate");

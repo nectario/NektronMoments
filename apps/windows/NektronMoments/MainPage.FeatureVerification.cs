@@ -139,6 +139,11 @@ public sealed partial class MainPage
                     "AI Settings update model and limit without starting work or writing test preferences");
                 check(AssetDescendants(settingsContent).OfType<TextBlock>().Any(text => text.Text.Contains("US$") && text.Text.Contains("gpt-5.6-sol")),
                     "AI Settings show a live model-specific cost estimate");
+                var priceTable = AssetDescendants(settingsContent).OfType<Grid>().Single(grid => grid.Name == "SettingsPricingTable");
+                check(priceTable.ColumnDefinitions.Count == 3 && priceTable.RowDefinitions.Count == AiProcessingOptions.Models.Length + 1,
+                    "AI pricing has aligned Model, Input and Output columns with one row per model");
+                check(priceTable.Children.OfType<TextBlock>().Any(text => text.Text == "$0.20"),
+                    "USD rates retain cents and clear decimal precision");
                 check(picker.Items.Count == 3, "Startup settings expose exactly Full, File metadata and Off");
                 picker.SelectedIndex = 2;
                 picker.SelectedIndex = 0;
@@ -147,6 +152,21 @@ public sealed partial class MainPage
                 check(AssetDescendants(settingsContent).OfType<TextBlock>().Any(text => text.Text.Contains("older pending") && text.Text.Contains("64")),
                     "Full discloses pending-photo scope, API cost and the existing bounded pass");
                 await SaveFeatureImageAsync(SettingsHost, Path.Combine(output, "settings-workspace.png"));
+                var pricingTheme = themeRoot.RequestedTheme;
+                var settingsWidth = SettingsHost.Width;
+                try {
+                    themeRoot.RequestedTheme = ElementTheme.Light;
+                    await SaveFeatureImageAsync(SettingsHost, Path.Combine(output, "pricing-light.png"));
+                    themeRoot.RequestedTheme = ElementTheme.Dark;
+                    await SaveFeatureImageAsync(SettingsHost, Path.Combine(output, "pricing-dark.png"));
+                    SettingsHost.Width = 650;
+                    await Task.Delay(200);
+                    var runEstimate = AssetDescendants(SettingsHost).OfType<TextBlock>().Single(text => text.Name == "SettingsRunEstimate");
+                    var runPanel = (StackPanel)runEstimate.Parent;
+                    check(Grid.GetRow(runPanel) == 1 && Grid.GetColumn(runPanel) == 0,
+                        "Narrow pricing stacks the estimate beneath the rate table");
+                    await SaveFeatureImageAsync(SettingsHost, Path.Combine(output, "pricing-narrow.png"));
+                } finally { themeRoot.RequestedTheme = pricingTheme; SettingsHost.Width = settingsWidth; }
                 var settingsTabs = AssetDescendants(SettingsHost).OfType<Pivot>().Single();
                 settingsTabs.SelectedIndex = 1; await Task.Delay(100);
                 var pricing = AssetDescendants(SettingsHost).OfType<StackPanel>().Single(panel => panel.Name == "SettingsPricing");
