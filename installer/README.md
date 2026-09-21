@@ -24,7 +24,8 @@ untrimmed x64 application, checks every published asset byte-for-byte and verifi
 actual Light/Dark icon pixels in the release shell, checks private-data exclusions, signs
 the app EXE/DLL, verifies direct launch, compiles/signs the setup and uninstaller,
 then tests a temporary install outside the checkout. It checks workspace reconnect,
-native launch, installed artwork rendering, signatures and uninstall before publishing the release.
+native launch, installed artwork rendering, full-library precision dragging, compact-tile
+photo opening, async image-loading races, signatures and uninstall before publishing the release.
 
 Output: `installer/NektronMoments.Setup.<version>.exe` only.
 Generated JSON and SHA-256 records are stored separately in `artifacts/releases/metadata/`;
@@ -75,6 +76,9 @@ available until the standalone native backend connection replaces this adapter.
   with 100,000 synthetic entries, without opening any user photos. It checks
   canvas movement at all four thumbnail presets, intermediate positions,
   fractional wheel input, reversal, bounded bursts, cancellation and virtualization.
+- `Test-Browsing.ps1` verifies initial 200-photo browsing, drag-guarded incremental
+  growth, pixel-anchor preservation, full-catalog viewer return, and display-ready
+  thumbnail preparation/reuse beyond the exposed range using generated photos.
 - `Generate-InstallerBranding.ps1` follows the sibling installer layout and draws
   the provided marks without redrawing them. The header uses the approved transparent
   mark directly, filling its image area without a padded light square.

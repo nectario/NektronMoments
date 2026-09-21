@@ -15,6 +15,10 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        if (Services.DiagnosticTrace.Enabled) {
+            Title = "Nektron Moments — Diagnostics";
+            AppTitleBar.Title = "Nektron Moments · Diagnostics";
+        }
 
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
@@ -27,6 +31,10 @@ public sealed partial class MainWindow : Window
 
         // Navigate the root frame to the main page on startup.
         RootFrame.Navigate(typeof(MainPage));
+        Activated += (_, args) => {
+            if (args.WindowActivationState == WindowActivationState.Deactivated)
+                (RootFrame.Content as MainPage)?.SuspendGalleryMotion();
+        };
         Closed += (_, _) => (RootFrame.Content as MainPage)?.Shutdown();
     }
 }

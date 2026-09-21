@@ -27,7 +27,7 @@ public sealed partial class MainPage
             if (elapsed >= 4300) { completed.TrySetResult(); return; }
             ThumbnailSlider.Value = 112 + 368 * (.5 - .5 * Math.Cos(elapsed / 1800 * Math.PI));
             if (Gallery.ItemsPanelRoot is Microsoft.UI.Xaml.Controls.ItemsWrapGrid wrap)
-                columnCounts.Add(Math.Max(1, (int)((Gallery.ActualWidth - Gallery.Padding.Left - Gallery.Padding.Right - 8) / wrap.ItemWidth)));
+                columnCounts.Add(GetGalleryColumns(wrap.ItemWidth));
             if (elapsed >= 300) starts.Add(elapsed); // Initial setup isn't steady-state dragging.
         }
         void Rendered(object? sender, RenderedEventArgs args) {
@@ -62,7 +62,7 @@ public sealed partial class MainPage
     {
         Directory.CreateDirectory(output);
         var deadline = DateTime.UtcNow.AddSeconds(30);
-        while (_priming && DateTime.UtcNow < deadline) await Task.Delay(150);
+        while (_loadingCatalog && DateTime.UtcNow < deadline) await Task.Delay(150);
         await Task.Delay(2000);
         if (File.Exists(Path.Combine(output, "wait-for-profiler.flag"))) {
             await File.WriteAllTextAsync(Path.Combine(output, "ready.json"), JsonSerializer.Serialize(new { processId = Environment.ProcessId }));
@@ -70,6 +70,9 @@ public sealed partial class MainPage
             while (!File.Exists(Path.Combine(output, "start.flag")) && DateTime.UtcNow < until) await Task.Delay(100);
         }
         try {
+            var scrollErrors = new List<string>();
+            var photoScrolling = await MeasureWideScrollingAsync(scrollErrors);
+            await File.WriteAllTextAsync(Path.Combine(output, "photo-scrolling.json"), JsonSerializer.Serialize(new { errors = scrollErrors, result = photoScrolling }));
             var result = await MeasureThumbnailSizingAsync();
             await File.WriteAllTextAsync(Path.Combine(output, "resize.json"), JsonSerializer.Serialize(result));
             var savedSize = _thumbnailSize;

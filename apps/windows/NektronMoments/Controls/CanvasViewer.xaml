@@ -3,6 +3,8 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
  <Grid Background="{ThemeResource MomentsWindowBrush}" SizeChanged="ViewerResized">
   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <Grid Background="{ThemeResource MomentsSurfaceBrush}">
+  <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
   <CommandBar x:Name="ViewerBar" DefaultLabelPosition="Collapsed" Background="{ThemeResource MomentsSurfaceBrush}" Padding="8,4">
    <CommandBar.Resources>
     <ResourceDictionary Source="ms-appx:///Styles/Moments.CommandBar.xaml"/>
@@ -34,6 +36,13 @@
     <AppBarButton Label="10-second interval" Tag="10" Click="IntervalClick"/>
    </CommandBar.SecondaryCommands>
   </CommandBar>
+  <Button x:Name="CloseViewerButton" Grid.Column="1" Click="BackClick" Width="36" Height="36" Margin="6,4,10,4"
+   Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+   VerticalAlignment="Top" ToolTipService.ToolTip="Close photo and return to library (Esc)"
+   AutomationProperties.Name="Close photo" AutomationProperties.HelpText="Return to the same photo in your library.">
+   <FontIcon Glyph="&#xE8BB;" FontSize="14" IsTextScaleFactorEnabled="False"/>
+  </Button>
+  </Grid>
   <Grid x:Name="Viewport" Grid.Row="1" Margin="12" SizeChanged="ViewerResized" Background="{ThemeResource MomentsWindowBrush}">
    <Image x:Name="Picture" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
    <MediaPlayerElement x:Name="Video" AreTransportControlsEnabled="True" AutoPlay="False" Visibility="Collapsed"

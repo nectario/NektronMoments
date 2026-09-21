@@ -5,11 +5,13 @@ namespace NektronMoments.Models;
 
 public sealed class MediaItem
 {
+    [JsonIgnore] public int CatalogIndex { get; internal set; } = -1;
+    [JsonIgnore] public Guid CatalogIdentity { get; internal set; }
     public string Key { get; set; } = "";
     public string Hash { get; set; } = "";
     public string Name { get; set; } = "";
     public string Path { get; set; } = "";
-    public List<string> Paths { get; set; } = [];
+    public string[] Paths { get; set; } = [];
     public string Source { get; set; } = "";
     public int Occurrences { get; set; }
     public string Captured { get; set; } = "";
@@ -34,6 +36,7 @@ public sealed class LibrarySource
 }
 public sealed class LibraryOverview
 {
+    public string LibraryId { get; set; } = "";
     public int Total { get; set; }
     public int Photos { get; set; }
     public int Videos { get; set; }

@@ -3,7 +3,26 @@
  <ItemGroup>
   <Compile Include="../NektronMoments/Models/ViewingPolicy.cs" Link="ViewingPolicy.cs"/>
   <Compile Include="../NektronMoments/Models/PixelScrollMotion.cs" Link="PixelScrollMotion.cs"/>
+  <Compile Include="../NektronMoments/Models/NativeScrollPrecision.cs" Link="NativeScrollPrecision.cs"/>
+  <Compile Include="../NektronMoments/Models/NativeWheelTarget.cs" Link="NativeWheelTarget.cs"/>
   <Compile Include="../NektronMoments/Models/ScrollbarGlide.cs" Link="ScrollbarGlide.cs"/>
+  <Compile Include="../NektronMoments/Models/BulkObservableCollection.cs" Link="BulkObservableCollection.cs"/>
+  <Compile Include="../NektronMoments/Models/BrowsingPolicy.cs" Link="BrowsingPolicy.cs"/>
+  <Compile Include="../NektronMoments/Models/SharedThumbnailPreparation.cs" Link="SharedThumbnailPreparation.cs"/>
+  <Compile Include="../NektronMoments/Models/GalleryWorkPolicy.cs" Link="GalleryWorkPolicy.cs"/>
+  <Compile Include="../NektronMoments/Models/ThumbnailDecodeLimiter.cs" Link="ThumbnailDecodeLimiter.cs"/>
+  <Compile Include="../NektronMoments/Models/ThumbnailWorkGate.cs" Link="ThumbnailWorkGate.cs"/>
+  <Compile Include="../NektronMoments/Models/ThumbnailKeyCache.cs" Link="ThumbnailKeyCache.cs"/>
+  <Compile Include="../NektronMoments/Models/LibraryModels.cs" Link="LibraryModels.cs"/>
+  <Compile Include="../NektronMoments/Models/CatalogMemory.cs" Link="CatalogMemory.cs"/>
+  <Compile Include="../NektronMoments/Models/CompactCatalog.cs" Link="CompactCatalog.cs"/>
+  <Compile Include="../NektronMoments/Models/CatalogCollection.cs" Link="CatalogCollection.cs"/>
+  <Compile Include="../NektronMoments/Models/CatalogView.cs" Link="CatalogView.cs"/>
+  <Compile Include="../NektronMoments/Models/MetadataProgress.cs" Link="MetadataProgress.cs"/>
+  <Compile Include="../NektronMoments/Models/ReorderPolicy.cs" Link="ReorderPolicy.cs"/>
+  <Compile Include="../NektronMoments/Models/StartupProcessing.cs" Link="StartupProcessing.cs"/>
+  <Compile Include="../NektronMoments/Models/AiProcessingOptions.cs" Link="AiProcessingOptions.cs"/>
+  <Compile Include="../NektronMoments/Services/LibraryOrderStore.cs" Link="LibraryOrderStore.cs"/>
   <Compile Include="../NektronMoments/Services/WeightedCache.cs" Link="WeightedCache.cs"/>
  </ItemGroup>
 </Project>

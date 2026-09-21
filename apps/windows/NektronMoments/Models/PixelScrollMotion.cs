@@ -3,8 +3,8 @@ namespace NektronMoments.Models;
 /// <summary>Pixel distances, not photo rows. Independent of thumbnail size and RAM.</summary>
 public sealed class PixelScrollMotion
 {
-    public const double PixelsPerNotch = 48;
-    public const double MaximumPendingPixels = 144;
+    public const double PixelsPerNotch = 64;
+    public const double MaximumPendingPixels = PixelsPerNotch * 3;
     public const double MaximumPixelsPerSecond = 720;
     public double WheelDistance { get; set; } = PixelsPerNotch;
     private int _direction;

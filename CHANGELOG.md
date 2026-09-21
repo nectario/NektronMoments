@@ -1,5 +1,223 @@
 # Nektron Moments Windows releases
 
+## [0.1.25] - 2026-09-21
+
+- Repair repeated Settings opening; add Edit → Settings and separate About/help.
+- Process metadata opens a Start/Cancel dialog with AI enrichment selected by
+  default. Unchecking it runs file metadata only; Cancel does no work.
+- Settings remembers the per-source AI limit (1–64, default 64) and scene model
+  (Terra by default; Luna and Sol alternatives). Manual and Full startup runs
+  snapshot these settings; already queued/completed descriptions are not changed.
+- Show a live illustrative USD estimate in Settings and before Start, including
+  token assumptions, pricing date and excluded services. Existing budgets remain.
+- Exclude description-identified text website captures with Hide screenshots,
+  while preserving unclassified media and physical photographs containing text.
+
+## [0.1.24] - 2026-09-21
+
+- Replace the startup toggle with Full — metadata + AI, File metadata only, and
+  Off. Preserve existing enabled/disabled preferences without opting users into
+  paid work. Changes apply on the next launch, not to an already running job.
+- Full includes new photos and older pending photos via the existing bounded
+  enrichment workflow (up to 64 eligible assets per source per launch). Completed
+  results are reused; service quotas remain enforced and API costs are disclosed.
+- Report AI/address preparation and scene-preview staging in processing activity;
+  distinguish a finished local pass from server-side work still queued or deferred.
+- Validate Full using controlled jobs only. Diagnostics and installer checks
+  continue to suppress automatic processing; no paid validation run is performed.
+
+## [0.1.23] - 2026-09-21
+
+- Add a persistent Hide screenshots checkbox based on existing description text;
+  preserve unknown photos and videos, and never delete originals.
+- Cache account-visible screenshot matches using paginated read-only metadata
+  searches in a separate background connection. Keep cached classifications and
+  descriptions across local catalog rebuilds; preserve the old index on failure.
+- Automatically run incremental metadata processing for registered local sources
+  after startup, without opening a progress window. Activity restores progress;
+  Library > Process new photos on startup controls the persistent preference.
+- Keep paid enrichment opt-in and suppress real processing during installer and
+  diagnostic checks. Preserve the complete custom order while filtering by
+  disabling rearrangement of the filtered subset.
+
+## [0.1.22] - 2026-09-20
+
+- Replace ineffective collection-only drag transitions with explicit 320 ms eased
+  movement of visible thumbnails. Retarget from their displayed positions, keep
+  the viewport steady, and clear transformations on completion and recycling.
+- Suppress nonessential gallery housekeeping during scrollbar dragging, retaining
+  the original image-publication throughput. Real-photo measurements rejected
+  reduced-priority/upload throttling and GC tuning; those experiments are not shipped.
+- Materialize decoded pixel data on workers and create one owned SoftwareBitmap,
+  avoiding the temporary bitmap/copy pair identified in real-photo GC traces.
+- Add intermediate-position, rapid-reversal and cleanup checks, plus an opt-in
+  real-library diagnostic at three thumbnail sizes. Tests preserve saved order
+  and originals. Automated timing is not physical pointer replay or display FPS.
+
+## [0.1.21] - 2026-09-20
+
+- Restore coordinated thumbnail reflow without row-by-row staggering. Keep smooth
+  compositor motion during resizing and preview drag rearrangements live across rows.
+- Commit custom order only on a successful in-gallery drop; cancel restores the
+  previous order. Originals remain unchanged.
+- Replace the compact modal progress dialog with a resizable, modeless processing
+  window: source operations, bounded activity log, overall source completion,
+  current-phase progress, throughput and estimated phase time remaining.
+- Hide or close the processing window without stopping the job; Activity reopens
+  its current state. Keep Stop explicit and preserve the library's usability.
+- Verify window resizing, hide/close/reopen, success/failure/cancellation and live
+  reorder rollback with isolated fixtures. No paid enrichment or cloud deployment.
+
+## [0.1.20] - 2026-09-20
+
+- Fix the viewer X's clipped glyph with explicit content padding and icon scaling.
+- Keep drag-reorder motion but remove staggered gallery reflow from ordinary
+  resizing. Shorten live resize movement/size animation to 40/30 milliseconds.
+- Explicitly detach and incrementally release all owned resize composition
+  resources; stop pending work on shutdown and simplify each thumbnail's placeholder.
+- Move preference writes, bridge startup and folder-launch work off the UI thread;
+  reuse unchanged viewer icons and serialize duplicate image-decode requests.
+- Cancel obsolete catalog/search loads, coalesce repeated refreshes and keep
+  unchanged compact view snapshots in a bounded memory cache. Refresh invalidates
+  view snapshots; metadata refresh preserves thumbnails with unchanged file keys.
+- Preserve rapid next/previous intent and explicitly release video media sources.
+- Add mixed-operation latency, request-race and silent-video checks to release
+  verification. These diagnostics are not physical mouse replay or display FPS.
+
+## [0.1.19] - 2026-09-19
+
+- Adapt initial browsing and subsequent batches from 200 positions at medium/large
+  sizes to 500 for small thumbnails, keeping image preparation independent and
+  preserving existing ranges and anchors when size changes.
+- Enable native animated thumbnail drag reordering, with locally saved custom
+  arrangements, date-sort restoration, stable viewer positions, and keyboard
+  reordering using Ctrl+Shift+Arrow. Original files are never moved or renamed.
+- Keep pending photos in their chosen positions when metadata processing adds
+  content hashes; isolate arrangements by account and library/source/type view.
+- Add a dedicated accessible close X at the upper-right of the photo/video viewer.
+- Show a hideable metadata-progress dialog with actual phase counts, percentage,
+  source, elapsed time, and Stop. Activity reopens the same current or last job.
+- Coalesce worker output into small UI updates; discovery remains indeterminate
+  until a total is known. No new paid enrichment or cloud deployment is included.
+
+## [0.1.18] - 2026-09-19
+
+- Stream the complete local catalog in bounded frames into a compact UTF-8 index,
+  avoiding the single large JSON line and eagerly retained per-photo object graph.
+- Materialize browsing rows on workers ahead of publication; keep the initial
+  200-photo native range independent of the full catalog and large thumbnail cache.
+- Use snapshot identities for constant-time viewer selection and preserve original
+  ordering, duplicate fallback paths, filters, and viewer navigation.
+- Cache thumbnail identity keys and stop viewport callbacks for ready tiles;
+  safely re-arm on recycling, resolution changes, and reload.
+- Keep native scrollbar ownership and existing wheel behavior unchanged. Retain
+  local opt-in frame/GC diagnostics for repeatable before/after investigation.
+
+## [0.1.17] - 2026-09-19
+
+- Use the branded list-and-clock icon for Processing activity, with descriptive
+  tooltip and accessibility help text, distinct from the sun/moon theme toggle.
+- Decode and resize thumbnail pixels on background workers. Prefetch no longer
+  creates XAML image sources or posts one UI callback per prepared preview.
+- Create presentation sources only for near-viewport tiles, in small paced UI
+  batches. Reuse sources for revisits and skip recycled/offscreen requests.
+- Coalesce cache-counter updates and avoid header text changes during dragging.
+- Pause optional warming during input, let visible jobs bypass that pause, and
+  defer optional UI buffer expansion until idle. Compact repeated catalog objects.
+- Add worker-thread/no-offscreen-XAML assertions and startup-scrubbing queue
+  latency instrumentation; these checks are not physical mouse replay or FPS.
+
+## [0.1.16] - 2026-09-17
+
+- Start the native gallery at 200 photos and extend in 200-photo increments,
+  preserving the visible photo and deferring range changes while the thumb is held.
+- Keep the complete catalog and thumbnail preparation independent of that range;
+  full-catalog viewer/slideshow navigation still returns to the correct photo.
+- Prepare display-ready bitmaps without creating gallery controls, share in-flight
+  work, prioritize visible/next photos, and retain completed work after tile recycling.
+- Use a 12 GiB decoded-preview cache on workstations with at least 96 GiB RAM,
+  with resolution-aware, direction-prioritized look-ahead and lower-memory profiles.
+- Verify generated photos are ready beyond the exposed range and reused by native
+  tiles on reveal, plus append anchors, resets, final-item access and viewer return.
+
+## [0.1.15] - 2026-09-17
+
+- Restore the GridView's own native scrollbar, as used in 0.1.1. Remove the
+  external proxy, drag-glide/fine-drag controls, and custom thumb controller.
+- Keep wheel smoothing and speed settings independent. Native bar input takes
+  ownership without a queued wheel freeze overwriting its destination.
+- Preserve the full catalog, thumbnail caching, thicker scrollbar, canvas viewer,
+  and live resizing. Unlike 0.1.1, the current range is not a growing 120-item page.
+  This distinction is recorded explicitly for the user's physical comparison.
+- Verify native range/geometry on 120- and 100,000-item fixtures, normal/maximized
+  layouts, wheel trains, cancellation handoff, resizing, and last-item access.
+  Automated checks do not establish physical dragging feel or display FPS.
+
+## [0.1.14] - 2026-09-16
+
+- Restore ordinary proportional thumb dragging so the handle visibly follows the
+  pointer; move the slower six-DIP precision mode to Shift-drag.
+- Animate mouse-wheel movement natively, accumulating fractional and rapid input
+  without the old UI-frame loop, three-notch truncation or fixed 720-DIP/s ceiling.
+- Keep the scrollbar position updating during wheel motion rather than waiting
+  for the whole animation to finish. Preserve wheel/drag ownership and reversal.
+- Coalesce stops, immediate navigation and new scrolling targets through one
+  request channel so an old freeze cannot override a newer position.
+- Verify actual template thumb travel and continuous slow/fast wheel input trains,
+  in addition to endpoints, cancellation and full-catalog bounds.
+
+## [0.1.13] - 2026-09-16
+
+- Replace moving 100-item ranges with one continuous, full-library scrollbar.
+  Remove range arrows, thumb recentering and stationary edge-hold auto-scrolling.
+- Scale ordinary thumb movement by pointer pixels, independently of library size;
+  expose drag sensitivity separately from wheel speed. Shift-start dragging retains
+  fast proportional positioning across the entire library.
+- Load a complete lightweight local catalog with two SQL queries and publish it
+  atomically, keeping the scrollbar extent stable rather than growing in batches.
+- Preserve bounded native virtualization and image caches; fetch full metadata when
+  details are opened. No original uploads, cloud provisioning or paid enrichment.
+- Verify the actual precision gesture processor/template correction, no stationary
+  drift or release jump, full-range bounds, cancellation and normal/maximized views.
+
+## [0.1.12] - 2026-09-15
+
+- Use Windows' native animated scrolling for scrollbar movement, with coalesced
+  latest-target requests and no UI-thread frame-by-frame repositioning for the thumb.
+- Replace the custom scrollbar timing slider with an honest Smooth scrollbar toggle;
+  mouse-wheel speed remains separately adjustable and saved off settings stay off.
+- Avoid redundant native viewport-cache assignments during steady scrolling.
+- Advance thumbnail prefetch windows in meaningful increments instead of cancelling
+  and restarting look-ahead for every small forward movement.
+- Add opt-in fully warmed photo-scroll measurements to separate loading work
+  from steady-state movement before comparing rendering approaches.
+
+## [0.1.11] - 2026-09-15
+
+- Preserve scrollbar position and velocity across dense thumb events with a
+  frame-rate-independent damped follower rather than restarting an easing curve.
+- Continue smoothly through fine-control ranges while the thumb is held at an edge;
+  recenter the scrollbar on release without moving the photo canvas backwards.
+- Indicate that more moments exist below and request another page at the loaded edge.
+- Increase the default wheel movement from 48 to 64 pixels; retain saved custom speeds.
+- Bound live offscreen XAML controls independently of the large photo/metadata caches,
+  prioritize visible thumbnail decodes, and coalesce gallery look-ahead work.
+- Test edge continuation, release, asynchronous paging, and restored/maximized scrolling.
+
+## [0.1.10] - 2026-09-14
+
+- Bound scrollbar travel to about 100 row-aligned items, with previous/next range
+  controls. Keep the full workstation buffer and continuous pixel-based wheel motion.
+- Keep the range fixed during thumb dragging and rebase after wheel motion settles.
+- Share native column geometry across scrollbar ranges and live thumbnail reflow.
+- Keep single-click selection from opening the details pane and rearranging tiles
+  before the second click; open details explicitly from the existing Details command.
+- Open the exact double-clicked thumbnail, and ignore gutters or removed items.
+- Prevent late detail/file lookups from replacing the newer selected photo, and show
+  explicit feedback when an original is missing or cannot be decoded.
+- Gate published and installed builds on compact-tile selection and image-loading
+  race checks, plus native bounded-scrollbar regressions.
+
 ## [0.1.9] - 2026-09-14
 
 - Enlarge the installer header identity and remove the padded square using the

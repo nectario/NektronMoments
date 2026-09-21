@@ -23,15 +23,16 @@ public sealed partial class MainPage
         try
         {
             var deadline = DateTime.UtcNow.AddSeconds(45);
-            while (_priming && DateTime.UtcNow < deadline) await Task.Delay(250);
+            while (_loadingCatalog && DateTime.UtcNow < deadline) await Task.Delay(250);
             await Task.Delay(1200);
             await CaptureAsync("ribbon-light.png");
             var ribbonIcons = CommandMetrics(RibbonBar);
             var buffered = Items.Count;
-            _selected = Items.FirstOrDefault(i => i.MediaType == "Photo" &&
+            var catalog = Items.Capture();
+            _selected = await Task.Run(() => catalog.Take(4096).FirstOrDefault(i => i.MediaType == "Photo" && i.Metadata.ValueKind == JsonValueKind.Object &&
                 i.Metadata.TryGetProperty("widthPixels", out var w) && w.GetInt32() is > 32 and < 500 &&
                 i.Metadata.TryGetProperty("heightPixels", out var h) && h.GetInt32() is > 32 and < 500)
-                ?? Items.FirstOrDefault(i => i.MediaType == "Photo");
+                ?? catalog.Take(4096).FirstOrDefault(i => i.MediaType == "Photo"));
             await OpenCanvasAsync(false);
             Viewer.SetAllowUpscale(false);
             await Task.Delay(700);
@@ -71,7 +72,7 @@ public sealed partial class MainPage
             CompositionTarget.Rendering += Frame;
             try {
                 for (var i = 1; i <= 6; i++) {
-                    scroll?.ChangeView(null, Math.Min(scroll.ScrollableHeight, i * 1000), null, false);
+                    if (scroll is not null) _pixelScroll?.SeekFromScrollbar(Math.Min(scroll.ScrollableHeight, i * 1000));
                     await Task.Delay(500);
                 }
             } finally { CompositionTarget.Rendering -= Frame; }

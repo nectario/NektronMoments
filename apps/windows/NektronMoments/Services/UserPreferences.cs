@@ -7,6 +7,14 @@ namespace NektronMoments.Services;
 /// <summary>Non-secret preferences that also work without MSIX package identity.</summary>
 public static class UserPreferences
 {
+    private static readonly SemaphoreSlim Writes = new(1);
+    private static readonly object WriteGate = new();
+    public static async Task SetAsync<T>(string key, T value)
+    {
+        await Writes.WaitAsync().ConfigureAwait(false);
+        try { await Task.Run(() => Set(key, value)).ConfigureAwait(false); }
+        finally { Writes.Release(); }
+    }
     private static readonly string DirectoryPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NektronMoments");
     private static readonly string SettingsPath = Path.Combine(DirectoryPath, "preferences.json");
@@ -28,14 +36,7 @@ public static class UserPreferences
         }
         set
         {
-            Directory.CreateDirectory(DirectoryPath);
-            var temporary = SettingsPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
-            try {
-                var preferences = Read();
-                preferences["theme"] = value == "Dark" ? "Dark" : "Light";
-                File.WriteAllText(temporary, preferences.ToJsonString());
-                File.Move(temporary, SettingsPath, overwrite: true);
-            } finally { if (File.Exists(temporary)) File.Delete(temporary); }
+            Set("theme", value == "Dark" ? "Dark" : "Light");
         }
     }
 
@@ -54,7 +55,16 @@ public static class UserPreferences
         try { return Read()[key]?.GetValue<bool>() ?? fallback; }
         catch (InvalidOperationException) { return fallback; }
     }
+    public static string? Text(string key)
+    {
+        try { return Read()[key]?.GetValue<string>(); }
+        catch (InvalidOperationException) { return null; }
+    }
     public static void Set<T>(string key, T value)
+    {
+        lock (WriteGate) SetCore(key, value);
+    }
+    private static void SetCore<T>(string key, T value)
     {
         var preferences = Read();
         preferences[key] = JsonSerializer.SerializeToNode(value);

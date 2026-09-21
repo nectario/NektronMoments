@@ -38,6 +38,8 @@ function Assert-Signed([string]$Path) {
 }
 
 Push-Location -LiteralPath $projectRoot
+$momentsStartupBefore = $env:NEKTRON_MOMENTS_DISABLE_STARTUP_PROCESSING
+$env:NEKTRON_MOMENTS_DISABLE_STARTUP_PROCESSING = '1'
 try {
     if (-not $DiagnosticUnsigned) {
         Write-Output 'Running the full repository regression suite.'
@@ -59,6 +61,8 @@ try {
     }
     & (Join-Path $PSScriptRoot 'Test-PublishedAssets.ps1') -ApplicationDirectory $payload -Render -RenderOutput (Join-Path $attempt 'published-artwork')
     & (Join-Path $PSScriptRoot 'Test-GalleryScrolling.ps1') -ApplicationDirectory $payload -OutputDirectory (Join-Path $attempt 'published-scrolling')
+    & (Join-Path $PSScriptRoot 'Test-PhotoOpening.ps1') -ApplicationDirectory $payload -OutputDirectory (Join-Path $attempt 'published-photo-opening')
+    & (Join-Path $PSScriptRoot 'Test-Browsing.ps1') -ApplicationDirectory $payload -OutputDirectory (Join-Path $attempt 'published-browsing') -IncludeAudit
     $publishedExe = Join-Path $payload 'NektronMoments.exe'
     $publishedVersion = (Get-Item -LiteralPath $publishedExe).VersionInfo
     if ($publishedVersion.ProductVersion -ne $version -or $publishedVersion.FileVersion -ne "$version.0") {
@@ -126,4 +130,4 @@ try {
     "$sha  $([IO.Path]::GetFileName($final))" | Set-Content -LiteralPath "$metadataBase.sha256" -Encoding ascii
     Write-Output "Signed release: $final"
     Write-Output "SHA-256: $sha"
-} finally { Pop-Location }
+} finally { $env:NEKTRON_MOMENTS_DISABLE_STARTUP_PROCESSING = $momentsStartupBefore; Pop-Location }

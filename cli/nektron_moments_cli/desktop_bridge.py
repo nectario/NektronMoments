@@ -8,6 +8,7 @@ The source snapshot is rebuilt only when the CLI database/WAL fingerprint change
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 import sqlite3
 import sys
@@ -30,6 +31,40 @@ def windows_path(value: str) -> str:
     if value.startswith("/"):
         return "\\\\wsl.localhost\\Ubuntu" + value.replace("/", "\\")
     raise ValueError("A library locator must be an absolute path.")
+
+
+SCREENSHOT_QUERIES = ("screenshot", "screen shot", "screen capture", "screen-shot", "screen-capture", "screencapture",
+                      "text", "website", "webpage", "web page", "browser", "digital", "online article")
+SCREENSHOT_WORD = re.compile(r"\bscreen[\s-]?(?:shot|capture)s?\b", re.IGNORECASE)
+TEXT_CAPTURE = re.compile(
+    r"\b(?:website|web\s?page|browser|online article|digital (?:document|page|text))\b"
+    r"|\b(?:text[- ]only|text[- ]based|text[- ]heavy) (?:image|capture|graphic)\b"
+    r"|\b(?:block|paragraph|excerpt|passage|portion) of (?:\w+\s+){0,2}text\b"
+    r"|\b(?:black|white|typed) text on (?:a |an )?(?:plain |solid )?(?:white|black|blank) background\b",
+    re.IGNORECASE,
+)
+PHYSICAL_TEXT = re.compile(
+    r"\b(?:book|newspaper|magazine|sign|billboard|poster|handwritten|notebook|paper|receipt|menu|monitor|laptop|person|holding)\b",
+    re.IGNORECASE,
+)
+
+
+def describes_screenshot(text):
+    if not isinstance(text, str):
+        return False
+    for match in SCREENSHOT_WORD.finditer(text):
+        prefix = text[max(0, match.start() - 40):match.start()]
+        if not re.search(r"(?:\bnot|\bno|isn't|rather than|instead of)\s+(?:(?:a|an|the|real|actual|really)\s+){0,4}$", prefix, re.I):
+            return True
+    # Description-based evidence only: preserve physical scenes containing text,
+    # and explicit negations. No filename or image-size guesses, no paid calls.
+    if SCREENSHOT_WORD.search(text) or PHYSICAL_TEXT.search(text):
+        return False
+    for match in TEXT_CAPTURE.finditer(text):
+        prefix = text[max(0, match.start() - 40):match.start()]
+        if not re.search(r"(?:\bnot|\bno|isn't|rather than|instead of)\s+(?:(?:a|an|the|real|actual|really)\s+){0,4}$", prefix, re.I):
+            return True
+    return False
 
 
 class DesktopCatalog:
@@ -60,9 +95,14 @@ class DesktopCatalog:
         cached.row_factory = sqlite3.Row
         try:
             metadata = dict(cached.execute("SELECT Name,Value FROM CatalogMeta"))
-            if metadata.get("version") != "3" or metadata.get("fingerprint") != self._fingerprint():
+            if metadata.get("version") != "3":
                 cached.close()
                 return False
+            if metadata.get("fingerprint") != self._fingerprint():
+                self.db.close()
+                self.db = cached
+                self._ensure_order_indexes(cached)
+                return False  # Refresh carries indexed descriptions forward by hash.
             sources = json.loads(metadata["sources"])
             if not isinstance(sources, list):
                 raise ValueError("Invalid catalog source list")
@@ -82,6 +122,8 @@ class DesktopCatalog:
 
     @staticmethod
     def _ensure_order_indexes(connection):
+        connection.create_function("describes_screenshot", 1, describes_screenshot, deterministic=True)
+        connection.execute("CREATE TABLE IF NOT EXISTS Screenshot(Hash TEXT PRIMARY KEY)")
         connection.execute("CREATE INDEX IF NOT EXISTS IX_Media_OrderDesc ON Media((Captured=''),Captured DESC,Key)")
         connection.execute("CREATE INDEX IF NOT EXISTS IX_Media_OrderAsc ON Media((Captured=''),Captured ASC,Key)")
         connection.commit()
@@ -135,6 +177,12 @@ class DesktopCatalog:
                     self._insert(fresh, binding, path, None, None, None, {})
             fresh.commit()
             self._ensure_order_indexes(fresh)
+            # Descriptions and screenshot classifications survive a metadata scan.
+            if self.db.execute("SELECT 1 FROM sqlite_master WHERE name='Media'").fetchone():
+                fresh.executemany("UPDATE Media SET Description=CASE WHEN Description='' THEN ? ELSE Description END,Address=?,AssetId=?,DetailJson=? WHERE Hash=?",
+                    self.db.execute("SELECT Description,Address,AssetId,DetailJson,Hash FROM Media WHERE Hash<>'' AND (Description<>'' OR DetailJson<>'')"))
+            if self.db.execute("SELECT 1 FROM sqlite_master WHERE name='Screenshot'").fetchone():
+                fresh.executemany("INSERT INTO Screenshot VALUES(?)", self.db.execute("SELECT Hash FROM Screenshot"))
             projected_sources = [{
                 "id": s["SourceId"], "name": s["DisplayName"], "path": windows_path(s["RootPath"]),
             } for s in sources]
@@ -150,6 +198,7 @@ class DesktopCatalog:
             temporary.replace(self.cache_path)
             self.db = sqlite3.connect(self.cache_path)
             self.db.row_factory = sqlite3.Row
+            self._ensure_order_indexes(self.db)
             self.sources = projected_sources
             fresh.close()
             return self.overview()
@@ -175,17 +224,22 @@ class DesktopCatalog:
         )
         db.execute("INSERT OR IGNORE INTO Occurrence VALUES(?,?,?,?)",
                    (key, binding["SourceId"], binding["DisplayName"], native))
+        description = metadata.get("description") or metadata.get("sceneDescription") or ""
+        if isinstance(description, dict):
+            description = description.get("text", "")
+        if isinstance(description, str) and description:
+            db.execute("UPDATE Media SET Description=? WHERE Key=?", (description, key))
 
     def overview(self):
         row = self.db.execute(
             "SELECT COUNT(*) total, SUM(MediaType='Photo') photos, SUM(MediaType='Video') videos, SUM(Hash='') pending FROM Media"
         ).fetchone()
         return {"total": row["total"], "photos": row["photos"] or 0, "videos": row["videos"] or 0,
-                "pending": row["pending"] or 0, "sources": self.sources, "protocol": 1}
+                "pending": row["pending"] or 0, "sources": self.sources, "protocol": 1,
+                "libraryId": hashlib.sha256(str(self.state_path.resolve()).encode()).hexdigest()}
 
-    def page(self, *, query="", source_id="", media_type="", offset=0, limit=120, ascending=False):
-        if not 0 <= offset <= 2_000_000 or not 1 <= limit <= 4096:
-            raise ValueError("Invalid page bounds.")
+    @staticmethod
+    def _filter(query="", source_id="", media_type="", hide_screenshots=False):
         terms, values = ["1=1"], []
         if query:
             terms.append("(m.FileName LIKE ? ESCAPE '\\' OR m.Description LIKE ? ESCAPE '\\' OR m.Address LIKE ? ESCAPE '\\')")
@@ -197,13 +251,100 @@ class DesktopCatalog:
         if media_type in {"Photo", "Video"}:
             terms.append("m.MediaType=?")
             values.append(media_type)
-        where = " AND ".join(terms)
+        if hide_screenshots:
+            terms.append("NOT (m.MediaType='Photo' AND (describes_screenshot(m.Description) OR EXISTS(SELECT 1 FROM Screenshot s WHERE s.Hash=m.Hash)))")
+        return " AND ".join(terms), values
+
+    def catalog(self, *, query="", source_id="", media_type="", ascending=False, hide_screenshots=False):
+        """Complete lightweight timeline, not complete decoded images or metadata.
+
+        Publishing this list atomically gives the native virtualizing gallery its
+        final extent before browsing starts. Exactly two queries keep duplicate
+        fallback paths without a per-photo alias lookup or parsing EXIF JSON.
+        Full details stay in get()/the explicit detail command.
+        """
+        where, values = self._filter(query, source_id, media_type, hide_screenshots)
+        aliases = {}
+        for row in self.db.execute(
+            f"SELECT o.Key,o.Source,o.Path FROM Occurrence o JOIN Media m ON m.Key=o.Key WHERE {where} ORDER BY o.Key,o.Path",
+            values,
+        ):
+            entry = aliases.setdefault(row["Key"], {"source": row["Source"], "paths": []})
+            entry["paths"].append(row["Path"])
+        order = "ASC" if ascending else "DESC"
+        items = []
+        for row in self.db.execute(
+            f"SELECT m.Key,m.Hash,m.FileName,m.Path,m.Captured,m.DateSource,m.MediaType,m.ByteSize,m.ModifiedNs "
+            f"FROM Media m WHERE {where} ORDER BY (Captured=''), Captured {order}, Key",
+            values,
+        ):
+            paths = aliases.get(row["Key"], {"source": "", "paths": []})
+            items.append({
+                "key": row["Key"], "hash": row["Hash"], "name": row["FileName"],
+                "path": row["Path"], "paths": paths["paths"], "source": paths["source"],
+                "occurrences": len(paths["paths"]), "captured": row["Captured"],
+                "dateSource": row["DateSource"], "mediaType": row["MediaType"],
+                "byteSize": row["ByteSize"], "modifiedNs": row["ModifiedNs"],
+            })
+        return {"items": items, "total": len(items), "nextOffset": len(items), "hasMore": False}
+
+    def page(self, *, query="", source_id="", media_type="", offset=0, limit=120, ascending=False, hide_screenshots=False):
+        if not 0 <= offset <= 2_000_000 or not 1 <= limit <= 4096:
+            raise ValueError("Invalid page bounds.")
+        where, values = self._filter(query, source_id, media_type, hide_screenshots)
         total = self.db.execute("SELECT COUNT(*) FROM Media m WHERE " + where, values).fetchone()[0]
         order = "ASC" if ascending else "DESC"
         rows = self.db.execute(f"SELECT m.* FROM Media m WHERE {where} ORDER BY (Captured=''), Captured {order}, Key LIMIT ? OFFSET ?", [*values, limit, offset])
         items = [self.item(row) for row in rows]
         return {"items": items, "total": total, "nextOffset": offset + len(items),
                 "hasMore": offset + len(items) < total}
+
+    def catalog_stream(self, *, query="", source_id="", media_type="", ascending=False, hide_screenshots=False):
+        """Read one consistent timeline without retaining its rows in Python.
+
+        The count and joined cursor share a read snapshot, even when a second
+        process updates the disposable catalog. A savepoint preserves any outer
+        transaction owned by the caller. Aliases for only the current media item
+        are retained; fetchmany bounds SQLite-to-Python row materialization.
+        """
+        where, values = self._filter(query, source_id, media_type, hide_screenshots)
+        order = "ASC" if ascending else "DESC"
+        connection = self.db
+        connection.execute("SAVEPOINT desktop_catalog_stream")
+        try:
+            total = connection.execute("SELECT COUNT(*) FROM Media m WHERE " + where, values).fetchone()[0]
+            yield {"ok": True, "catalogStart": {"version": 1, "total": total}}
+            count, item = 0, None
+            with closing(connection.execute(
+                "SELECT m.Key,m.Hash,m.FileName,m.Path,m.Captured,m.DateSource,m.MediaType,m.ByteSize,m.ModifiedNs,"
+                "o.Source AS AliasSource,o.Path AS AliasPath "
+                f"FROM Media m LEFT JOIN Occurrence o ON o.Key=m.Key WHERE {where} "
+                f"ORDER BY (m.Captured=''),m.Captured {order},m.Key,o.Path",
+                values,
+            )) as rows:
+                while batch := rows.fetchmany(256):
+                    for row in batch:
+                        if item is None or item["key"] != row["Key"]:
+                            if item is not None:
+                                count += 1
+                                yield {"ok": True, "item": item}
+                            item = {
+                                "key": row["Key"], "hash": row["Hash"], "name": row["FileName"],
+                                "path": row["Path"], "paths": [], "source": row["AliasSource"] or "",
+                                "occurrences": 0, "captured": row["Captured"], "dateSource": row["DateSource"],
+                                "mediaType": row["MediaType"], "byteSize": row["ByteSize"], "modifiedNs": row["ModifiedNs"],
+                            }
+                        if row["AliasPath"] is not None:
+                            item["paths"].append(row["AliasPath"])
+                            item["occurrences"] += 1
+                if item is not None:
+                    count += 1
+                    yield {"ok": True, "item": item}
+            if count != total:
+                raise ValueError("The catalog snapshot count was inconsistent.")
+            yield {"ok": True, "catalogEnd": {"count": count}}
+        finally:
+            connection.execute("RELEASE SAVEPOINT desktop_catalog_stream")
 
     def item(self, row):
         aliases = self.db.execute("SELECT Source,Path FROM Occurrence WHERE Key=? ORDER BY Path", (row["Key"],)).fetchall()
@@ -265,8 +406,59 @@ class Bridge:
             raise ValueError("Register this workstation using the CLI before requesting indexed details.")
         return self.runtime.api, device
 
+    def responses(self, request):
+        if not isinstance(request, dict):
+            raise ValueError("A desktop request must be an object.")
+        if request.get("command") == "catalog-stream":
+            yield from self.catalog.catalog_stream(
+                query=str(request.get("query", ""))[:200],
+                source_id=str(request.get("sourceId", "")),
+                media_type=str(request.get("mediaType", "")),
+                ascending=bool(request.get("ascending", False)),
+                hide_screenshots=bool(request.get("hideScreenshots", False)),
+            )
+            return
+        result = self.dispatch(request)
+        # Signed URLs are not needed by this Local-only viewer.
+        if isinstance(result, dict) and isinstance(result.get("remote"), dict):
+            result["remote"].pop("remoteAccess", None)
+        yield {"ok": True, "result": result}
+
     def dispatch(self, request):
         command = request.get("command")
+        if command == "screenshot-page":
+            index = request.get("queryIndex", 0)
+            if type(index) is not int or not 0 <= index < len(SCREENSHOT_QUERIES):
+                raise ValueError("Invalid screenshot query")
+            api, device = self.remote()
+            params = {"q": SCREENSHOT_QUERIES[index], "limit": 200, "mediaType": "Photo"}
+            cursor = request.get("cursor")
+            if cursor:
+                if not isinstance(cursor, str) or len(cursor) > 4000:
+                    raise ValueError("Invalid cursor")
+                params["cursor"] = cursor
+            result = api.request("GET", "/v1/media/search", params=params, headers={"X-ImageTracker-Device-Id": device})
+            hashes = []
+            for hit in result.get("items", []):
+                asset = hit.get("asset") or {}
+                description = (asset.get("description") or {}).get("text") or asset.get("descriptionExcerpt") or ""
+                if hit.get("matchedField") == "Description":
+                    description = hit.get("highlight") or description
+                content_hash = asset.get("contentSha256", "")
+                if describes_screenshot(description) and re.fullmatch(r"[0-9a-fA-F]{64}", content_hash):
+                    hashes.append(content_hash.lower())
+            return {"hashes": hashes, "nextCursor": (result.get("page") or {}).get("nextCursor"), "queryCount": len(SCREENSHOT_QUERIES)}
+        if self.catalog is None:
+            raise ValueError("This connection only reads indexed screenshot metadata")
+        if command == "screenshot-index-replace":
+            hashes = request.get("hashes")
+            if not isinstance(hashes, list) or len(hashes) > 100000 or any(not isinstance(h, str) or not re.fullmatch(r"[0-9a-f]{64}", h) for h in hashes):
+                raise ValueError("Invalid screenshot index batch")
+            candidates = set(hashes)
+            with self.catalog.db:
+                self.catalog.db.execute("DELETE FROM Screenshot")
+                self.catalog.db.executemany("INSERT INTO Screenshot VALUES(?)", ((h,) for h in candidates))
+            return {"count": len(candidates)}
         if command == "hello":
             return self.catalog.overview()
         if command == "refresh":
@@ -276,7 +468,12 @@ class Bridge:
                                      source_id=str(request.get("sourceId", "")),
                                      media_type=str(request.get("mediaType", "")),
                                      offset=int(request.get("offset", 0)), limit=int(request.get("limit", 120)),
-                                     ascending=bool(request.get("ascending", False)))
+                                     ascending=bool(request.get("ascending", False)), hide_screenshots=bool(request.get("hideScreenshots", False)))
+        if command == "catalog":
+            return self.catalog.catalog(query=str(request.get("query", ""))[:200],
+                                        source_id=str(request.get("sourceId", "")),
+                                        media_type=str(request.get("mediaType", "")),
+                                        ascending=bool(request.get("ascending", False)), hide_screenshots=bool(request.get("hideScreenshots", False)))
         if command == "activity":
             return self.catalog.activity()
         if command == "search":
@@ -284,7 +481,8 @@ class Bridge:
             if not query:
                 return self.catalog.page()
             source_id, media_type = str(request.get("sourceId", "")), str(request.get("mediaType", ""))
-            local = self.catalog.page(query=query, source_id=source_id, media_type=media_type, limit=200)
+            hide_screenshots = bool(request.get("hideScreenshots", False))
+            local = self.catalog.page(query=query, source_id=source_id, media_type=media_type, limit=200, hide_screenshots=hide_screenshots)
             items = list(local["items"])
             seen = {i["key"] for i in items}
             try:
@@ -296,6 +494,11 @@ class Bridge:
             for hit in hits:
                 asset = hit.get("asset") or {}
                 self.catalog.apply_remote(asset)
+                if hide_screenshots and self.catalog.db.execute(
+                    "SELECT 1 FROM Media m WHERE Hash=? AND MediaType='Photo' AND (describes_screenshot(Description) OR EXISTS(SELECT 1 FROM Screenshot s WHERE s.Hash=m.Hash))",
+                    (asset.get("contentSha256"),)).fetchone():
+                    items = [i for i in items if i["hash"] != asset.get("contentSha256")]
+                    continue
                 row = self.catalog.db.execute("SELECT * FROM Media WHERE Hash=?", (asset.get("contentSha256"),)).fetchone()
                 if row and row["Key"] not in seen and (not media_type or row["MediaType"] == media_type) and (
                     not source_id or self.catalog.db.execute("SELECT 1 FROM Occurrence WHERE Key=? AND SourceId=?", (row["Key"], source_id)).fetchone()
@@ -334,6 +537,44 @@ class Bridge:
         raise ValueError("Unsupported desktop request.")
 
 
+def _write_responses(output, frames):
+    # The client launches Python unbuffered. Combine small NDJSON records into
+    # bounded writes rather than making one IPC write/flush per photo.
+    pending, size = [], 0
+    try:
+        for frame in frames:
+            line = json.dumps(frame, ensure_ascii=True, allow_nan=False) + "\n"
+            pending.append(line)
+            size += len(line)
+            if size >= 65536 or "catalogStart" in frame:
+                output.write("".join(pending))
+                output.flush()
+                pending, size = [], 0
+    finally:
+        if pending:
+            output.write("".join(pending))
+            output.flush()
+
+
+def serve(bridge, input_stream, output_stream):
+    """Finish every response stream before reading the next request."""
+    for line in input_stream:
+        try:
+            if len(line) > 8 * 1024 * 1024:
+                raise ValueError("Request too large.")
+            request = json.loads(line)
+            if len(line) > 8192 and (not isinstance(request, dict) or request.get("command") != "screenshot-index-replace"):
+                raise ValueError("Request too large.")
+            _write_responses(output_stream, bridge.responses(request))
+        except (ValueError, TypeError, KeyError):
+            print(json.dumps({"ok": False, "error": "The library request was invalid. Refresh and try again."}),
+                  file=output_stream, flush=True)
+        except Exception:
+            print(json.dumps({"ok": False, "error": "Cannot read the library right now. Check the CLI connection and retry."}),
+                  file=output_stream, flush=True)
+    return 0
+
+
 def main():
     from .auth import TokenStore
     from .config import ConfigStore
@@ -342,21 +583,8 @@ def main():
     if not tokens or not tokens.local_subject:
         print(json.dumps({"ok": False, "error": "Sign in with ./scripts/cli.sh auth login first."}), flush=True)
         return 2
-    bridge = Bridge(DesktopCatalog(store.state_path_for_subject(tokens.local_subject)))
-    for line in sys.stdin:
-        try:
-            if len(line) > 8192:
-                raise ValueError("Request too large.")
-            result = bridge.dispatch(json.loads(line))
-            # remoteAccess contains signed URLs and is not needed by this Local-only viewer.
-            if isinstance(result, dict) and isinstance(result.get("remote"), dict):
-                result["remote"].pop("remoteAccess", None)
-            print(json.dumps({"ok": True, "result": result}, ensure_ascii=True, allow_nan=False), flush=True)
-        except (ValueError, TypeError, KeyError):
-            print(json.dumps({"ok": False, "error": "The library request was invalid. Refresh and try again."}), flush=True)
-        except Exception:
-            print(json.dumps({"ok": False, "error": "Cannot read the library right now. Check the CLI connection and retry."}), flush=True)
-    return 0
+    bridge = Bridge(None if "--index-only" in sys.argv else DesktopCatalog(store.state_path_for_subject(tokens.local_subject)))
+    return serve(bridge, sys.stdin, sys.stdout)
 
 
 if __name__ == "__main__":

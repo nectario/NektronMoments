@@ -28,11 +28,14 @@
                     <MenuFlyoutItem Text="Exit" Tag="exit" Click="MenuAction"/>
                 </MenuBarItem>
                 <MenuBarItem Title="Edit">
+                    <MenuFlyoutItem x:Name="SettingsMenu" Text="Settings…" Tag="settings" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsSettingsImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutSeparator/>
                     <MenuFlyoutItem Text="Copy file path" Tag="copy-path" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsCopyImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
                     <MenuFlyoutItem Text="Copy filename" Tag="copy-name" Click="MenuAction"/>
                 </MenuBarItem>
                 <MenuBarItem Title="Library">
                     <MenuFlyoutItem Text="Process metadata" Tag="process" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsMetadataImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem x:Name="StartupProcessingMenu" Text="On startup: File metadata only…" Click="StartupProcessingChanged"/>
                     <MenuFlyoutItem Text="Stop processing" Tag="cancel" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsStopImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
                     <MenuFlyoutSeparator/>
                     <MenuFlyoutItem Text="Refresh library" Tag="refresh" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsRefreshImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
@@ -60,7 +63,7 @@
                     <MenuFlyoutItem Text="Stop slideshow" Tag="stop-slideshow" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsStopImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
                 </MenuBarItem>
                 <MenuBarItem Title="Help">
-                    <MenuFlyoutItem Text="Keyboard shortcuts and settings" Tag="settings" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsSettingsImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Keyboard shortcuts" Tag="about" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsSettingsImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
                     <MenuFlyoutItem Text="Performance profile" Tag="performance" Click="MenuAction"/>
                     <MenuFlyoutItem Text="About Nektron Moments" Tag="about" Click="MenuAction"><MenuFlyoutItem.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsInfoImage}"/></MenuFlyoutItem.Icon></MenuFlyoutItem>
                 </MenuBarItem>
@@ -90,7 +93,7 @@
             <AppBarButton x:Name="AddFolderButton" Label="Add folder" LabelPosition="Default" Click="AddFolder" ToolTipService.ToolTip="Add a local folder">
                 <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsAddImage}"/></AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="ProcessButton" Label="Process metadata" Click="ProcessMetadata" ToolTipService.ToolTip="Read hashes, dates, GPS and dimensions, then sync metadata. Does not start paid AI enrichment.">
+            <AppBarButton x:Name="ProcessButton" Label="Process metadata" Click="ProcessMetadata" ToolTipService.ToolTip="Choose processing options, including AI descriptions (on by default), then Start.">
                 <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsMetadataImage}"/></AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton Label="Refresh" Click="RefreshLibrary" ToolTipService.ToolTip="Refresh library (F5)" LabelPosition="Collapsed">
@@ -113,7 +116,9 @@
             <AppBarButton x:Name="ThemeButton" Label="Light theme" Click="ChangeTheme" ToolTipService.ToolTip="Switch to dark theme" LabelPosition="Collapsed">
                 <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsThemeImage}"/></AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton Label="Activity" Click="ShowActivity" LabelPosition="Collapsed">
+            <AppBarButton x:Name="ActivityButton" Label="Processing activity" Click="ShowActivity" LabelPosition="Collapsed"
+                ToolTipService.ToolTip="View processing queues, progress, and items that need attention."
+                AutomationProperties.HelpText="View processing queues, progress, and items that need attention.">
                 <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsActivityImage}"/></AppBarButton.Icon>
             </AppBarButton>
         </CommandBar>
@@ -131,7 +136,7 @@
             Background="{ThemeResource MomentsSecondaryBrush}"
             IsBackButtonVisible="Collapsed" IsSettingsVisible="True"
             OpenPaneLength="216" CompactPaneLength="48" ExpandedModeThresholdWidth="1000"
-            SelectionChanged="NavigationChanged" Header="">
+            SelectionChanged="NavigationChanged" ItemInvoked="NavigationInvoked" Header="">
             <NavigationView.MenuItems>
                 <NavigationViewItemHeader Content="YOUR LIBRARY"/>
                 <NavigationViewItem x:Name="LibraryNav" Content="Library" Tag="all" IsSelected="True">
@@ -187,17 +192,34 @@
                     </StackPanel>
                     <InfoBar x:Name="Notice" Grid.Row="1" IsOpen="False" IsClosable="True" Severity="Warning" Margin="0,0,0,12"/>
                     <Grid Grid.Row="2" Margin="0,0,0,12">
-                        <TextBlock x:Name="ResultCount" VerticalAlignment="Center" FontSize="13" Foreground="{ThemeResource MomentsMutedBrush}"/>
-                        <Button x:Name="SortButton" Content="Newest first ↓" HorizontalAlignment="Right" Click="ToggleSort" Padding="12,6"/>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <TextBlock x:Name="ResultCount" VerticalAlignment="Center" FontSize="13" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource MomentsMutedBrush}"/>
+                        <CheckBox x:Name="HideScreenshotsCheck" Grid.Column="1" Content="Hide screenshots" Margin="12,0,16,0" FontSize="13" Checked="ScreenshotFilterChanged" Unchecked="ScreenshotFilterChanged" ToolTipService.ToolTip="Hide screenshots and text-based digital captures, including website excerpts, identified in existing descriptions. Unclassified photos stay visible. No files are deleted."/>
+                        <Button x:Name="SortButton" Grid.Column="2" Content="Newest first ↓" HorizontalAlignment="Right" Padding="12,6" ToolTipService.ToolTip="Choose date sorting or your saved arrangement">
+                            <Button.Flyout><MenuFlyout>
+                                <MenuFlyoutItem Text="Newest first" Tag="newest" Click="ChooseSort"/>
+                                <MenuFlyoutItem Text="Oldest first" Tag="oldest" Click="ChooseSort"/>
+                                <MenuFlyoutItem Text="Custom order" Tag="custom" Click="ChooseSort"/>
+                            </MenuFlyout></Button.Flyout>
+                        </Button>
                     </Grid>
                     <Grid x:Name="GalleryScrollHost" Grid.Row="3">
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="24"/></Grid.ColumnDefinitions>
-                    <GridView x:Name="Gallery" ItemsSource="{x:Bind Items}" SizeChanged="GalleryResized" Loaded="GalleryLoaded"
+                    <GridView x:Name="Gallery" ItemsSource="{x:Bind BrowseItems}" SizeChanged="GalleryResized" Loaded="GalleryLoaded"
+                        AutomationProperties.Name="Photo library"
+                        AutomationProperties.HelpText="Drag photos to arrange them, or select a photo and press Control Shift Arrow. Original files stay in place."
                         DoubleTapped="GalleryDoubleTapped"
                         IsItemClickEnabled="True" ItemClick="MediaClicked" SelectionMode="Single"
                         ContainerContentChanging="GalleryContainerChanging"
+                        CanDragItems="True" CanReorderItems="False" AllowDrop="True"
+                        DragItemsStarting="GalleryDragStarting" DragItemsCompleted="GalleryDragCompleted"
+                        DragOver="GalleryDragOver" DragLeave="GalleryDragLeave" Drop="GalleryDrop"
+                        KeyDown="GalleryReorderKey"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        ScrollViewer.VerticalScrollBarVisibility="Hidden" Padding="0,0,8,8">
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        ScrollViewer.IsDeferredScrollingEnabled="False" Padding="0,0,8,8">
+                        <GridView.ItemContainerTransitions>
+                            <TransitionCollection><ReorderThemeTransition/><RepositionThemeTransition IsStaggeringEnabled="False"/></TransitionCollection>
+                        </GridView.ItemContainerTransitions>
                         <GridView.Resources>
                             <x:Double x:Key="ScrollBarSize">24</x:Double>
                             <x:Double x:Key="ScrollBarVerticalThumbMinWidth">14</x:Double>
@@ -210,7 +232,7 @@
                             </Style>
                         </GridView.Resources>
                         <GridView.ItemsPanel>
-                            <ItemsPanelTemplate><ItemsWrapGrid x:Name="MediaWrap" Background="Transparent" Orientation="Horizontal" ItemWidth="242" ItemHeight="224" CacheLength="3"/></ItemsPanelTemplate>
+                            <ItemsPanelTemplate><ItemsWrapGrid x:Name="MediaWrap" Background="Transparent" Orientation="Horizontal" ItemWidth="242" ItemHeight="224" CacheLength="0.5"/></ItemsPanelTemplate>
                         </GridView.ItemsPanel>
                         <GridView.ItemContainerStyle>
                             <Style TargetType="GridViewItem">
@@ -233,14 +255,8 @@
                                 </Grid>
                             </DataTemplate>
                         </GridView.ItemTemplate>
-                        <GridView.Footer>
-                            <Button x:Name="LoadMoreButton" Content="Load more photos" Click="LoadMore" Margin="0,12" HorizontalAlignment="Center" Visibility="Collapsed"/>
-                        </GridView.Footer>
                     </GridView>
                     <Grid x:Name="SizingCanvas" Background="{ThemeResource MomentsWindowBrush}" Visibility="Collapsed" IsHitTestVisible="False"/>
-                    <ScrollBar x:Name="GalleryScrollbar" Grid.Column="1" Orientation="Vertical" Width="24"
-                        IndicatorMode="MouseIndicator" Scroll="GalleryScrollbarChanged" Loaded="GalleryScrollbarLoaded"
-                        AutomationProperties.Name="Browse library position"/>
                     </Grid>
                     <StackPanel x:Name="EmptyState" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12" MaxWidth="400">
                         <ContentControl Width="54" Height="54" HorizontalAlignment="Center" ContentTemplate="{ThemeResource MomentsIconLibrary}"/>

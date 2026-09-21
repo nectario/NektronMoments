@@ -18,7 +18,7 @@
       <SvgImageSource x:Key="MomentsPhotosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/photos.svg"/>
       <SvgImageSource x:Key="MomentsVideosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/videos.svg"/>
       <SvgImageSource x:Key="MomentsFolderImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/sources.svg"/>
-      <SvgImageSource x:Key="MomentsActivityImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/processing.svg"/>
+      <SvgImageSource x:Key="MomentsActivityImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/queued.svg"/>
       <SvgImageSource x:Key="MomentsInfoImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/info.svg"/>
       <SvgImageSource x:Key="MomentsMetadataImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/metadata.svg"/>
       <SvgImageSource x:Key="MomentsOpenImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/light/file-open.svg"/>
@@ -52,7 +52,7 @@
       <SvgImageSource x:Key="MomentsPhotosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/photos.svg"/>
       <SvgImageSource x:Key="MomentsVideosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/videos.svg"/>
       <SvgImageSource x:Key="MomentsFolderImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/sources.svg"/>
-      <SvgImageSource x:Key="MomentsActivityImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/processing.svg"/>
+      <SvgImageSource x:Key="MomentsActivityImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/queued.svg"/>
       <SvgImageSource x:Key="MomentsInfoImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/info.svg"/>
       <SvgImageSource x:Key="MomentsMetadataImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/metadata.svg"/>
       <SvgImageSource x:Key="MomentsOpenImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/dark/file-open.svg"/>
@@ -85,7 +85,7 @@
       <SvgImageSource x:Key="MomentsPhotosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/photos.svg"/>
       <SvgImageSource x:Key="MomentsVideosImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/videos.svg"/>
       <SvgImageSource x:Key="MomentsFolderImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/sources.svg"/>
-      <SvgImageSource x:Key="MomentsActivityImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/processing.svg"/>
+      <SvgImageSource x:Key="MomentsActivityImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/queued.svg"/>
       <SvgImageSource x:Key="MomentsInfoImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/info.svg"/>
       <SvgImageSource x:Key="MomentsMetadataImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/metadata.svg"/>
       <SvgImageSource x:Key="MomentsOpenImage" UriSource="ms-appx:///Assets/NektronMoments/icons/ui/svg/high-contrast-dark/file-open.svg"/>

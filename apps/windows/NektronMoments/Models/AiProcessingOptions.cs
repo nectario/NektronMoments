@@ -1,0 +1,39 @@
+using System.Globalization;
+using System.Text.Json;
+
+namespace NektronMoments.Models;
+
+public sealed record SceneModelOption(string Id, string Label, decimal InputRate, decimal OutputRate);
+
+public sealed record AiProcessingOptions(int Limit = 64, string Model = "gpt-5.6-terra")
+{
+    // Standard USD / million tokens, verified 2026-09-21. Flex can cost less.
+    public static readonly SceneModelOption[] Models = [
+        new("gpt-5.6-terra", "Terra — default", 2m, 12m),
+        new("gpt-5.6-luna", "Luna", .2m, 1.2m),
+        new("gpt-5.6-sol", "Sol", 4m, 20m),
+    ];
+    public void Validate()
+    {
+        if (Limit is < 1 or > 64 || !Models.Any(item => item.Id == Model))
+            throw new ArgumentException("Choose 1–64 assets and a supported AI model.");
+    }
+    public static AiProcessingOptions Resolve(string? saved)
+    {
+        try {
+            var result = saved is null ? new() : JsonSerializer.Deserialize<AiProcessingOptions>(saved) ?? new();
+            result.Validate(); return result;
+        } catch (Exception error) when (error is JsonException or ArgumentException) { return new(); }
+    }
+    public decimal Estimate(int sources = 1)
+    {
+        Validate();
+        if (sources < 0) throw new ArgumentOutOfRangeException(nameof(sources));
+        var model = Models.Single(item => item.Id == Model);
+        return Limit * (decimal)sources * (2560 * model.InputRate + 100 * model.OutputRate) / 1_000_000m;
+    }
+    public string Preview(int sources = 1) => $"{Model} · Up to {Limit:N0} assets per source\n" +
+        $"Illustrative AI cost for {Limit * (long)sources:N0} descriptions: US${Estimate(sources).ToString("F3", CultureInfo.InvariantCulture)}. " +
+        "Assumes 2,560 input + 100 output tokens per image at standard rates (2026-09-21). " +
+        "Not a quote or spending cap: actual tokens, retries and pending jobs vary; Flex/cache reuse can cost less. Excludes address lookup and AWS costs.";
+}

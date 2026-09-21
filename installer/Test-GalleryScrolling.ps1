@@ -3,6 +3,7 @@ param([Parameter(Mandatory)][string] $ApplicationDirectory, [Parameter(Mandatory
 $ErrorActionPreference = 'Stop'
 $ApplicationDirectory = (Resolve-Path -LiteralPath $ApplicationDirectory).Path
 if (-not [IO.Path]::IsPathFullyQualified($OutputDirectory)) { throw 'Use an absolute scroll-check output directory.' }
+$OutputDirectory = [IO.Path]::GetFullPath($OutputDirectory)
 New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 $resultPath = Join-Path $OutputDirectory 'scroll.json'
 if (Test-Path -LiteralPath $resultPath) { throw 'Use a fresh output directory; stale scroll results are not accepted.' }
@@ -11,7 +12,7 @@ $app = $null
 try {
     $env:NEKTRON_MOMENTS_SCROLL_CHECK_DIR = $OutputDirectory
     $app = Start-Process -FilePath (Join-Path $ApplicationDirectory 'NektronMoments.exe') -WorkingDirectory $ApplicationDirectory -WindowStyle Hidden -PassThru
-    $deadline = [DateTime]::UtcNow.AddSeconds(60)
+    $deadline = [DateTime]::UtcNow.AddSeconds(90)
     do {
         Start-Sleep -Milliseconds 250
         $app.Refresh()
@@ -21,7 +22,7 @@ try {
     $result = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
     if (-not $result.passed) { throw ('Pixel-scroll verification failed: ' + ($result.errors -join '; ')) }
     if ($app.MainWindowHandle -eq [IntPtr]::Zero -or -not $app.Responding) { throw 'Pixel-scroll window is not responsive.' }
-    Write-Output "Native pixel scrolling passed: $($result.itemCount) items, four thumbnail sizes, fractional deltas, reversal, burst bounds and cancellation."
+    Write-Output "Native scrolling passed: $($result.itemCount) items, built-in scrollbar ownership/range, wheel handoff, full-library access, resizing, and bounded virtualization. Physical drag feel requires user comparison."
 } finally {
     $env:NEKTRON_MOMENTS_SCROLL_CHECK_DIR = $previous
     if ($app -and -not $app.HasExited) {

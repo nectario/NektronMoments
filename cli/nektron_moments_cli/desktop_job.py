@@ -8,13 +8,24 @@ from uuid import UUID
 
 
 def permitted(arguments: list[str]) -> bool:
-    # No arbitrary CLI execution, destructive operations, or paid enrichment.
+    if len(arguments) in (6, 8) and arguments[0] == "sync":
+        try:
+            UUID(arguments[1])
+            limit = int(arguments[4])
+        except ValueError:
+            return False
+        return (arguments[2:4] == ["--with-enrichment", "--enrichment-limit"]
+                and 1 <= limit <= 64 and arguments[-1] == "--no-input"
+                and (len(arguments) == 6 or (arguments[5] == "--description-model"
+                     and arguments[6] in {"gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol"})))
+    # No arbitrary CLI execution or destructive operations. Full startup mode
+    # explicitly opts into the existing bounded enrichment path.
     if len(arguments) in (3, 4) and arguments[0] == "sync":
         try:
             UUID(arguments[1])
         except ValueError:
             return False
-        return arguments[2:] in (["--no-input"], ["--fast-add", "--no-input"])
+        return arguments[2:] in (["--no-input"], ["--fast-add", "--no-input"], ["--with-enrichment", "--no-input"])
     return len(arguments) == 4 and arguments[:2] == ["source", "add"] and arguments[2].startswith("/") and arguments[3] == "--json"
 
 

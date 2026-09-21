@@ -19,17 +19,16 @@ public static class ViewingPolicy
         ThumbnailWidth(dips) * Math.Clamp(rasterScale, 1, 4) <= 512 ? 512 : 1024);
 }
 
-public sealed record GalleryBudget(string Name, int PageSize, int RecordBuffer, int LowWater,
-    int ThumbnailAhead, double ViewportCache, long EncodedBytes, long DecodedBytes, long DiskBytes,
+public sealed record GalleryBudget(string Name, int ThumbnailAhead, double ViewportCache, long EncodedBytes, long DecodedBytes, long DiskBytes,
     int ForegroundWorkers, int PrefetchWorkers)
 {
     public static GalleryBudget ForMemory(ulong physicalBytes)
     {
         const long MiB = 1024 * 1024;
         if (physicalBytes >= 96UL * 1024 * 1024 * 1024)
-            return new("Workstation", 4096, 24576, 8192, 1536, 8, 768 * MiB, 2048 * MiB, 8192 * MiB, 12, 4);
+            return new("Workstation", 8192, 8, 1024 * MiB, 12288 * MiB, 8192 * MiB, 12, 4);
         if (physicalBytes >= 24UL * 1024 * 1024 * 1024)
-            return new("Enhanced", 2048, 8192, 2048, 512, 5, 256 * MiB, 768 * MiB, 4096 * MiB, 8, 2);
-        return new("Balanced", 512, 2048, 512, 96, 3, 64 * MiB, 192 * MiB, 1024 * MiB, 4, 1);
+            return new("Enhanced", 2048, 5, 512 * MiB, 2048 * MiB, 4096 * MiB, 8, 2);
+        return new("Balanced", 512, 3, 128 * MiB, 384 * MiB, 1024 * MiB, 4, 1);
     }
 }

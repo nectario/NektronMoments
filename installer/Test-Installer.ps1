@@ -27,6 +27,8 @@ $installed = $false
 $ownsRegistration = $false
 $workspaceBefore = $env:NEKTRON_MOMENTS_WORKSPACE
 $manifestChecks = @{}
+$momentsStartupBefore = $env:NEKTRON_MOMENTS_DISABLE_STARTUP_PROCESSING
+$env:NEKTRON_MOMENTS_DISABLE_STARTUP_PROCESSING = '1'
 try {
     $arguments = @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/NOICONS','/TASKS=""',
         "/DIR=`"$resolvedCanary`"", "/WORKSPACE=`"$Workspace`"", "/LOG=`"$(Join-Path $LogDirectory 'install.log')`"")
@@ -45,6 +47,8 @@ try {
     if ($savedWorkspace -ne $Workspace) { throw 'The workspace reconnect preference was not saved correctly.' }
     & (Join-Path $PSScriptRoot 'Test-PublishedAssets.ps1') -ApplicationDirectory $resolvedCanary -Render -RenderOutput (Join-Path $LogDirectory 'artwork')
     & (Join-Path $PSScriptRoot 'Test-GalleryScrolling.ps1') -ApplicationDirectory $resolvedCanary -OutputDirectory (Join-Path $LogDirectory 'scrolling')
+    & (Join-Path $PSScriptRoot 'Test-PhotoOpening.ps1') -ApplicationDirectory $resolvedCanary -OutputDirectory (Join-Path $LogDirectory 'photo-opening')
+    & (Join-Path $PSScriptRoot 'Test-Browsing.ps1') -ApplicationDirectory $resolvedCanary -OutputDirectory (Join-Path $LogDirectory 'browsing') -IncludeAudit
     if ($RequireSignature) {
         foreach ($name in @('NektronMoments.exe','NektronMoments.dll','unins000.exe')) {
             $signature = Get-AuthenticodeSignature -LiteralPath (Join-Path $resolvedCanary $name)
@@ -63,9 +67,10 @@ try {
     if ($app.MainWindowHandle -eq [IntPtr]::Zero -or -not $app.Responding) { throw 'The installed app did not show a responsive window.' }
     $manifestChecks = @{
         installed=$true; userScope=$true; reconnectPreference=$true; directLaunch=$true
-        signaturesRequired=[bool]$RequireSignature; canary=$resolvedCanary; artworkRendered=$true; pixelScrolling=$true; sideBySide=$sideBySide
+        signaturesRequired=[bool]$RequireSignature; canary=$resolvedCanary; artworkRendered=$true; pixelScrolling=$true; photoOpening=$true; sideBySide=$sideBySide
     }
 } finally {
+    $env:NEKTRON_MOMENTS_DISABLE_STARTUP_PROCESSING = $momentsStartupBefore
     $env:NEKTRON_MOMENTS_WORKSPACE = $workspaceBefore
     if ($app -and -not $app.HasExited) {
         $app.CloseMainWindow() | Out-Null

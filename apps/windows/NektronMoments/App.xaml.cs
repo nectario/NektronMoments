@@ -37,10 +37,12 @@ public partial class App : Application
     /// Invoked when the application is launched.
     /// </summary>
     /// <param name="args">Details about the launch request and process.</param>
-    protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+    protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         try {
+            await Services.DiagnosticTrace.WaitForCollectorAsync();
             MainWindowInstance = new MainWindow();
+            Services.DiagnosticTrace.AttachFrames(MainWindowInstance);
             MainWindowInstance.Activate();
         } catch (Exception error) { Services.DiagnosticLog.Write(error); throw; }
     }

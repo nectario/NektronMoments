@@ -18,6 +18,7 @@ public sealed partial class MainPage
         var rendered = new List<object>();
         var commandSizes = new List<object>();
         var overflowWidths = new List<double>();
+        object? compactLayout = null;
         var svgOpened = 0;
         var shell = (FrameworkElement)App.MainWindowInstance!.Content;
         var previousTheme = shell.RequestedTheme;
@@ -56,6 +57,11 @@ public sealed partial class MainPage
                 UpdateThemeChrome();
                 await Task.Delay(650);
                 shell.UpdateLayout();
+                if (ActivityButton.Icon is not ImageIcon { Source: SvgImageSource activity } ||
+                    !activity.UriSource.AbsolutePath.EndsWith("/queued.svg", StringComparison.Ordinal))
+                    errors.Add($"{theme}: Activity must use the distinct branded list-and-clock icon.");
+                if (ToolTipService.GetToolTip(ActivityButton)?.ToString() != "View processing queues, progress, and items that need attention.")
+                    errors.Add("Processing activity tooltip is missing or incorrect.");
                 CheckCommandSizes(RibbonBar, "ribbon", 24, 48, 9);
                 CheckCommandSizes(Viewer, "viewer", 24, 48, 5);
                 var icons = AssetDescendants(shell).OfType<ImageIcon>()
@@ -78,7 +84,21 @@ public sealed partial class MainPage
             App.MainWindowInstance.AppWindow.Resize(new Windows.Graphics.SizeInt32(780, 820));
             await Task.Delay(650);
             RibbonBar.IsOpen = true;
-            await Task.Delay(350);
+            // AppWindow resize and CommandBar's overflow measure complete
+            // asynchronously. Wait for the state under test, not a fixed 350ms
+            // assumption that can sample the old wide layout on a busy desktop.
+            var overflowDeadline = DateTime.UtcNow.AddSeconds(3);
+            do {
+                await Task.Delay(50);
+                shell.UpdateLayout();
+            } while (!RibbonBar.PrimaryCommands.OfType<AppBarButton>().Any(button => button.IsInOverflow)
+                && DateTime.UtcNow < overflowDeadline);
+            await Task.Delay(100);
+            compactLayout = new {
+                requestedWindowWidth = 780, actualWindowWidth = App.MainWindowInstance.AppWindow.Size.Width,
+                pageWidth = ActualWidth, ribbonWidth = RibbonBar.ActualWidth, ribbonMaxWidth = RibbonBar.MaxWidth,
+                sizePanelWidth = ThumbnailSizePanel.ActualWidth,
+            };
             foreach (var button in RibbonBar.PrimaryCommands.OfType<AppBarButton>().Where(button => button.IsInOverflow)) {
                 overflowWidths.Add(button.ActualWidth);
                 if (button.ActualWidth < 120) errors.Add($"Overflow label has insufficient space: {button.Label}");
@@ -89,7 +109,7 @@ public sealed partial class MainPage
         } catch (Exception error) { errors.Add(error.Message); }
         finally { shell.RequestedTheme = previousTheme; }
         await File.WriteAllTextAsync(Path.Combine(output, "assets.json"), JsonSerializer.Serialize(new {
-            passed = errors.Count == 0, svgOpened, rendered, commandSizes, overflowWidths, errors,
+            passed = errors.Count == 0, svgOpened, rendered, commandSizes, overflowWidths, compactLayout, errors,
             baseDirectory = AppContext.BaseDirectory,
             version = typeof(App).Assembly.GetName().Version?.ToString(),
             libraryConnected = false,
