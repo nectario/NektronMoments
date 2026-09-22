@@ -34,7 +34,7 @@
     <Style x:Key="SectionCard" TargetType="Border"><Setter Property="CornerRadius" Value="8"/><Setter Property="BorderThickness" Value="1"/><Setter Property="BorderBrush" Value="{ThemeResource MomentsBorderBrush}"/><Setter Property="Background" Value="{ThemeResource MomentsSurfaceBrush}"/><Setter Property="Padding" Value="12,6"/></Style>
    </ResourceDictionary>
   </Grid.Resources>
-  <Grid.KeyboardAccelerators><KeyboardAccelerator Key="Escape" Invoked="HideKey"/></Grid.KeyboardAccelerators>
+  <Grid.KeyboardAccelerators><KeyboardAccelerator Key="Escape" Invoked="HideKey"/><KeyboardAccelerator Key="C" Modifiers="Control" Invoked="CopySelectedRows"/></Grid.KeyboardAccelerators>
   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
   <TitleBar x:Name="ProcessingTitleBar" Title="Nektron Moments · Processing" Background="{ThemeResource MomentsTitlebarBrush}" Foreground="{ThemeResource MomentsTextBrush}">
    <TitleBar.IconSource><ImageIconSource ImageSource="{ThemeResource MomentsActivityImage}"/></TitleBar.IconSource>
@@ -48,7 +48,7 @@
        <TextBlock x:Name="Heading" Text="Processing photos" FontSize="32" FontWeight="SemiBold"/>
        <Border Background="{ThemeResource MomentsSelectionBrush}" BorderBrush="{ThemeResource MomentsBorderBrush}" BorderThickness="1" CornerRadius="7" Padding="12,1" VerticalAlignment="Center"><TextBlock x:Name="ModeBadge" Text="Full" FontSize="18" FontWeight="SemiBold"/></Border>
       </StackPanel>
-      <TextBlock x:Name="SessionText" Text="Preparing your library…" FontSize="17" Foreground="{ThemeResource MomentsMutedBrush}" TextTrimming="CharacterEllipsis"/>
+      <TextBlock x:Name="SessionText" Text="Preparing your library…" FontSize="15" Foreground="{ThemeResource MomentsMutedBrush}" TextTrimming="CharacterEllipsis"/>
      </StackPanel>
      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" Margin="16,0,0,0">
       <FontIcon Glyph="&#xE917;" FontSize="22" Foreground="{ThemeResource MomentsMutedBrush}"/>
@@ -60,63 +60,63 @@
       <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
       <Grid.ColumnDefinitions><ColumnDefinition Width="1.5*"/><ColumnDefinition Width="*"/><ColumnDefinition Width=".8*"/></Grid.ColumnDefinitions>
       <StackPanel x:Name="AiChoices" Spacing="4">
-       <StackPanel Orientation="Horizontal" Spacing="8"><TextBlock Text="AI enrichment" Style="{StaticResource SectionTitle}" VerticalAlignment="Center"/><Button x:Name="CatchUpButton" Content="Catch up: 10,000 per source" Click="CatchUpClicked"/></StackPanel>
+       <StackPanel Orientation="Horizontal" Spacing="8"><TextBlock Text="AI enrichment" Style="{StaticResource SectionTitle}" FontSize="18" VerticalAlignment="Center"/><Button x:Name="CatchUpButton" FontSize="13" Content="Catch up: 10,000 per source" Click="CatchUpClicked"/></StackPanel>
        <StackPanel Orientation="Horizontal" Spacing="14">
-        <CheckBox x:Name="IncludeAiChoice" Content="Enabled" IsChecked="True" Checked="SetupChanged" Unchecked="SetupChanged"/>
-        <StackPanel x:Name="AiReadOnly" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center" Visibility="Collapsed"><FontIcon x:Name="AiStateIcon" Glyph="&#xE73A;" FontSize="24" Foreground="{ThemeResource MomentsAccentBrush}"/><TextBlock x:Name="AiStateText" Text="Enabled" FontSize="17"/></StackPanel>
+        <CheckBox x:Name="IncludeAiChoice" FontSize="13" Content="Enabled" IsChecked="True" Checked="SetupChanged" Unchecked="SetupChanged"/>
+        <StackPanel x:Name="AiReadOnly" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center" Visibility="Collapsed"><FontIcon x:Name="AiStateIcon" Glyph="&#xE73A;" FontSize="24" Foreground="{ThemeResource MomentsAccentBrush}"/><TextBlock x:Name="AiStateText" Text="Enabled" FontSize="15"/></StackPanel>
         <StackPanel x:Name="LockedNotice" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center" Visibility="Collapsed">
          <FontIcon Glyph="&#xE72E;" FontSize="15" Foreground="{ThemeResource MomentsMutedBrush}"/>
-         <TextBlock Text="Settings locked during processing" FontSize="13" Foreground="{ThemeResource MomentsMutedBrush}"/>
+         <TextBlock Text="Settings locked during processing" FontSize="12" Foreground="{ThemeResource MomentsMutedBrush}"/>
         </StackPanel>
        </StackPanel>
 
       </StackPanel>
-      <ComboBox x:Name="ModelChoice" Grid.Column="1" Header="Scene model" HorizontalAlignment="Stretch" VerticalAlignment="Center" SelectionChanged="SetupChanged"/>
-      <NumberBox x:Name="LimitChoice" Grid.Column="2" Header="Assets per source" VerticalAlignment="Center" Minimum="1" Maximum="1000000" Value="64" SmallChange="1" SpinButtonPlacementMode="Compact" ValueChanged="LimitChanged"/>
-      <StackPanel x:Name="ModelDisplay" Grid.Column="1" Spacing="4" VerticalAlignment="Center" Visibility="Collapsed"><TextBlock Text="Scene model" Foreground="{ThemeResource MomentsMutedBrush}" FontSize="14"/><Border Background="{ThemeResource MomentsSecondaryBrush}" BorderBrush="{ThemeResource MomentsBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,6"><TextBlock x:Name="ModelValue" FontSize="17"/></Border></StackPanel>
-      <StackPanel x:Name="LimitDisplay" Grid.Column="2" Spacing="4" VerticalAlignment="Center" Visibility="Collapsed"><TextBlock Text="Assets per source" Foreground="{ThemeResource MomentsMutedBrush}" FontSize="14"/><Border Background="{ThemeResource MomentsSecondaryBrush}" BorderBrush="{ThemeResource MomentsBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,6"><TextBlock x:Name="LimitValue" FontSize="17"/></Border></StackPanel>
+      <ComboBox x:Name="ModelChoice" FontSize="13" Grid.Column="1" Header="Scene model" HorizontalAlignment="Stretch" VerticalAlignment="Center" SelectionChanged="SetupChanged"/>
+      <NumberBox x:Name="LimitChoice" FontSize="13" Grid.Column="2" Header="Assets per source" VerticalAlignment="Center" Minimum="1" Maximum="1000000" Value="64" SmallChange="1" SpinButtonPlacementMode="Compact" ValueChanged="LimitChanged"/>
+      <StackPanel x:Name="ModelDisplay" Grid.Column="1" Spacing="4" VerticalAlignment="Center" Visibility="Collapsed"><TextBlock Text="Scene model" Foreground="{ThemeResource MomentsMutedBrush}" FontSize="13"/><Border Background="{ThemeResource MomentsSecondaryBrush}" BorderBrush="{ThemeResource MomentsBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,6"><TextBlock x:Name="ModelValue" FontSize="15"/></Border></StackPanel>
+      <StackPanel x:Name="LimitDisplay" Grid.Column="2" Spacing="4" VerticalAlignment="Center" Visibility="Collapsed"><TextBlock Text="Assets per source" Foreground="{ThemeResource MomentsMutedBrush}" FontSize="13"/><Border Background="{ThemeResource MomentsSecondaryBrush}" BorderBrush="{ThemeResource MomentsBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,6"><TextBlock x:Name="LimitValue" FontSize="15"/></Border></StackPanel>
      </Grid>
     </Border>
-    <Grid x:Name="PricingGrid" ColumnSpacing="14" RowSpacing="14">
+    <Grid x:Name="PricingGrid" ColumnSpacing="14" RowSpacing="14"><Grid.Resources><Style TargetType="TextBlock"><Setter Property="FontSize" Value="14"/><Setter Property="Foreground" Value="{ThemeResource MomentsTextBrush}"/></Style></Grid.Resources>
      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
      <Grid.ColumnDefinitions><ColumnDefinition Width="1.35*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
      <Border x:Name="PricingCard" Style="{StaticResource SectionCard}">
       <StackPanel Spacing="4">
-       <StackPanel><TextBlock Text="Model pricing" Style="{StaticResource SectionTitle}"/><TextBlock Text="USD per 1 million tokens" Foreground="{ThemeResource MomentsMutedBrush}"/></StackPanel>
+       <StackPanel><TextBlock Text="Model pricing" Style="{StaticResource SectionTitle}" FontSize="18"/><TextBlock Text="USD per 1 million tokens" Foreground="{ThemeResource MomentsMutedBrush}"/></StackPanel>
        <Border CornerRadius="7" BorderThickness="1" BorderBrush="{ThemeResource MomentsBorderBrush}">
         <StackPanel>
          <Grid Padding="12,4" Background="{ThemeResource MomentsSecondaryBrush}">
           <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="90"/><ColumnDefinition Width="90"/></Grid.ColumnDefinitions>
           <TextBlock Text="Model" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="Input" HorizontalAlignment="Right" FontWeight="SemiBold"/><TextBlock Grid.Column="2" Text="Output" HorizontalAlignment="Right" FontWeight="SemiBold"/>
          </Grid>
-         <ItemsControl x:Name="PricingRows">
-          <ItemsControl.ItemTemplate><DataTemplate><Grid>
-           <Border Background="{ThemeResource MomentsSelectionBrush}" Visibility="{Binding Selected}"/>
+         <ListView x:Name="PricingRows" SelectionMode="Single" IsItemClickEnabled="False" AutomationProperties.Name="Model pricing"><ListView.ItemContainerStyle><Style TargetType="ListViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Padding" Value="0"/><Setter Property="MinHeight" Value="28"/></Style></ListView.ItemContainerStyle>
+          <ListView.ItemTemplate><DataTemplate><Grid>
+
            <Border Width="3" Background="{ThemeResource MomentsAccentBrush}" HorizontalAlignment="Left" Visibility="{Binding Selected}" CornerRadius="2"/>
            <Grid Padding="12,4" BorderBrush="{ThemeResource MomentsBorderBrush}" BorderThickness="0,0,0,1">
             <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="90"/><ColumnDefinition Width="90"/></Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal" Spacing="4"><TextBlock Text="{Binding Name}" FontSize="17"/><Border Background="{ThemeResource MomentsSecondaryBrush}" CornerRadius="10" Padding="9,2" Visibility="{Binding Selected}"><TextBlock Text="This run" FontSize="12"/></Border></StackPanel>
-            <TextBlock Grid.Column="1" Text="{Binding Input}" HorizontalAlignment="Right" FontSize="17"/><TextBlock Grid.Column="2" Text="{Binding Output}" HorizontalAlignment="Right" FontSize="17"/>
+            <StackPanel Orientation="Horizontal" Spacing="4"><TextBlock Text="{Binding Name}" FontSize="15"/><Border Background="{ThemeResource MomentsSecondaryBrush}" CornerRadius="10" Padding="9,2" Visibility="{Binding Selected}"><TextBlock Text="This run" FontSize="11"/></Border></StackPanel>
+            <TextBlock Grid.Column="1" Text="{Binding Input}" HorizontalAlignment="Right" FontSize="15"/><TextBlock Grid.Column="2" Text="{Binding Output}" HorizontalAlignment="Right" FontSize="15"/>
            </Grid>
-          </Grid></DataTemplate></ItemsControl.ItemTemplate>
-         </ItemsControl>
+          </Grid></DataTemplate></ListView.ItemTemplate>
+         </ListView>
         </StackPanel>
        </Border>
-       <TextBlock Text="Rate snapshot: 21 Sep 2026" FontSize="13" Foreground="{ThemeResource MomentsMutedBrush}"/>
+       <TextBlock Text="Rate snapshot: 21 Sep 2026" FontSize="12" Foreground="{ThemeResource MomentsMutedBrush}"/>
       </StackPanel>
      </Border>
      <Border x:Name="EstimateCard" Grid.Column="1" Style="{StaticResource SectionCard}" Background="{ThemeResource EstimateFill}" BorderBrush="{ThemeResource EstimateStroke}">
       <StackPanel Spacing="4">
-       <StackPanel Orientation="Horizontal" Spacing="4"><Image Source="ms-appx:///Assets/FluentDatabase.svg" Width="32" Height="32"/><TextBlock Text="Illustrative AI cost" Style="{StaticResource SectionTitle}"/></StackPanel>
-       <Grid ColumnSpacing="12"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><StackPanel Orientation="Horizontal" Spacing="10"><TextBlock x:Name="EstimateAmount" Text="$63.20" FontSize="46" FontWeight="SemiBold"/><TextBlock Text="USD" VerticalAlignment="Bottom" Margin="0,0,0,8" FontSize="18"/></StackPanel>
+       <StackPanel Orientation="Horizontal" Spacing="4"><Image Source="ms-appx:///Assets/FluentDatabase.svg" Width="32" Height="32"/><TextBlock Text="Illustrative AI cost" Style="{StaticResource SectionTitle}" FontSize="18"/></StackPanel>
+       <Grid ColumnSpacing="12"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><StackPanel Orientation="Horizontal" Spacing="10"><TextBlock x:Name="EstimateAmount" Text="$63.20" FontSize="36" FontWeight="SemiBold"/><TextBlock Text="USD" VerticalAlignment="Bottom" Margin="0,0,0,8" FontSize="16"/></StackPanel>
        <TextBlock x:Name="EstimateCount" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap"/></Grid>
-       <Grid RowSpacing="2" Padding="8,4" BorderThickness="0,1,0,1" BorderBrush="{ThemeResource EstimateStroke}">
-        <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-        <TextBlock Text="Model"/><TextBlock x:Name="EstimateModel" Grid.Column="1"/>
-        <TextBlock Grid.Row="1" Text="Input per image"/><TextBlock Grid.Row="1" Grid.Column="1" Text="2,560 tokens"/>
-        <TextBlock Grid.Row="2" Text="Output per image"/><TextBlock Grid.Row="2" Grid.Column="1" Text="100 tokens"/>
-       </Grid>
-       <TextBlock Text="Illustrative estimate, not a quote or spending cap." FontSize="13" TextWrapping="Wrap" Foreground="{ThemeResource MomentsMutedBrush}"/>
+       <ListView x:Name="EstimateRows" SelectionMode="Single" BorderThickness="0,1,0,1" BorderBrush="{ThemeResource EstimateStroke}" AutomationProperties.Name="Cost assumptions">
+        <ListView.ItemContainerStyle><Style TargetType="ListViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Padding" Value="8,2"/><Setter Property="MinHeight" Value="28"/></Style></ListView.ItemContainerStyle>
+        <ListViewItem><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="Model"/><TextBlock x:Name="EstimateModel" Grid.Column="1"/></Grid></ListViewItem>
+        <ListViewItem><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="Input per image"/><TextBlock Grid.Column="1" Text="2,560 tokens"/></Grid></ListViewItem>
+        <ListViewItem><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="Output per image"/><TextBlock Grid.Column="1" Text="100 tokens"/></Grid></ListViewItem>
+       </ListView>
+       <TextBlock Text="Illustrative estimate, not a quote or spending cap." FontSize="12" TextWrapping="Wrap" Foreground="{ThemeResource MomentsMutedBrush}"/>
       </StackPanel>
      </Border>
     </Grid>
@@ -129,7 +129,7 @@
         <Grid.ColumnDefinitions><ColumnDefinition Width="40"/><ColumnDefinition Width="*"/><ColumnDefinition Width="130"/><ColumnDefinition Width="1.1*"/><ColumnDefinition Width="130"/></Grid.ColumnDefinitions>
         <TextBlock Text="#"/><TextBlock Grid.Column="1" Text="Source"/><TextBlock Grid.Column="2" Text="Status"/><TextBlock Grid.Column="3" Text="Current operation"/><TextBlock Grid.Column="4" Text="Items"/>
        </Grid>
-       <ListView x:Name="OperationsList" SelectionMode="None" MinHeight="40" MaxHeight="96" Background="{ThemeResource MomentsSurfaceBrush}">
+       <ListView x:Name="OperationsList" SelectionMode="Extended" MinHeight="40" MaxHeight="96" Background="{ThemeResource MomentsSurfaceBrush}">
         <ListView.ItemContainerTransitions><TransitionCollection/></ListView.ItemContainerTransitions>
         <ListView.ItemContainerStyle><Style TargetType="ListViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Padding" Value="12,4"/></Style></ListView.ItemContainerStyle>
         <ListView.ItemTemplate><DataTemplate><Grid>
@@ -148,7 +148,7 @@
      <Border CornerRadius="8" BorderBrush="{ThemeResource MomentsBorderBrush}" BorderThickness="1">
       <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="96"/></Grid.RowDefinitions>
        <Grid Padding="12,4" Background="{ThemeResource MomentsSecondaryBrush}"><Grid.ColumnDefinitions><ColumnDefinition Width="88"/><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Text="Time"/><TextBlock Grid.Column="1" Text="Operation"/><TextBlock Grid.Column="2" Text="Description"/></Grid>
-       <ListView x:Name="LogList" Grid.Row="1" SelectionMode="None" Background="{ThemeResource MomentsSurfaceBrush}">
+       <ListView x:Name="LogList" Grid.Row="1" SelectionMode="Extended" SelectionChanged="LogSelectionChanged" Background="{ThemeResource MomentsSurfaceBrush}">
         <ListView.ItemContainerTransitions><TransitionCollection/></ListView.ItemContainerTransitions>
         <ListView.ItemContainerStyle><Style TargetType="ListViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Padding" Value="12,4"/><Setter Property="MinHeight" Value="30"/></Style></ListView.ItemContainerStyle>
         <ListView.ItemTemplate><DataTemplate><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="88"/><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>

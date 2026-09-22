@@ -4,11 +4,14 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using NektronMoments.Models;
 using System.Globalization;
+using Microsoft.UI.Xaml.Media;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace NektronMoments;
 
 public sealed partial class ProcessingWindow : Window
 {
+    private sealed record PricingRow(string Name, string Input, string Output, Visibility Selected);
     public BulkObservableCollection<ProcessingOperation> Operations { get; } = [];
     public BulkObservableCollection<ProcessingLogEntry> Log { get; } = [];
     public event Action? StopRequested;
@@ -18,6 +21,7 @@ public sealed partial class ProcessingWindow : Window
     private long _lastSequence, _lastSecond = -1;
     private bool _closing;
     private bool _setupReady;
+    private bool _updatingSelection;
     private int _setupSourceCount;
     private TaskCompletionSource<ProcessingSelection?>? _setup;
     private AiProcessingOptions _runOptions = new();
@@ -123,12 +127,14 @@ public sealed partial class ProcessingWindow : Window
         if (_pricing == pricing) return; // Never rebuild the table for each worker log event.
         _pricing = pricing;
         ModeBadge.Text = includeAi ? "Full" : "Metadata";
-        PricingRows.ItemsSource = AiProcessingOptions.Models.Select(item => new {
-            Name = item.Label.Split(" — ")[0],
-            Input = "$" + item.InputRate.ToString("F2", CultureInfo.InvariantCulture),
-            Output = "$" + item.OutputRate.ToString("F2", CultureInfo.InvariantCulture),
-            Selected = includeAi && item.Id == options.Model ? Visibility.Visible : Visibility.Collapsed
-        }).ToArray();
+        var selectedPrice = PricingRows.SelectedIndex;
+        PricingRows.ItemsSource = AiProcessingOptions.Models.Select(item => new PricingRow(
+            item.Label.Split(" — ")[0],
+            "$" + item.InputRate.ToString("F2", CultureInfo.InvariantCulture),
+            "$" + item.OutputRate.ToString("F2", CultureInfo.InvariantCulture),
+            includeAi && item.Id == options.Model ? Visibility.Visible : Visibility.Collapsed
+        )).ToArray();
+        PricingRows.SelectedIndex = selectedPrice;
         var amount = includeAi ? options.Estimate(sources) : 0m;
         EstimateAmount.Text = "$" + amount.ToString(amount is > 0 and < .01m ? "F4" : "N2", CultureInfo.InvariantCulture);
         EstimateCount.Text = includeAi ? $"For up to {options.Limit * (long)sources:N0} photo descriptions" : "File metadata only · No new AI requests";
@@ -175,7 +181,7 @@ public sealed partial class ProcessingWindow : Window
             UpdatePricing(_runOptions, state.SourceCount, state.EnrichmentEnabled);
             Heading.Text = state.Running ? "Processing photos" : state.Phase;
             SessionText.Text = state.Source.Length > 0 ? state.Source + " · " + state.Phase : state.Message;
-            Operations.ReplaceAll(state.Operations);
+            PreserveSelection<ProcessingOperation>(OperationsList, () => Operations.ReplaceAll(state.Operations), item => item.Number);
             OverallText.Text = state.SourceCount > 0 ? $"{state.CompletedSources:N0} of {state.SourceCount:N0} sources complete" : state.State == "Complete" ? "Pass complete" : "Preparing source list";
             OverallBar.IsIndeterminate = state.Running && state.OverallPercent is null;
             OverallBar.Value = state.OverallPercent ?? 0;
@@ -189,8 +195,10 @@ public sealed partial class ProcessingWindow : Window
             var entries = _model.LogAfter(_lastSequence, 500);
             if (entries.Length > 0) {
                 var follow = FollowLog.IsChecked == true;
-                if (entries.Length > 16) Log.ReplaceAll(Log.Concat(entries).TakeLast(500));
-                else { foreach (var entry in entries) Log.Add(entry); while (Log.Count > 500) Log.RemoveAt(0); }
+                PreserveSelection<ProcessingLogEntry>(LogList, () => {
+                    if (entries.Length > 16) Log.ReplaceAll(Log.Concat(entries).TakeLast(500));
+                    else { foreach (var entry in entries) Log.Add(entry); while (Log.Count > 500) Log.RemoveAt(0); }
+                }, item => item.Sequence);
                 _lastSequence = entries[^1].Sequence;
                 LogHeading.Text = Log.Count >= 500 ? "Activity log · latest 500 updates" : "Activity log";
                 if (follow) LogList.ScrollIntoView(Log[^1]);
@@ -201,6 +209,42 @@ public sealed partial class ProcessingWindow : Window
         if (seconds != _lastSecond || changed) { _lastSecond = seconds; ElapsedText.Text = $"Elapsed {state.Elapsed:hh\\:mm\\:ss}"; }
     }
     private void HideClick(object sender, RoutedEventArgs args) => Hide();
+    private void CopySelectedRows(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        var focused = FocusManager.GetFocusedElement(Surface.XamlRoot) as DependencyObject;
+        while (focused is not null && focused is not ListView) focused = VisualTreeHelper.GetParent(focused);
+        if (focused is not ListView table || (table != PricingRows && table != EstimateRows && table != OperationsList && table != LogList)) return;
+        var lines = table.Items.Cast<object>().Where(table.SelectedItems.Contains).Select(FormatRow).Where(text => text.Length > 0).ToArray();
+        if (lines.Length == 0) return;
+        var data = new DataPackage(); data.SetText(string.Join(Environment.NewLine, lines));
+        try { Clipboard.SetContent(data); }
+        catch (Exception) { FooterText.Text = "The clipboard is busy. Please try copying again."; }
+        args.Handled = true;
+    }
+    internal static string FormatRow(object row) => row switch {
+        ProcessingOperation item => string.Join('\t', item.NumberText, item.Name, item.State, item.Phase, item.CountText),
+        ProcessingLogEntry item => string.Join('\t', item.TimeText, item.Stage, item.Message),
+        PricingRow item => string.Join('\t', item.Name, item.Input, item.Output),
+        ListViewItem { Content: Grid grid } => string.Join('\t', grid.Children.OfType<TextBlock>().Select(item => item.Text)),
+        _ => ""
+    };
+    private void PreserveSelection<T>(ListView table, Action update, Func<T, long> key)
+    {
+        var selected = table.SelectedItems.OfType<T>().Select(key).ToHashSet();
+        _updatingSelection = true;
+        try {
+            update();
+            if (selected.Count > 0)
+                foreach (var row in table.Items.OfType<T>())
+                    if (selected.Contains(key(row)) && !table.SelectedItems.Contains(row)) table.SelectedItems.Add(row);
+        } finally { _updatingSelection = false; }
+    }
+    private void LogSelectionChanged(object sender, SelectionChangedEventArgs args)
+    {
+        // Selecting a row is an inspection gesture; don't scroll it away while
+        // the user reads. Follow latest can be re-enabled explicitly.
+        if (!_updatingSelection && args.AddedItems.Count > 0) FollowLog.IsChecked = false;
+    }
     private void HideKey(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) { Hide(); args.Handled = true; }
     private void StopClick(object sender, RoutedEventArgs args) => StopRequested?.Invoke();
     private void SavedQueuesClick(object sender, RoutedEventArgs args) { Hide(); SavedQueuesRequested?.Invoke(); }

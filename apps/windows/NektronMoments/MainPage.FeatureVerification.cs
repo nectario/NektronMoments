@@ -236,6 +236,32 @@ public sealed partial class MainPage
                 check(estimate.Text == "$63.20", "Processing cost card uses the selected model and 10,000-photo allowance");
                 var modelChoice = AssetDescendants(referenceWindow.VisualRoot).OfType<ComboBox>().Single(item => item.Name == "ModelChoice");
                 check(!modelChoice.IsEnabled, "Running processing options remain locked");
+                var priceRows = AssetDescendants(referenceWindow.VisualRoot).OfType<ListView>().Single(item => item.Name == "PricingRows");
+                var sourceRows = AssetDescendants(referenceWindow.VisualRoot).OfType<ListView>().Single(item => item.Name == "OperationsList");
+                var logRows = AssetDescendants(referenceWindow.VisualRoot).OfType<ListView>().Single(item => item.Name == "LogList");
+                var costRows = AssetDescendants(referenceWindow.VisualRoot).OfType<ListView>().Single(item => item.Name == "EstimateRows");
+                foreach (var table in new[] { priceRows, sourceRows, logRows, costRows }) {
+                    var index = table == priceRows ? 1 : 0;
+                    var peer = new ListViewItemDataAutomationPeer(table.Items[index], new ListViewAutomationPeer(table));
+                    if (peer.GetPattern(PatternInterface.SelectionItem) is not ISelectionItemProvider selection)
+                        throw new InvalidOperationException(table.Name + " does not expose the native selection pattern");
+                    selection.Select();
+                    check(table.SelectedIndex == index, table.Name + " supports native row selection");
+                }
+                check(modelChoice.SelectedIndex == 0 && estimate.Text == "$63.20", "Pricing selection does not change the running model or estimate");
+                var selectedSequence = ((ProcessingLogEntry)logRows.SelectedItem).Sequence;
+                for (var update = 0; update < 20; update++) referenceProgress.Report("Discovering media · verification update " + update);
+                referenceWindow.Refresh(true);
+                check(sourceRows.SelectedIndex == 0 && ((ProcessingLogEntry)logRows.SelectedItem).Sequence == selectedSequence,
+                    "Source and activity selections survive live collection replacement");
+                check(!AssetDescendants(referenceWindow.VisualRoot).OfType<CheckBox>().Single(item => item.Name == "FollowLog").IsChecked.GetValueOrDefault(),
+                    "Selecting a log entry pauses Follow latest for inspection");
+                check(ProcessingWindow.FormatRow(logRows.SelectedItem).Contains(((ProcessingLogEntry)logRows.SelectedItem).Message),
+                    "Selected-row copy includes the full untruncated log message");
+                check(estimate.FontSize == 36 && AssetDescendants(referenceWindow.VisualRoot).OfType<TextBlock>().Single(item => item.Name == "SessionText").FontSize == 15,
+                    "Marked-region typography is smaller and the price is two steps smaller");
+                await Task.Delay(100);
+                await SaveFeatureImageAsync(referenceWindow.VisualRoot, Path.Combine(output, "processing-selected-light.png"));
                 referenceWindow.SetTheme(ElementTheme.Dark);
                 await Task.Delay(200);
                 await SaveFeatureImageAsync(referenceWindow.VisualRoot, Path.Combine(output, "processing-reference-dark.png"));

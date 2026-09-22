@@ -1,5 +1,20 @@
 # Processing window — reference QA
 
+## Selection and targeted typography — 0.1.36
+
+The next user request supersedes the unchanged-font requirement only within the
+marked upper region. Its headings are now 18, the subtitle and prominent values
+15, and the price 36 (from 46); the main heading and lower sections stay unchanged.
+Evidence: `build/processing-selection/check-02/processing-selected-light.png`
+and `processing-reference-dark.png` in the same directory, visually inspected.
+All four tables expose native selection. UI Automation verifies selection,
+source/log selection retention through collection replacement, unchanged running
+model when selecting a pricing row, and Follow latest pausing for inspection.
+The full selected-row text formatter is checked without changing the user's
+clipboard. Ctrl+C is wired to the focused table; it is not a global copy of stale
+selections. The first test attempt used a visual-container peer instead of the
+data-item selection peer; the corrected native run passed all 153 checks.
+
 ## Approved compact revision — 0.1.35
 
 The user's subsequent request reduces each default dimension by 20%, retaining

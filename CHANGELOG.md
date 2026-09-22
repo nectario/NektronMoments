@@ -1,5 +1,15 @@
 # Nektron Moments Windows releases
 
+## [0.1.36] - 2026-09-22
+
+- Enable selection in pricing, cost assumptions, operations and activity tables;
+  support Ctrl+C to copy selected rows, including complete log messages.
+- Preserve source/log selections during live updates while rows remain in the
+  bounded history. Selecting a log entry pauses Follow latest for inspection.
+  Pricing selection does not change the model used by the running job.
+- Reduce upper-panel typography, with the beige price reduced from 46 to 36.
+  Keep the main heading and lower operations/activity/progress typography intact.
+
 ## [0.1.35] - 2026-09-22
 
 - Reduce the default processing window from 1248 × 1240 to 998 × 992,
