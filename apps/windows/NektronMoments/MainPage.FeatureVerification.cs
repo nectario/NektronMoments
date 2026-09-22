@@ -184,15 +184,24 @@ public sealed partial class MainPage
             check(HideScreenshotsCheck.Content?.ToString() == "Hide screenshots" && LibraryAutomationDisabled,
                 "Screenshot control is available and diagnostic launches suppress real startup processing");
             var quietFinish = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-            var quietJob = RunMetadataJobAsync(token => quietFinish.Task.WaitAsync(token), () => Task.CompletedTask, showWindow: false);
-            check(_importing && _processingWindow?.IsVisible != true && _metadataProgress is not null,
-                "Startup-style processing runs with tracked progress without opening or focusing a window");
+            var quietJob = RunMetadataJobAsync(token => quietFinish.Task.WaitAsync(token), () => Task.CompletedTask);
+            await WaitForAsync(() => _processingWindow?.IsVisible == true);
+            check(_importing && _metadataProgress is not null && Busy.Visibility == Visibility.Collapsed,
+                "Startup-style processing opens detailed progress without the top busy stripe");
+            SetBusy(true);
+            check(Busy.Visibility == Visibility.Collapsed && ProcessButton.IsEnabled && ProcessButton.Label == "View progress",
+                "Processing keeps the stripe hidden during refresh and offers View progress in the ribbon");
+            var startupProgress = _metadataProgress; var startupWindow = _processingWindow;
+            _processingWindow!.Hide();
+            await ProcessPhotosAsync();
+            check(ReferenceEquals(startupProgress, _metadataProgress) && ReferenceEquals(startupWindow, _processingWindow) && _processingWindow.IsVisible && !quietJob.IsCompleted,
+                "The processing button reopens the same startup job without starting new work");
             quietFinish.SetResult(); await quietJob;
-            check(!_importing && _metadataProgress!.Snapshot.State == "Complete", "Quiet startup-style processing completes through the existing job owner");
+            check(!_importing && _metadataProgress!.Snapshot.State == "Complete" && ProcessButton.Label == "Process metadata", "Startup-style processing completes and restores the normal command label");
             await RunMetadataJobAsync(_ => {
                 _metadataProgress!.Report("Preparing explicit enrichment for up to 64 media asset(s)");
                 return Task.CompletedTask;
-            }, () => Task.CompletedTask, showWindow: false, withEnrichment: true);
+            }, () => Task.CompletedTask, withEnrichment: true);
             check(_metadataProgress!.Snapshot.EnrichmentEnabled && _metadataProgress.Snapshot.Message.Contains("may still be queued"),
                 "Controlled Full jobs keep truthful server-side enrichment status without provider calls");
             var finish = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);

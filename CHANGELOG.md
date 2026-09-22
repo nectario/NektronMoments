@@ -1,5 +1,14 @@
 # Nektron Moments Windows releases
 
+## [0.1.31] - 2026-09-21
+
+- Hide the top indeterminate line during processing, including library refreshes
+  within a running job. Ordinary non-processing library loading is unchanged.
+- Automatic startup processing opens the same detailed modeless progress window
+  as manual processing. Hide/close does not stop the job; Activity reopens it.
+- Keep the ribbon command available as View progress during a run, reopening the
+  same job without duplicate processing, then restore Process metadata afterward.
+
 ## [0.1.30] - 2026-09-21
 
 - Make native drag-animation verification continuously observe actual transforms

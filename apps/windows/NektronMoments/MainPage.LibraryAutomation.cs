@@ -111,7 +111,7 @@ public sealed partial class MainPage
                     await RunSyncAsync(source.Id, false, token, withEnrichment: mode == StartupProcessingMode.Full, aiOptions: aiOptions);
                     _metadataProgress.CompleteSource();
                 }
-            }, sourceNames: sources.Select(source => source.Name).ToArray(), showWindow: false,
+            }, sourceNames: sources.Select(source => source.Name).ToArray(),
                 withEnrichment: mode == StartupProcessingMode.Full, aiOptions: aiOptions);
         });
     }

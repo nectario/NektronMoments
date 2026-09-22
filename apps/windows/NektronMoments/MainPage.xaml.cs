@@ -247,7 +247,9 @@ public sealed partial class MainPage : Page
             ? "Try another filename, or press Enter to search indexed descriptions and addresses."
             : "Add a folder, or choose another source. Originals stay on your computer.";
     }
-    private void SetBusy(bool value) => Busy.Visibility = value || _importing ? Visibility.Visible : Visibility.Collapsed;
+    // Processing owns the detailed window; don't duplicate it with a permanent
+    // indeterminate stripe over the photo canvas (including refreshes mid-run).
+    private void SetBusy(bool value) => Busy.Visibility = value && !_importing ? Visibility.Visible : Visibility.Collapsed;
     private void ShowError(Exception error)
     {
         if (_lifetime.IsCancellationRequested) return;

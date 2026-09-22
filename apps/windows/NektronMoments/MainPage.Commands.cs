@@ -41,15 +41,17 @@ public sealed partial class MainPage
         EnsureProcessingWindow();
         return _processingWindow!.ShowSetup(sources, options ?? _aiOptions, ActualTheme);
     }
-    private async Task RunMetadataJobAsync(Func<CancellationToken, Task> work, Func<Task>? refreshForVerification = null, IReadOnlyList<string>? sourceNames = null, bool showWindow = true, bool withEnrichment = false, Models.AiProcessingOptions? aiOptions = null)
+    private async Task RunMetadataJobAsync(Func<CancellationToken, Task> work, Func<Task>? refreshForVerification = null, IReadOnlyList<string>? sourceNames = null, bool withEnrichment = false, Models.AiProcessingOptions? aiOptions = null)
     {
         if (_importing) return;
         _jobAiOptions = aiOptions ?? _aiOptions;
-        _importing = true; AddFolderButton.IsEnabled = false; ProcessButton.IsEnabled = false;
+        _importing = true; AddFolderButton.IsEnabled = false; ProcessButton.IsEnabled = true;
+        ProcessButton.Label = "View progress";
+        ToolTipService.SetToolTip(ProcessButton, "Show the current processing job, its stages and activity log.");
         CancelProcessingButton.Visibility = Visibility.Visible; CancelProcessingButton.IsEnabled = true;
         _jobCancellation = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
         SetBusy(true); Notice.IsOpen = false;
-        StartProcessingPresentation(sourceNames, showWindow, withEnrichment);
+        StartProcessingPresentation(sourceNames, withEnrichment);
         var stopped = false;
         Exception? failure = null;
         try {
@@ -67,6 +69,8 @@ public sealed partial class MainPage
                 if (failure is not null) ShowError(failure);
             }
             _importing = false; AddFolderButton.IsEnabled = true; ProcessButton.IsEnabled = true;
+            ProcessButton.Label = "Process metadata";
+            ToolTipService.SetToolTip(ProcessButton, "Choose processing options, including AI descriptions (on by default), then Start.");
             _processingTimer?.Stop();
             SetBusy(false);
         }
