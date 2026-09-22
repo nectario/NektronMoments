@@ -123,6 +123,9 @@ class DesktopCatalog:
     @staticmethod
     def _ensure_order_indexes(connection):
         connection.create_function("describes_screenshot", 1, describes_screenshot, deterministic=True)
+        # Description carry-forward and BYOK merges address Media by Hash, not
+        # its Key primary key. Install before merging, including legacy caches.
+        connection.execute("CREATE INDEX IF NOT EXISTS IX_Media_Hash ON Media(Hash)")
         connection.execute("CREATE TABLE IF NOT EXISTS Screenshot(Hash TEXT PRIMARY KEY)")
         connection.execute("CREATE INDEX IF NOT EXISTS IX_Media_OrderDesc ON Media((Captured=''),Captured DESC,Key)")
         connection.execute("CREATE INDEX IF NOT EXISTS IX_Media_OrderAsc ON Media((Captured=''),Captured ASC,Key)")

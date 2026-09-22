@@ -171,6 +171,21 @@ def test_valid_cached_projection_skips_rebuilding_source(catalog, monkeypatch):
     assert loaded.overview()["total"] == 3
 
 
+def test_hash_merge_uses_index_on_fresh_and_legacy_catalogs(catalog, monkeypatch):
+    def assert_index(connection):
+        plan = connection.execute('EXPLAIN QUERY PLAN UPDATE Media SET Description=? WHERE Hash=?', ('test', 'a'*64)).fetchall()
+        assert any('IX_Media_Hash' in row[3] and 'SEARCH' in row[3] for row in plan)
+    assert_index(catalog.db)
+    catalog.db.execute('DROP INDEX IX_Media_Hash')
+    catalog.db.commit()
+    def forbidden(*args):
+        pytest.fail('Adding the index must not rebuild an unchanged catalog')
+    monkeypatch.setattr(DesktopCatalog, 'refresh', forbidden)
+    loaded = DesktopCatalog(catalog.state_path)
+    assert_index(loaded.db)
+    assert loaded.overview()['total'] == 3
+
+
 def test_projection_invalidates_after_cli_state_changes(catalog):
     with sqlite3.connect(catalog.state_path) as db:
         db.execute("INSERT INTO KnownOccurrence VALUES('one','new.jpg')")

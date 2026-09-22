@@ -11,6 +11,7 @@ namespace NektronMoments;
 public sealed partial class MainPage
 {
     private CancellationTokenSource? _jobCancellation;
+    private bool _reconnectingForProcessing;
     private async void ProcessMetadata(object sender, RoutedEventArgs e)
     {
         try { await ProcessPhotosAsync(); }
@@ -19,7 +20,25 @@ public sealed partial class MainPage
     private async Task ProcessPhotosAsync()
     {
         if (_importing) { await ShowProcessingProgressAsync(); return; }
-        if (_overview is null) return;
+        if (_overview is null) {
+            if (_reconnectingForProcessing) return;
+            _reconnectingForProcessing = true;
+            ProcessButton.Label = "Connecting…";
+            StatusText.Text = "Connecting to your library before opening processing options…";
+            try {
+                // Join an existing startup load instead of racing it or forcing
+                // another full catalog rebuild. This does not start processing.
+                await ReloadAsync(false, invalidateThumbnails: false);
+                if (_lifetime.IsCancellationRequested) return;
+                if (_overview is null) {
+                    ShowError(new InvalidOperationException("Processing options need your library connection. Reconnection did not finish; use Refresh to retry. No processing was started."));
+                    return;
+                }
+            } finally {
+                _reconnectingForProcessing = false;
+                ProcessButton.Label = "Process metadata";
+            }
+        }
         var sources = _overview.Sources.Where(s => _sourceId.Length == 0 || s.Id == _sourceId).ToArray();
         if (sources.Length == 0) { StatusText.Text = "Add a local folder to process its metadata."; return; }
         var aiOptions = _aiOptions;

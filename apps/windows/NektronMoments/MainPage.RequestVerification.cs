@@ -35,6 +35,26 @@ public sealed partial class MainPage
             check(calls == 3, "An unchanged library view reuses its bounded compact snapshot without another bridge transfer");
             await ReloadAsync(true, false);
             check(calls == 4 && overviews == 2, "Explicit refresh invalidates cached library views");
+            var reconnect = new TaskCompletionSource<LibraryOverview>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _overview = null;
+            _overviewLoaderForVerification = _ => { ++overviews; return reconnect.Task; };
+            var openProcessing = ProcessPhotosAsync();
+            await ProcessPhotosAsync();
+            check(_reconnectingForProcessing && ProcessButton.Label == "Connecting…" && overviews == 3,
+                "Process metadata shows connection feedback and repeated clicks share one recovery");
+            reconnect.SetResult(new() { Total = 2, Photos = 2, LibraryId = "request-fixture", Sources = [new() { Id = "recovered", Name = "Recovered photos", Path = "C:\\Photos" }] });
+            var reconnectDeadline = DateTime.UtcNow.AddSeconds(5);
+            while (_processingWindow?.IsPreparing != true && DateTime.UtcNow < reconnectDeadline) await Task.Delay(20);
+            check(_processingWindow?.IsPreparing == true && !_importing,
+                "A recovered library opens processing setup without starting AI or metadata work");
+            _processingWindow?.Hide(); await openProcessing;
+            _overview = null;
+            _overviewLoaderForVerification = _ => Task.FromException<LibraryOverview>(new InvalidOperationException("Controlled connection failure"));
+            await ProcessPhotosAsync();
+            check(Notice.IsOpen && StatusText.Text.Contains("No processing was started") && !_reconnectingForProcessing && !_importing,
+                "Failed processing recovery gives an actionable error instead of silently returning");
+            _overview = new() { Total = 2, Photos = 2, LibraryId = "request-fixture" };
+            Notice.IsOpen = false;
             await Task.WhenAll(Viewer.OpenAsync(0), Viewer.MoveAsync(1));
             check(Viewer.CurrentIndex == 1 && Viewer.CurrentItemKey == "request-4-1", "Rapid viewer navigation advances the requested index instead of losing the next command");
             Viewer.Close(); LibraryCanvas.Visibility = Microsoft.UI.Xaml.Visibility.Visible;

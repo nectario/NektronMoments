@@ -1,5 +1,13 @@
 # Nektron Moments Windows releases
 
+## [0.1.34] - 2026-09-22
+
+- Index desktop catalog hashes before merging saved descriptions, avoiding
+  thousands of full-library scans at startup. Existing caches upgrade in place.
+- Process metadata reconnects a missing library, shows connection feedback and
+  opens setup on recovery. Repeated clicks share the pending reconnect; failures
+  explain that no processing started. No AI calls are made by reconnection.
+
 ## [0.1.33] - 2026-09-22
 
 - Restyle the modeless processing window from the supplied reference: Full badge,
