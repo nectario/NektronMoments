@@ -1,5 +1,15 @@
 # Nektron Moments Windows releases
 
+## [0.1.33] - 2026-09-22
+
+- Restyle the modeless processing window from the supplied reference: Full badge,
+  readable locked options, selected-model pricing table, warm cost estimate card,
+  source operations, activity log, phase progress and persistent footer actions.
+- Keep pricing derived from the existing dated model rates and selected allowance.
+  Stack cards and options at narrow widths; short windows scroll without hiding
+  Hide/Stop actions. Preserve setup, cancellation, background work and 64 AI workers.
+- Add native reference screenshots and checks for selected cost and locked options.
+
 ## [0.1.32] - 2026-09-22
 
 - Auto-tune direct BYOK AI concurrency up to 64 on machines with at least 32

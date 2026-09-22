@@ -214,6 +214,29 @@ public sealed partial class MainPage
             check(!_dialog && _processingWindow!.AppWindow.Presenter is Microsoft.UI.Windowing.OverlappedPresenter { IsResizable: true },
                 "Processing uses a resizable modeless window without setting the library modal gate");
             await SaveFeatureImageAsync(_processingWindow!.VisualRoot, Path.Combine(output, "progress-light.png"));
+            // Screenshot-reference fixture: no provider calls, source scans or paid work.
+            var referenceWindow = new ProcessingWindow(App.MainWindowInstance!, ElementTheme.Light);
+            try {
+                var referenceProgress = new MetadataProgress();
+                referenceProgress.ConfigureSources(["My Photos"], true); referenceProgress.Source("My Photos", 1, 1);
+                referenceProgress.Report("Scanning /mnt/d/Pictures");
+                referenceProgress.Report("Discovering media with 32 directory workers");
+                referenceProgress.Report("Discovering media · 9,792 files found");
+                referenceWindow.Show(referenceProgress, true, ElementTheme.Light, new AiProcessingOptions(10000));
+                referenceWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32(1254, 1254));
+                await Task.Delay(300);
+                await SaveFeatureImageAsync(referenceWindow.VisualRoot, Path.Combine(output, "processing-reference-light.png"));
+                var estimate = AssetDescendants(referenceWindow.VisualRoot).OfType<TextBlock>().Single(item => item.Name == "EstimateAmount");
+                check(estimate.Text == "$63.20", "Processing cost card uses the selected model and 10,000-photo allowance");
+                var modelChoice = AssetDescendants(referenceWindow.VisualRoot).OfType<ComboBox>().Single(item => item.Name == "ModelChoice");
+                check(!modelChoice.IsEnabled, "Running processing options remain locked");
+                referenceWindow.SetTheme(ElementTheme.Dark);
+                await Task.Delay(200);
+                await SaveFeatureImageAsync(referenceWindow.VisualRoot, Path.Combine(output, "processing-reference-dark.png"));
+                referenceWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32(760, 660));
+                await Task.Delay(200);
+                await SaveFeatureImageAsync(referenceWindow.VisualRoot, Path.Combine(output, "processing-reference-small.png"));
+            } finally { referenceWindow.ClosePermanently(); }
             var model = _metadataProgress;
             var processingWindow = _processingWindow;
             _processingWindow!.Hide(); await WaitForAsync(() => !_processingWindow.IsVisible);

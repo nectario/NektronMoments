@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using NektronMoments.Models;
+using System.Globalization;
 
 namespace NektronMoments;
 
@@ -20,6 +21,7 @@ public sealed partial class ProcessingWindow : Window
     private int _setupSourceCount;
     private TaskCompletionSource<ProcessingSelection?>? _setup;
     private AiProcessingOptions _runOptions = new();
+    private (AiProcessingOptions Options, int Sources, bool IncludeAi)? _pricing;
     public bool IsPreparing => _setup is not null;
     public bool IsVisible => AppWindow.IsVisible;
     internal FrameworkElement VisualRoot => Surface;
@@ -39,7 +41,7 @@ public sealed partial class ProcessingWindow : Window
         var presenter = (OverlappedPresenter)AppWindow.Presenter;
         presenter.PreferredMinimumWidth = 760; presenter.PreferredMinimumHeight = 660;
         var area = DisplayArea.GetFromWindowId(owner.AppWindow.Id, DisplayAreaFallback.Nearest).WorkArea;
-        var width = Math.Min(1080, area.Width); var height = Math.Min(920, area.Height);
+        var width = Math.Min(1248, area.Width); var height = Math.Min(1240, area.Height);
         AppWindow.MoveAndResize(new Windows.Graphics.RectInt32(
             Math.Clamp(owner.AppWindow.Position.X + (owner.AppWindow.Size.Width - width) / 2, area.X, area.X + area.Width - width),
             Math.Clamp(owner.AppWindow.Position.Y + (owner.AppWindow.Size.Height - height) / 2, area.Y, area.Y + area.Height - height), width, height));
@@ -52,11 +54,19 @@ public sealed partial class ProcessingWindow : Window
         IncludeAiChoice.IsChecked = model.Snapshot.EnrichmentEnabled;
         ModelChoice.SelectedIndex = Array.FindIndex(AiProcessingOptions.Models, item => item.Id == _runOptions.Model);
         LimitChoice.Value = _runOptions.Limit;
-        SetupPanel.Visibility = Visibility.Visible; SetupPricing.Text = AiProcessingOptions.RateSummary;
+        SetupPanel.Visibility = Visibility.Visible;
+        LockedNotice.Visibility = Visibility.Visible;
         StartButton.Visibility = Visibility.Collapsed; StopButton.Visibility = Visibility.Visible;
         SetupPanel.IsHitTestVisible = false;
         IncludeAiChoice.IsEnabled = ModelChoice.IsEnabled = LimitChoice.IsEnabled = false;
-        HideButton.Content = "Hide"; SavedQueuesButton.IsEnabled = true;
+        IncludeAiChoice.Visibility = ModelChoice.Visibility = LimitChoice.Visibility = Visibility.Collapsed;
+        AiReadOnly.Visibility = ModelDisplay.Visibility = LimitDisplay.Visibility = Visibility.Visible;
+        AiStateText.Text = model.Snapshot.EnrichmentEnabled ? "Enabled" : "Not included";
+        AiStateIcon.Glyph = model.Snapshot.EnrichmentEnabled ? "\uE73A" : "\uE739";
+        ModelValue.Text = AiProcessingOptions.Models.Single(item => item.Id == _runOptions.Model).Label;
+        LimitValue.Text = _runOptions.Limit.ToString("N0");
+        CatchUpButton.IsEnabled = false;
+        HideButton.Content = "Hide"; HideButton.Style = StartButton.Style; SavedQueuesButton.IsEnabled = true;
         SetTheme(theme);
         if (!ReferenceEquals(model, _model)) { _model = model; _painted = null; _lastSequence = 0; Log.Clear(); Operations.Clear(); }
         AppWindow.Show(); Activate(); Refresh(canStop);
@@ -77,9 +87,12 @@ public sealed partial class ProcessingWindow : Window
         ModelChoice.SelectedIndex = Array.FindIndex(AiProcessingOptions.Models, item => item.Id == options.Model);
         _setupReady = true;
         SetupPanel.Visibility = Visibility.Visible; SetupPanel.IsHitTestVisible = true;
+        LockedNotice.Visibility = Visibility.Collapsed;
         IncludeAiChoice.IsEnabled = ModelChoice.IsEnabled = LimitChoice.IsEnabled = true;
+        IncludeAiChoice.Visibility = ModelChoice.Visibility = LimitChoice.Visibility = Visibility.Visible;
+        AiReadOnly.Visibility = ModelDisplay.Visibility = LimitDisplay.Visibility = Visibility.Collapsed;
         StartButton.Visibility = Visibility.Visible; StopButton.Visibility = Visibility.Collapsed;
-        SavedQueuesButton.IsEnabled = false; HideButton.Content = "Cancel";
+        SavedQueuesButton.IsEnabled = false; HideButton.Content = "Cancel"; HideButton.Style = null;
         Heading.Text = "Process photos"; SessionText.Text = string.Join(" · ", sources);
         ElapsedText.Text = "Not started"; PhaseText.Text = "Ready to start";
         OverallBar.IsIndeterminate = PhaseBar.IsIndeterminate = false; OverallBar.Value = PhaseBar.Value = 0;
@@ -99,9 +112,47 @@ public sealed partial class ProcessingWindow : Window
     {
         if (!_setupReady || _setup is null) return;
         var selection = ReadSetup(); StartButton.IsEnabled = selection is not null;
-        SetupPricing.Text = AiProcessingOptions.RateSummary;
-        SetupEstimate.Text = selection is null ? "Enter a whole number from 1 to 1,000,000." : selection.IncludeAi ? selection.Options.Preview(_setupSourceCount) : "File metadata only · No new AI requests. Existing queued jobs are unaffected.";
+        if (selection is not null) UpdatePricing(selection.Options, _setupSourceCount, selection.IncludeAi);
+        else { EstimateAmount.Text = "—"; EstimateCount.Text = "Enter a whole number from 1 to 1,000,000."; _pricing = null; }
         ModelChoice.IsEnabled = LimitChoice.IsEnabled = IncludeAiChoice.IsChecked == true;
+        CatchUpButton.IsEnabled = IncludeAiChoice.IsChecked == true;
+    }
+    private void UpdatePricing(AiProcessingOptions options, int sources, bool includeAi)
+    {
+        var pricing = (options, sources, includeAi);
+        if (_pricing == pricing) return; // Never rebuild the table for each worker log event.
+        _pricing = pricing;
+        ModeBadge.Text = includeAi ? "Full" : "Metadata";
+        PricingRows.ItemsSource = AiProcessingOptions.Models.Select(item => new {
+            Name = item.Label.Split(" — ")[0],
+            Input = "$" + item.InputRate.ToString("F2", CultureInfo.InvariantCulture),
+            Output = "$" + item.OutputRate.ToString("F2", CultureInfo.InvariantCulture),
+            Selected = includeAi && item.Id == options.Model ? Visibility.Visible : Visibility.Collapsed
+        }).ToArray();
+        var amount = includeAi ? options.Estimate(sources) : 0m;
+        EstimateAmount.Text = "$" + amount.ToString(amount is > 0 and < .01m ? "F4" : "N2", CultureInfo.InvariantCulture);
+        EstimateCount.Text = includeAi ? $"For up to {options.Limit * (long)sources:N0} photo descriptions" : "File metadata only · No new AI requests";
+        EstimateModel.Text = AiProcessingOptions.Models.Single(item => item.Id == options.Model).Label.Split(" — ")[0];
+        SetupEstimate.Text = includeAi ? "Actual cost varies with tokens, retries and pending jobs. Flex and cache reuse may lower costs. Excludes address lookup and AWS costs." : "AI is not included in this run. Existing queued jobs are unaffected.";
+    }
+    private void SurfaceSizeChanged(object sender, SizeChangedEventArgs args)
+    {
+        if (PricingGrid is null || FooterActions is null) return;
+        var narrow = args.NewSize.Width < 960;
+        PricingGrid.RowSpacing = narrow ? 14 : 0;
+        OptionsGrid.RowSpacing = narrow ? 12 : 0;
+        FooterGrid.RowSpacing = narrow ? 10 : 0;
+        PricingGrid.ColumnDefinitions[1].Width = new GridLength(narrow ? 0 : 1, GridUnitType.Star);
+        Grid.SetRow(EstimateCard, narrow ? 1 : 0); Grid.SetColumn(EstimateCard, narrow ? 0 : 1);
+        Grid.SetRow(ModelChoice, narrow ? 1 : 0); Grid.SetColumn(ModelChoice, narrow ? 0 : 1);
+        Grid.SetColumnSpan(ModelChoice, narrow ? 2 : 1);
+        Grid.SetRow(LimitChoice, narrow ? 1 : 0);
+        Grid.SetRow(ModelDisplay, narrow ? 1 : 0); Grid.SetColumn(ModelDisplay, narrow ? 0 : 1);
+        Grid.SetColumnSpan(ModelDisplay, narrow ? 2 : 1); Grid.SetRow(LimitDisplay, narrow ? 1 : 0);
+        Grid.SetColumnSpan(AiChoices, narrow ? 3 : 1);
+        Grid.SetRow(FooterActions, narrow ? 1 : 0); Grid.SetColumn(FooterActions, narrow ? 0 : 1);
+        Grid.SetColumnSpan(FooterNotice, narrow ? 2 : 1); Grid.SetColumnSpan(FooterActions, narrow ? 2 : 1);
+        Heading.FontSize = narrow ? 26 : 32;
     }
     private void SetupChanged(object sender, RoutedEventArgs args) => UpdateSetup();
     private void LimitChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => UpdateSetup();
@@ -121,8 +172,8 @@ public sealed partial class ProcessingWindow : Window
         var changed = !ReferenceEquals(state, _painted);
         if (changed) {
             _painted = state;
-            SetupEstimate.Text = state.EnrichmentEnabled ? _runOptions.Preview(state.SourceCount) : "File metadata only · No new AI requests. Existing queued jobs are unaffected.";
-            Heading.Text = state.Running ? state.EnrichmentEnabled ? "Processing photos — Full" : "Processing metadata" : state.Phase;
+            UpdatePricing(_runOptions, state.SourceCount, state.EnrichmentEnabled);
+            Heading.Text = state.Running ? "Processing photos" : state.Phase;
             SessionText.Text = state.Source.Length > 0 ? state.Source + " · " + state.Phase : state.Message;
             Operations.ReplaceAll(state.Operations);
             OverallText.Text = state.SourceCount > 0 ? $"{state.CompletedSources:N0} of {state.SourceCount:N0} sources complete" : state.State == "Complete" ? "Pass complete" : "Preparing source list";
