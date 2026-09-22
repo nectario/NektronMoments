@@ -1,5 +1,20 @@
 # Processing window — reference QA
 
+## Approved compact revision — 0.1.35
+
+The user's subsequent request reduces each default dimension by 20%, retaining
+font sizes and keeping all sections visible. The new default is 998 × 992.
+Evidence: `build/processing-compact/check-02/processing-reference-light.png`,
+`processing-reference-dark.png`, and `processing-setup.png` in that directory.
+The native captures were visually inspected in both themes. The first attempt
+stacked panels too early at the workstation's display scale; lowering the
+responsive breakpoint fixed this without scaling text. All 144 native checks
+passed, including zero outer scrolling in setup and running states and the
+unchanged 32-unit heading. The full set of XAML font-size declarations is unchanged.
+The activity log retains its own bounded scrollbar; smaller manual window sizes
+retain responsive reflow and outer scrolling so controls stay accessible.
+The original full-size comparison below is historical, not the current geometry.
+
 Source visual truth: `C:/Users/NEKTAR~1/AppData/Local/Temp/codex-clipboard-c043b1de-112d-463d-b06b-dd4ab1433753.png`.
 
 Native WinUI implementation, not a browser prototype. The supplied image is

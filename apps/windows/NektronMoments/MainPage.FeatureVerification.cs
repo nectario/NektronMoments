@@ -95,6 +95,8 @@ public sealed partial class MainPage
                 check(checkbox.IsChecked == true && !_importing, "Process setup defaults to AI without starting work before Start");
                 check(!_dialog && _commonDialog is null, "Processing setup never opens a modal precursor");
                 await SaveFeatureImageAsync(setupWindow.VisualRoot, Path.Combine(output, "processing-setup.png"));
+                var setupBody = AssetDescendants(setupWindow.VisualRoot).OfType<ScrollViewer>().Single(control => control.Name == "ProcessingBody");
+                check(setupBody.ScrollableHeight <= 1, "Compact processing setup shows every section without outer scrolling");
                 if (option is null) setupWindow.Hide();
                 else {
                     checkbox.IsChecked = option.Value;
@@ -223,9 +225,13 @@ public sealed partial class MainPage
                 referenceProgress.Report("Discovering media with 32 directory workers");
                 referenceProgress.Report("Discovering media · 9,792 files found");
                 referenceWindow.Show(referenceProgress, true, ElementTheme.Light, new AiProcessingOptions(10000));
-                referenceWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32(1254, 1254));
+                referenceWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32(998, 992));
                 await Task.Delay(300);
                 await SaveFeatureImageAsync(referenceWindow.VisualRoot, Path.Combine(output, "processing-reference-light.png"));
+                var compactBody = AssetDescendants(referenceWindow.VisualRoot).OfType<ScrollViewer>().Single(control => control.Name == "ProcessingBody");
+                check(compactBody.ScrollableHeight <= 1, "The 20-percent-smaller processing window shows every section without outer scrolling");
+                check(AssetDescendants(referenceWindow.VisualRoot).OfType<TextBlock>().Single(item => item.Name == "Heading").FontSize == 32,
+                    "Compact processing retains the original heading font size");
                 var estimate = AssetDescendants(referenceWindow.VisualRoot).OfType<TextBlock>().Single(item => item.Name == "EstimateAmount");
                 check(estimate.Text == "$63.20", "Processing cost card uses the selected model and 10,000-photo allowance");
                 var modelChoice = AssetDescendants(referenceWindow.VisualRoot).OfType<ComboBox>().Single(item => item.Name == "ModelChoice");

@@ -41,7 +41,7 @@ public sealed partial class ProcessingWindow : Window
         var presenter = (OverlappedPresenter)AppWindow.Presenter;
         presenter.PreferredMinimumWidth = 760; presenter.PreferredMinimumHeight = 660;
         var area = DisplayArea.GetFromWindowId(owner.AppWindow.Id, DisplayAreaFallback.Nearest).WorkArea;
-        var width = Math.Min(1248, area.Width); var height = Math.Min(1240, area.Height);
+        var width = Math.Min(998, area.Width); var height = Math.Min(992, area.Height);
         AppWindow.MoveAndResize(new Windows.Graphics.RectInt32(
             Math.Clamp(owner.AppWindow.Position.X + (owner.AppWindow.Size.Width - width) / 2, area.X, area.X + area.Width - width),
             Math.Clamp(owner.AppWindow.Position.Y + (owner.AppWindow.Size.Height - height) / 2, area.Y, area.Y + area.Height - height), width, height));
@@ -138,7 +138,7 @@ public sealed partial class ProcessingWindow : Window
     private void SurfaceSizeChanged(object sender, SizeChangedEventArgs args)
     {
         if (PricingGrid is null || FooterActions is null) return;
-        var narrow = args.NewSize.Width < 960;
+        var narrow = args.NewSize.Width < 850;
         PricingGrid.RowSpacing = narrow ? 14 : 0;
         OptionsGrid.RowSpacing = narrow ? 12 : 0;
         FooterGrid.RowSpacing = narrow ? 10 : 0;
@@ -152,7 +152,7 @@ public sealed partial class ProcessingWindow : Window
         Grid.SetColumnSpan(AiChoices, narrow ? 3 : 1);
         Grid.SetRow(FooterActions, narrow ? 1 : 0); Grid.SetColumn(FooterActions, narrow ? 0 : 1);
         Grid.SetColumnSpan(FooterNotice, narrow ? 2 : 1); Grid.SetColumnSpan(FooterActions, narrow ? 2 : 1);
-        Heading.FontSize = narrow ? 26 : 32;
+        // Reflow rather than shrinking typography as the window gets smaller.
     }
     private void SetupChanged(object sender, RoutedEventArgs args) => UpdateSetup();
     private void LimitChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => UpdateSetup();

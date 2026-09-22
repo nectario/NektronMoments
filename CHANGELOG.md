@@ -1,5 +1,16 @@
 # Nektron Moments Windows releases
 
+## [0.1.35] - 2026-09-22
+
+- Reduce the default processing window from 1248 × 1240 to 998 × 992,
+  approximately 20% smaller in each dimension, without shrinking fonts.
+- Compact panel padding, table rows and spacing; put Catch up beside the AI
+  heading and the description allowance beside the estimate. Keep all sections
+  visible at the default size, with internal activity-log scrolling and fixed
+  footer actions. Smaller manual sizes retain accessible scrolling/reflow.
+- Add native checks for complete setup/running visibility and unchanged heading
+  typography. Processing execution and AI settings are unchanged.
+
 ## [0.1.34] - 2026-09-22
 
 - Index desktop catalog hashes before merging saved descriptions, avoiding
