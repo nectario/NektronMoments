@@ -19,6 +19,12 @@ public sealed record AiProcessingOptions(int Limit = 64, string Model = "gpt-5.6
         new("gpt-5.6-luna", "Luna", .2m, 1.2m),
         new("gpt-5.6-sol", "Sol", 4m, 20m),
     ];
+    // Comparison-only entries must not silently enter the execution allowlist.
+    // Astra standard short-context rates verified 2026-09-22:
+    // https://developers.openai.com/api/docs/models/gpt-6-astra
+    public static readonly SceneModelOption[] PricingModels = [..Models,
+        new("gpt-6-astra", "Astra — pricing only", 10m, 50m),
+    ];
     public void Validate()
     {
         if (Limit is < 1 or > MaximumRunLimit || !Models.Any(item => item.Id == Model))

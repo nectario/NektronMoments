@@ -83,8 +83,8 @@ public sealed partial class MainPage
         }
         table.RowDefinitions.Add(new() { Height = GridLength.Auto });
         Cell("Model", 0, 0, true); Cell("Input\nper 1M tokens", 0, 1, true); Cell("Output\nper 1M tokens", 0, 2, true);
-        for (var index = 0; index < AiProcessingOptions.Models.Length; index++) {
-            var model = AiProcessingOptions.Models[index]; var row = index + 1;
+        for (var index = 0; index < AiProcessingOptions.PricingModels.Length; index++) {
+            var model = AiProcessingOptions.PricingModels[index]; var row = index + 1;
             table.RowDefinitions.Add(new() { Height = GridLength.Auto });
             Cell(model.Label, row, 0);
             Cell(model.InputRate.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US")), row, 1,

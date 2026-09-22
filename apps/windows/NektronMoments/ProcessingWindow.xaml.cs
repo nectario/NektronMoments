@@ -45,7 +45,7 @@ public sealed partial class ProcessingWindow : Window
         var presenter = (OverlappedPresenter)AppWindow.Presenter;
         presenter.PreferredMinimumWidth = 760; presenter.PreferredMinimumHeight = 660;
         var area = DisplayArea.GetFromWindowId(owner.AppWindow.Id, DisplayAreaFallback.Nearest).WorkArea;
-        var width = Math.Min(998, area.Width); var height = Math.Min(992, area.Height);
+        var width = Math.Min(1000, area.Width); var height = Math.Min(923, area.Height);
         AppWindow.MoveAndResize(new Windows.Graphics.RectInt32(
             Math.Clamp(owner.AppWindow.Position.X + (owner.AppWindow.Size.Width - width) / 2, area.X, area.X + area.Width - width),
             Math.Clamp(owner.AppWindow.Position.Y + (owner.AppWindow.Size.Height - height) / 2, area.Y, area.Y + area.Height - height), width, height));
@@ -128,8 +128,8 @@ public sealed partial class ProcessingWindow : Window
         _pricing = pricing;
         ModeBadge.Text = includeAi ? "Full" : "Metadata";
         var selectedPrice = PricingRows.SelectedIndex;
-        PricingRows.ItemsSource = AiProcessingOptions.Models.Select(item => new PricingRow(
-            item.Label.Split(" — ")[0],
+        PricingRows.ItemsSource = AiProcessingOptions.PricingModels.Select(item => new PricingRow(
+            item.Id == "gpt-6-astra" ? item.Label : item.Label.Split(" — ")[0],
             "$" + item.InputRate.ToString("F2", CultureInfo.InvariantCulture),
             "$" + item.OutputRate.ToString("F2", CultureInfo.InvariantCulture),
             includeAi && item.Id == options.Model ? Visibility.Visible : Visibility.Collapsed

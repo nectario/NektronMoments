@@ -142,7 +142,7 @@ public sealed partial class MainPage
                 check(AssetDescendants(settingsContent).OfType<TextBlock>().Any(text => text.Text.Contains("US$") && text.Text.Contains("gpt-5.6-sol")),
                     "AI Settings show a live model-specific cost estimate");
                 var priceTable = AssetDescendants(settingsContent).OfType<Grid>().Single(grid => grid.Name == "SettingsPricingTable");
-                check(priceTable.ColumnDefinitions.Count == 3 && priceTable.RowDefinitions.Count == AiProcessingOptions.Models.Length + 1,
+                check(priceTable.ColumnDefinitions.Count == 3 && priceTable.RowDefinitions.Count == AiProcessingOptions.PricingModels.Length + 1,
                     "AI pricing has aligned Model, Input and Output columns with one row per model");
                 check(priceTable.Children.OfType<TextBlock>().Any(text => text.Text == "$0.20"),
                     "USD rates retain cents and clear decimal precision");
@@ -225,7 +225,7 @@ public sealed partial class MainPage
                 referenceProgress.Report("Discovering media with 32 directory workers");
                 referenceProgress.Report("Discovering media · 9,792 files found");
                 referenceWindow.Show(referenceProgress, true, ElementTheme.Light, new AiProcessingOptions(10000));
-                referenceWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32(998, 992));
+                referenceWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32(1000, 923));
                 await Task.Delay(300);
                 await SaveFeatureImageAsync(referenceWindow.VisualRoot, Path.Combine(output, "processing-reference-light.png"));
                 var compactBody = AssetDescendants(referenceWindow.VisualRoot).OfType<ScrollViewer>().Single(control => control.Name == "ProcessingBody");
@@ -237,6 +237,13 @@ public sealed partial class MainPage
                 var modelChoice = AssetDescendants(referenceWindow.VisualRoot).OfType<ComboBox>().Single(item => item.Name == "ModelChoice");
                 check(!modelChoice.IsEnabled, "Running processing options remain locked");
                 var priceRows = AssetDescendants(referenceWindow.VisualRoot).OfType<ListView>().Single(item => item.Name == "PricingRows");
+                check(priceRows.Items.Count == 4 && ProcessingWindow.FormatRow(priceRows.Items[3]).Contains("$50.00"),
+                    "Astra pricing is included without changing execution choices");
+                foreach (var name in new[] { "ElapsedText", "AiStateText", "ModelValue", "LimitValue" })
+                    check(AssetDescendants(referenceWindow.VisualRoot).OfType<TextBlock>().Single(item => item.Name == name).FontSize == 13,
+                        name + " uses the requested smaller text");
+                check(AssetDescendants(referenceWindow.VisualRoot).OfType<TextBlock>().Single(item => item.Name == "ModeBadge").FontSize == 16,
+                    "Full badge uses the requested smaller text");
                 var sourceRows = AssetDescendants(referenceWindow.VisualRoot).OfType<ListView>().Single(item => item.Name == "OperationsList");
                 var logRows = AssetDescendants(referenceWindow.VisualRoot).OfType<ListView>().Single(item => item.Name == "LogList");
                 var costRows = AssetDescendants(referenceWindow.VisualRoot).OfType<ListView>().Single(item => item.Name == "EstimateRows");

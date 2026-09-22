@@ -1,5 +1,20 @@
 # Processing window — reference QA
 
+## Exact size and Astra comparison — 0.1.37
+
+Default window: 1000 × 923. Full badge: 16; elapsed time, Enabled, model value and
+asset count: 13. Other typography is unchanged. Astra is a pricing-only comparison
+row at $10 input / $50 output per million tokens, verified 2026-09-22 against
+https://developers.openai.com/api/docs/models/gpt-6-astra . Execution choices and
+the Terra default are deliberately unchanged.
+
+Initial checks found the extra pricing row pushed content below the viewport.
+Tighter section gaps and pricing-row padding resolved this without losing activity
+rows or shrinking unmarked text. Final evidence is under
+`build/installer/0.1.37/341849a58552408f939222d2e810709b/published-browsing/`.
+The light screenshot was inspected; native checks verify setup and running states
+fit without outer scrolling, the four pricing rows, and each marked font size.
+
 ## Selection and targeted typography — 0.1.36
 
 The next user request supersedes the unchanged-font requirement only within the

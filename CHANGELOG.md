@@ -1,5 +1,13 @@
 # Nektron Moments Windows releases
 
+## [0.1.37] - 2026-09-22
+
+- Set the default processing window to 1000 × 923. Reduce the Full badge,
+  elapsed time, Enabled label, selected model and asset-count text as marked.
+- Add Astra standard pricing ($10 input / $50 output per million tokens) to
+  processing and Settings comparison tables, verified against OpenAI on Sep 22.
+  Label it pricing-only; do not change defaults, active jobs or execution support.
+
 ## [0.1.36] - 2026-09-22
 
 - Enable selection in pricing, cost assumptions, operations and activity tables;

@@ -17,6 +17,9 @@ internal static class GalleryFeatureTests
             unavailable.Begin(); check(!unavailable.IsHeld, "Unsupported high-refresh APIs degrade safely");
         }
         var ai = AiProcessingOptions.Resolve(null);
+        var astraPrice = AiProcessingOptions.PricingModels.Single(item => item.Id == "gpt-6-astra");
+        check(astraPrice.InputRate == 10m && astraPrice.OutputRate == 50m, "Astra comparison uses verified standard input/output pricing");
+        check(!AiProcessingOptions.Models.Any(item => item.Id == astraPrice.Id), "Pricing-only Astra is not silently enabled for execution");
         check(ai.Limit == 64 && ai.Model == "gpt-5.6-terra", "AI defaults preserve Terra and 64");
         check(AiProcessingOptions.Resolve("{\"Limit\":10000,\"Model\":\"gpt-5.6-terra\"}").Limit == 10000, "Catch-up allowance survives preference reload");
         check(new AiProcessingOptions(10000).Estimate() == 63.2m, "Catch-up estimate scales to the full run, not a 64-photo request");
