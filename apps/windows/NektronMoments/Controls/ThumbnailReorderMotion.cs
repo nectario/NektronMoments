@@ -18,6 +18,7 @@ public sealed class ThumbnailReorderMotion(GridView gallery, ScrollViewer? scrol
     private TransitionCollection? _normalTransitions;
     private bool _transitionsHeld, _moving;
     public int ActiveCount => _active.Count;
+    internal Action<string>? Trace { get; set; }
     public const int DurationMs = 320;
 
     public void Move(ObservableCollection<MediaItem> items, int from, int to)
@@ -71,6 +72,7 @@ public sealed class ThumbnailReorderMotion(GridView gallery, ScrollViewer? scrol
                 _active.Add(container, new(item, original, translation, story));
                 story.Completed += Completed;
                 story.Begin();
+                Trace?.Invoke("started");
                 void AddAxis(string axis, double fromValue) {
                     var animation = new DoubleAnimation {
                         From = fromValue, To = 0, Duration = TimeSpan.FromMilliseconds(DurationMs),
@@ -87,11 +89,14 @@ public sealed class ThumbnailReorderMotion(GridView gallery, ScrollViewer? scrol
     private void Completed(object? sender, object args)
     {
         var container = _active.FirstOrDefault(pair => ReferenceEquals(pair.Value.Story, sender)).Key;
+        Trace?.Invoke(container is null ? "completion-unmatched" : "completed");
         if (container is not null) Stop(container);
     }
     public void ContainerChanging(GridViewItem container, object item, bool recycled)
     {
-        if (_active.TryGetValue(container, out var motion) && (recycled || !ReferenceEquals(item, motion.Item))) Stop(container);
+        if (_active.TryGetValue(container, out var motion) && (recycled || !ReferenceEquals(item, motion.Item))) {
+            Trace?.Invoke("recycled"); Stop(container);
+        }
     }
     private void Stop(GridViewItem container)
     {

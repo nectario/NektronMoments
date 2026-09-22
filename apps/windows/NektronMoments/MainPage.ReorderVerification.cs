@@ -53,25 +53,37 @@ public sealed partial class MainPage
         var peer = before[columns];
         Point Position() => ((FrameworkElement)Gallery.ContainerFromIndex(BrowseItems.IndexOf(peer))).TransformToVisual(Gallery).TransformPoint(new Point());
         var start = Position();
-        var offsetBefore = _pixelScroll!.Scroll.VerticalOffset;
+        var scroll = _pixelScroll?.Scroll ?? throw new InvalidOperationException("No gallery scroll controller.");
+        var offsetBefore = scroll.VerticalOffset;
         var samples = new List<object>();
         var positions = new List<Point>();
         var clock = Stopwatch.StartNew();
+        var lifecycle = new List<object>();
+        var timerSamples = new List<object>();
+        var motion = _reorderMotion ??= new(Gallery, scroll);
+        motion.Trace = action => lifecycle.Add(new { action, elapsedMs = clock.Elapsed.TotalMilliseconds, active = motion.ActiveCount });
         var sampling = true;
         void SampleFrame(object? sender, object args) {
             if (!sampling) return;
             var point = Position(); positions.Add(point);
             samples.Add(new { elapsedMs = clock.Elapsed.TotalMilliseconds, x = point.X, y = point.Y });
         }
-        // Query independent-animation transforms on rendering ticks, not an
-        // unrelated dispatcher timer that can observe only the final layout.
+        // Rendering samples observe actual XAML transforms, not GPU-present FPS.
+        // Keep a bounded dispatcher sampler running too: an otherwise idle test
+        // can sleep through compositor-only motion and see only its endpoints.
         Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += SampleFrame;
         try {
         PreviewReorder(columns + 2, true);
         Gallery.UpdateLayout();
-        await Task.Delay(400);
+        var moveFinishedMs = clock.Elapsed.TotalMilliseconds;
+        var observation = Stopwatch.StartNew();
+        while (observation.ElapsedMilliseconds < 400) {
+            var point = Position();
+            timerSamples.Add(new { elapsedMs = clock.Elapsed.TotalMilliseconds, x = point.X, y = point.Y, active = motion.ActiveCount });
+            await Task.Delay(8);
+        }
         sampling = false;
-        await Task.Delay(200);
+        await WaitForSettlementAsync();
         var finish = Position();
         static double Distance(Point a, Point b) => Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         var moved = Distance(start, finish) > 10;
@@ -80,12 +92,12 @@ public sealed partial class MainPage
         await File.WriteAllTextAsync(Path.Combine(output, "reorder-motion.json"), JsonSerializer.Serialize(new {
             systemAnimationsEnabled = new Windows.UI.ViewManagement.UISettings().AnimationsEnabled,
             windowVisible = App.MainWindowInstance.AppWindow.IsVisible,
-            columns, start, finish, intermediate, distinctPositions, offsetBefore, offsetAfter = _pixelScroll.Scroll.VerticalOffset, samples,
+            columns, start, finish, intermediate, distinctPositions, offsetBefore, offsetAfter = scroll.VerticalOffset, samples, timerSamples, lifecycle, moveFinishedMs,
             timingSource = "XAML Rendering callbacks; not GPU-present FPS"
         }, new JsonSerializerOptions { WriteIndented = true }));
         check(moved && intermediate >= 2 && distinctPositions >= 3, "A rendered peer thumbnail traverses intermediate positions while crossing a row during drag preview");
         check(_reorderMotion?.ActiveCount == 0, "Finished reorder animation releases its transforms and storyboard ownership");
-        RestoreDragOrder(before); await Task.Delay(400);
+        RestoreDragOrder(before); await WaitForSettlementAsync();
         await SaveFeatureImageAsync(Gallery, Path.Combine(output, "reorder-before.png"), 0);
         PreviewReorder(columns + 2, true); await Task.Delay(80);
         var wasAnimating = _reorderMotion?.ActiveCount > 0;
@@ -97,15 +109,21 @@ public sealed partial class MainPage
         }, new JsonSerializerOptions { WriteIndented = true }));
         check(wasAnimating && Distance(beforeRetarget, afterRetarget) < 40,
             "Reversing a live drag retargets from the displayed position without snapping to the previous destination");
-        await Task.Delay(400);
-        RestoreDragOrder(before); await Task.Delay(400);
+        await WaitForSettlementAsync();
+        RestoreDragOrder(before); await WaitForSettlementAsync();
         check(BrowseItems.SequenceEqual(before) && _reorderMotion?.ActiveCount == 0,
             "Cancel after rapid animated previews restores order and retires all thumbnail transforms");
         // Keep screenshot encoding outside the timed retarget test.
         PreviewReorder(columns + 2, true); await Task.Delay(80);
         await SaveFeatureImageAsync(Gallery, Path.Combine(output, "reorder-moving.png"), 0);
-        RestoreDragOrder(before); await Task.Delay(400);
+        RestoreDragOrder(before); await WaitForSettlementAsync();
         await SaveFeatureImageAsync(Gallery, Path.Combine(output, "reorder-restored.png"), 0);
-        } finally { Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= SampleFrame; }
+        } finally { Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= SampleFrame; motion.Trace = null; }
+        async Task WaitForSettlementAsync() {
+            var waiting = Stopwatch.StartNew();
+            while (motion.ActiveCount > 0 && waiting.ElapsedMilliseconds < 2000)
+                await Task.Delay(8, _lifetime.Token);
+            // Assertions still require zero active motions; a timeout is not success.
+        }
     }
 }

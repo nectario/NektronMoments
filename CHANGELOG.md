@@ -2,6 +2,12 @@
 
 ## [0.1.30] - 2026-09-21
 
+- Make native drag-animation verification continuously observe actual transforms
+  and wait for bounded completion instead of sleeping through compositor motion.
+  Preserve intermediate-position, retargeting and cleanup assertions, with
+  lifecycle traces for diagnosing genuine failures. Production animation timing
+  and scrolling behavior are unchanged.
+
 - Personal BYOK: previews are prepared on the source device and sent directly to
   OpenAI with the existing local key, using four concurrent Standard-tier calls.
   No S3 preview staging or managed AI worker is involved. Legacy queued work is
