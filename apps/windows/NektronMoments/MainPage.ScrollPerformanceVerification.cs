@@ -144,9 +144,11 @@ public sealed partial class MainPage
         var beforeErrors = errors.Count;
         var wheelDistance = controller.WheelDistance;
         var samples = new List<object>();
+        var interruptedAttempts = new List<object>();
         controller.WheelDistance = 64;
         try {
             foreach (var frequency in new[] { 2, 12, 30, 60 }) {
+              for (var attempt = 0; attempt < 3; attempt++) {
                 CancelScrollbarGesture(); controller.Stop();
                 controller.JumpTo(500);
                 await WaitForProbeOffsetAsync(500);
@@ -159,6 +161,10 @@ public sealed partial class MainPage
                 var offsets = new List<double>();
                 var eventTimes = new List<double>();
                 var barProgressDuringMotion = false;
+                var interrupted = false;
+                void ActivationChanged(object sender, WindowActivatedEventArgs args) {
+                    if (args.WindowActivationState == WindowActivationState.Deactivated) interrupted = true;
+                }
                 var watch = Stopwatch.StartNew();
                 void Observe(object? sender, ScrollViewerViewChangedEventArgs args) {
                     offsets.Add(scroll.VerticalOffset);
@@ -171,6 +177,7 @@ public sealed partial class MainPage
                         barProgressDuringMotion = true;
                 }
                 scroll.ViewChanged += Observe;
+                App.MainWindowInstance!.Activated += ActivationChanged;
                 double lastTarget;
                 try {
                     for (var notch = 0; notch < frequency; notch++) {
@@ -184,8 +191,21 @@ public sealed partial class MainPage
                     while (controller.IsAnimating && settling.ElapsedMilliseconds < 3000)
                         await Task.Delay(16, _lifetime.Token);
                     await Task.Delay(80, _lifetime.Token);
-                } finally { scroll.ViewChanged -= Observe; }
+                } finally {
+                    scroll.ViewChanged -= Observe;
+                    App.MainWindowInstance!.Activated -= ActivationChanged;
+                }
                 var end = scroll.VerticalOffset;
+                // Losing activation invokes the real Stop policy. It is a
+                // different input sequence, not a monotonic wheel-only trial.
+                // Retain its evidence and require a fresh, complete trial;
+                // repeated interference fails the gate rather than skipping it.
+                if (interrupted) {
+                    interruptedAttempts.Add(new { frequencyHz = frequency, attempt = attempt + 1, start, end, lastTarget, offsets, eventTimes });
+                    if (attempt == 2) errors.Add($"{frequency} Hz wheel verification was interrupted by window deactivation three times.");
+                    await Task.Delay(250, _lifetime.Token);
+                    continue;
+                }
                 var distinct = offsets.Select(offset => Math.Round(offset, 2)).Distinct().Count();
                 var gaps = eventTimes.Zip(eventTimes.Skip(1), (first, second) => second - first).Order().ToArray();
                 if (distinct < 3) errors.Add($"{frequency} Hz wheel train produced no continuous intermediate movement.");
@@ -203,7 +223,7 @@ public sealed partial class MainPage
                 await Task.Delay(120, _lifetime.Token);
                 if (Math.Abs(scroll.VerticalOffset - idle) > 1) errors.Add($"{frequency} Hz wheel train drifted after settling.");
                 samples.Add(new {
-                    frequencyHz = frequency, notches = frequency, start, lastTarget, end,
+                    frequencyHz = frequency, attempt = attempt + 1, notches = frequency, start, lastTarget, end,
                     requestedTravel = frequency * 64, observedTravel = end - start,
                     distinctOffsets = distinct, barProgressDuringMotion,
                     nativeSubmissions = controller.NativeWheelSubmissions - submissions,
@@ -216,12 +236,15 @@ public sealed partial class MainPage
                     offsetEventGapP95Ms = gaps.Length > 0 ? gaps[(int)(.95 * (gaps.Length - 1))] : 0,
                     offsetEventGapMaxMs = gaps.LastOrDefault(), elapsedMs = watch.Elapsed.TotalMilliseconds,
                 });
+                break;
+              }
             }
+            if (samples.Count != 4) errors.Add("Not every wheel frequency completed an uninterrupted verification sequence.");
         } finally { controller.Stop(); controller.WheelDistance = wheelDistance; }
         return new {
             passed = errors.Count == beforeErrors, thumbnailSize = _thumbnailSize,
             windowState = App.MainWindowInstance!.AppWindow.Presenter is OverlappedPresenter presenter ? presenter.State.ToString() : "Unknown",
-            nativeWheelAnimation = controller.NativeWheelAnimationEnabled, samples,
+            nativeWheelAnimation = controller.NativeWheelAnimationEnabled, samples, interruptedAttempts,
             measurement = "Native view-change observations; neither display-present FPS nor OS wheel replay",
         };
     }

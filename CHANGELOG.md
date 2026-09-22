@@ -7,6 +7,9 @@
   Preserve intermediate-position, retargeting and cleanup assertions, with
   lifecycle traces for diagnosing genuine failures. Production animation timing
   and scrolling behavior are unchanged.
+- Record focus-interrupted wheel trials separately and require a complete,
+  uninterrupted trial at every speed. Retries are bounded and repeated external
+  interruption fails verification; monotonicity and endpoint checks remain intact.
 
 - Personal BYOK: previews are prepared on the source device and sent directly to
   OpenAI with the existing local key, using four concurrent Standard-tier calls.
