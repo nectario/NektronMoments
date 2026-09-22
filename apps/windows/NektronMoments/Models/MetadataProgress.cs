@@ -45,7 +45,7 @@ public sealed class MetadataProgress
 {
     private static readonly Regex Counts = new(@"(?<done>[\d,]+)\s*/\s*(?<total>[\d,]+)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
     private static readonly Regex Ansi = new(@"\x1B\[[0-?]*[ -/]*[@-~]", RegexOptions.Compiled);
-    private static readonly Regex Rate = new(@"(?<rate>[\d,.]+)\s+(?:files|rows)/s", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+    private static readonly Regex Rate = new(@"(?<rate>[\d,.]+)\s+(?:files|rows|items)/s", RegexOptions.Compiled | RegexOptions.CultureInvariant);
     private readonly object _gate = new();
     private bool _byok;
     private readonly Queue<ProcessingLogEntry> _log = new();
@@ -112,6 +112,7 @@ public sealed class MetadataProgress
             if (_current.State != "Running") return;
             if (line.StartsWith("BYOK ")) _byok = true;
             if (_byok && phase == _current.Phase && done is null) { done = _current.Completed; total = _current.Total; }
+            if (_byok && phase == _current.Phase && rate is null) rate = _current.ItemsPerSecond;
             _current = _current with { Phase = phase, Message = line, Completed = done, Total = total, ItemsPerSecond = rate };
             UpdateOperation("Running"); AddLog(phase, line);
         }

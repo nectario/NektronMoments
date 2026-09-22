@@ -1,5 +1,17 @@
 # Nektron Moments Windows releases
 
+## [0.1.32] - 2026-09-22
+
+- Auto-tune direct BYOK AI concurrency up to 64 on machines with at least 32
+  logical CPUs and 32 GiB RAM; smaller machines use lower defaults. CLI overrides:
+  `byok --workers 64` and `sync --byok --with-enrichment --ai-workers 64`.
+- Replace the 64-photo completion barrier with a bounded rolling pipeline.
+  Preview decoding is capped at eight; backend access and token refresh remain
+  serialized, while AI calls overlap. Persist each result before synchronization.
+- Show measured AI descriptions/second and estimated remaining phase time.
+  Keep the selected model, budget reservation, provider-limit pause, and safe
+  resume behavior unchanged. Existing runs retain their original worker count.
+
 ## [0.1.31] - 2026-09-21
 
 - Hide the top indeterminate line during processing, including library refreshes

@@ -601,7 +601,7 @@ def _print_enrichment(summary: EnrichmentSummary) -> None:
 def byok_analyze(
     source: Annotated[str | None, typer.Argument(help="Registered source name or ID.")] = None,
     limit: Annotated[int, typer.Option(min=1, max=MAX_ENRICHMENT_RUN_LIMIT)] = 10000,
-    workers: Annotated[int, typer.Option(min=1, max=16)] = 4,
+    workers: Annotated[int | None, typer.Option(min=1, max=64, help="Concurrent AI requests. Default: hardware-tuned, up to 64.")] = None,
     model: Annotated[Literal["gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol"], typer.Option()] = "gpt-5.6-terra",
 ) -> None:
     """Analyze pending indexed photos directly; no rescan or S3 preview upload."""
@@ -619,6 +619,7 @@ def byok_analyze(
 
 @app.command()
 def sync(
+    ai_workers: Annotated[int | None, typer.Option("--ai-workers", min=1, max=64, help="BYOK AI concurrency; default hardware-tuned up to 64.")] = None,
     byok: Annotated[bool, typer.Option("--byok", help="Analyze previews directly from this machine using your OpenAI key.")] = False,
     enrichment_limit: Annotated[int, typer.Option("--enrichment-limit", min=1, max=MAX_ENRICHMENT_RUN_LIMIT, help="Total assets per source for this run; sent in resumable batches of 64.")] = DEFAULT_ENRICHMENT_LIMIT,
     description_model: Annotated[Literal["gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.6-sol"] | None, typer.Option("--description-model", help="Scene description model for newly prepared jobs.")] = None,
@@ -725,7 +726,7 @@ def sync(
                 if byok:
                     from .byok import ByokRunner
                     byok_runner = ByokRunner(runtime.api, runtime.state, _registered_device_id(runtime),
-                        model=description_model or 'gpt-5.6-terra', progress=progress, include_geocode=True)
+                        model=description_model or 'gpt-5.6-terra', workers=ai_workers, progress=progress, include_geocode=True)
                 summary = engine.sync(
                     binding,
                     dry_run=dry_run,

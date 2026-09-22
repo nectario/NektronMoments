@@ -3,7 +3,7 @@
 No preview or credential is sent to Nektron/S3. An interrupted in-flight call
 is retained as Uncertain instead of being automatically billed a second time.
 """
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import datetime, timezone
@@ -12,6 +12,8 @@ import json
 import os
 from pathlib import Path
 import threading
+from queue import SimpleQueue, Empty
+from time import perf_counter
 from uuid import uuid4
 
 from dotenv import dotenv_values
@@ -19,6 +21,22 @@ from services.enrichment.model_options import SCENE_MODEL_RATES
 from services.enrichment.openai_scene import OpenAISceneDescriptionProvider, SceneDescriptionProviderError, scene_description_cost_usd
 from .scene_preview import prepare_scene_preview, ScenePreviewError
 from .api_client import ApiError
+
+
+def recommended_ai_workers() -> int:
+    """Network concurrency, with conservative CPU/RAM ceilings for preview work."""
+    cpus = os.cpu_count() or 1
+    try:
+        memory_gib = os.sysconf('SC_PHYS_PAGES') * os.sysconf('SC_PAGE_SIZE') / 1024**3
+    except (AttributeError, OSError, ValueError):
+        return 4
+    if cpus >= 32 and memory_gib >= 32:
+        return 64
+    if cpus >= 16 and memory_gib >= 16:
+        return 32
+    if cpus >= 8 and memory_gib >= 8:
+        return 16
+    return 4
 
 
 def personal_key() -> str:
@@ -38,6 +56,8 @@ class ByokJournal:
                 Model TEXT NOT NULL, ContentHash TEXT NOT NULL, TaskJson TEXT NOT NULL, State TEXT NOT NULL,
                 ResultJson TEXT, ErrorCode TEXT, UsageMonth TEXT, CostUsd TEXT NOT NULL DEFAULT '0')""")
             db.execute('CREATE INDEX IF NOT EXISTS IX_Byok_ContentHash ON ByokAnalysis(ContentHash)')
+            db.execute('CREATE INDEX IF NOT EXISTS IX_Byok_SourceState ON ByokAnalysis(SourceId,State)')
+            db.execute('CREATE INDEX IF NOT EXISTS IX_Byok_MonthCost ON ByokAnalysis(UsageMonth,CostUsd)')
 
     def recover(self, source):
         with self.state._connect() as db:
@@ -48,11 +68,16 @@ class ByokJournal:
             db.execute("INSERT OR IGNORE INTO ByokAnalysis(JobId,SourceId,ClaimId,Model,ContentHash,TaskJson,State) VALUES(?,?,?,?,?,?,'Ready')",
                 (task['jobId'], source, str(uuid4()), model, task['assetContentSha256'], json.dumps(task)))
 
-    def rows(self, source, states=('Ready','ResultReady'), limit=64):
+    def rows(self, source, states=('Ready','ResultReady'), limit=64, exclude=()):
         with self.state._connect() as db:
+            exclusion = f" AND JobId NOT IN ({','.join('?' for _ in exclude)})" if exclude else ''
             return [dict(row) for row in db.execute(
-                f"SELECT * FROM ByokAnalysis WHERE SourceId=? AND State IN ({','.join('?' for _ in states)}) ORDER BY rowid LIMIT ?",
-                (source, *states, limit))]
+                f"SELECT * FROM ByokAnalysis WHERE SourceId=? AND State IN ({','.join('?' for _ in states)}){exclusion} ORDER BY rowid LIMIT ?",
+                (source, *states, *exclude, limit))]
+
+    def result_row(self, job):
+        with self.state._connect() as db:
+            return dict(db.execute('SELECT * FROM ByokAnalysis WHERE JobId=?', (job,)).fetchone())
 
     def set(self, job, state, error=None, result=None, cost=None):
         with self.state._connect() as db:
@@ -75,16 +100,23 @@ class ByokJournal:
 
 
 class ByokRunner:
-    def __init__(self, api, state, device_id, *, model='gpt-5.6-terra', workers=4,
+    def __init__(self, api, state, device_id, *, model='gpt-5.6-terra', workers=None,
                  monthly_cap=Decimal('230'), progress=print, provider=None, preview_factory=prepare_scene_preview, include_geocode=False):
-        if model not in SCENE_MODEL_RATES or not 1 <= workers <= 16 or not monthly_cap.is_finite() or monthly_cap <= 0:
-            raise ValueError('Choose a supported model, 1–16 workers and a positive monthly BYOK limit')
+        workers = recommended_ai_workers() if workers is None else workers
+        if model not in SCENE_MODEL_RATES or not 1 <= workers <= 64 or not monthly_cap.is_finite() or monthly_cap <= 0:
+            raise ValueError('Choose a supported model, 1–64 workers and a positive monthly BYOK limit')
         self.api, self.state, self.device_id = api, state, device_id
         self.model, self.workers, self.cap, self.progress = model, workers, monthly_cap, progress
         self.provider = provider or OpenAISceneDescriptionProvider(personal_key(), model=model, service_tier='default')
         self.preview = preview_factory
         self.journal = ByokJournal(state)
         self.stop = threading.Event()
+        # ApiClient's token refresh/store remains single-threaded. AI requests
+        # never hold this lock, so slow inference does not serialize the pipeline.
+        self.backend_lock = threading.Lock()
+        self.backend_failed = False
+        self.preview_slots = threading.BoundedSemaphore(min(8, workers))
+        self.events = SimpleQueue()
         self.pause_reason = None
         self.types = ['Geocode', 'Description'] if include_geocode else ['Description']
 
@@ -100,23 +132,36 @@ class ByokRunner:
             pool.shutdown(wait=True, cancel_futures=True)
 
     def remote(self, row, description=None):
-        return self.api.request('POST', f"/v1/jobs/{row['JobId']}/byok",
-            json={'claimId': row['ClaimId'], **({'description': description} if description is not None else {})},
-            headers={'X-Nektron-Moments-Device-Id': self.device_id,
-                     'Idempotency-Key': f"byok:{row['ClaimId']}:{'result' if description else 'claim'}"})
+        with self.backend_lock:
+            if self.backend_failed:
+                raise RuntimeError('BYOK backend unavailable; completed descriptions remain saved locally')
+            try:
+                return self.api.request('POST', f"/v1/jobs/{row['JobId']}/byok",
+                    json={'claimId': row['ClaimId'], **({'description': description} if description is not None else {})},
+                    headers={'X-Nektron-Moments-Device-Id': self.device_id,
+                             'Idempotency-Key': f"byok:{row['ClaimId']}:{'result' if description else 'claim'}"})
+            except Exception as error:
+                if not (isinstance(error, ApiError) and error.problem.code == 'BYOK_JOB_UNAVAILABLE'):
+                    # One network failure must not become 64 consecutive timeouts.
+                    self.backend_failed = True
+                    self.stop.set()
+                raise
 
     def sync_result(self, row):
         result = json.loads(row['ResultJson'])
         self.remote(row, result['description'])
         self.journal.set(row['JobId'], 'Synced')
-        self.progress('BYOK synchronized · description saved to your library')
+        self.events.put('synced')
 
     def analyze(self, row):
         if self.stop.is_set():
             return
         task = json.loads(row['TaskJson'])
         try:
-            preview = self.preview(task['localLocator'])
+            with self.preview_slots:
+                if self.stop.is_set():
+                    return
+                preview = self.preview(task['localLocator'])
             if preview.source_sha256_hex.lower() != task['assetContentSha256'].lower():
                 self.journal.set(row['JobId'], 'NeedsAttention', 'SOURCE_CHANGED')
                 return
@@ -151,7 +196,32 @@ class ByokRunner:
         charge = scene_description_cost_usd(result.usage, input_usd_per_million=rates[0],
             cached_input_usd_per_million=rates[1], output_usd_per_million=rates[2])
         self.journal.set(row['JobId'], 'ResultReady', result=asdict(result), cost=charge[0] if charge else rates[3])
+        self.events.put('analyzed')
         return True
+
+    def process(self, row):
+        try:
+            if self.stop.is_set():
+                return
+            if row['Model'] != self.model:
+                raise ValueError('Resume pending BYOK work with its original model before changing models')
+            try:
+                response = self.remote(row)
+            except ApiError as error:
+                if error.problem.code == 'BYOK_JOB_UNAVAILABLE':
+                    self.journal.set(row['JobId'], 'Skipped', 'EXISTING_CLOUD_WORK')
+                    return
+                raise
+            if response['status'] == 'Succeeded':
+                self.journal.set(row['JobId'], 'Synced')
+                return
+            self.state.mark_description_skipped(row['JobId'], code='BYOK_DEVICE_OWNED',
+                message='Analysis is now owned by the direct BYOK workflow.')
+            if self.analyze(row):
+                self.sync_result(self.journal.result_row(row['JobId']))
+        except BaseException:
+            self.stop.set()
+            raise
 
     def run(self, binding, limit):
         if not 1 <= limit <= 1_000_000:
@@ -162,58 +232,72 @@ class ByokRunner:
             for row in rows:
                 self.sync_result(row)
         cursor, used, completed_count = None, 0, 0
+        started = perf_counter()
+        def report_events():
+            nonlocal completed_count
+            while True:
+                try:
+                    event = self.events.get_nowait()
+                except Empty:
+                    break
+                if event == 'analyzed':
+                    completed_count += 1
+                    rate = completed_count / max(.001, perf_counter() - started)
+                    self.progress(f'BYOK analyzed · {completed_count:,}/{limit:,} descriptions completed · saved locally · {rate:.2f} items/s')
+                else:
+                    self.progress('BYOK synchronized · description saved to your library')
+        self.progress(f'BYOK workers · {self.workers} AI requests · up to {min(8, self.workers)} preview decoders')
         seen = set()
+        pending = {}
+        exhausted = False
         with self.worker_pool() as pool:
-            while used < limit and not self.stop.is_set():
-                rows = self.journal.rows(binding.source_id, ('Ready',), min(64, limit-used))
+            while pending or (used < limit and not exhausted and not self.stop.is_set()):
+                report_events()
+                for future in list(pending):
+                    if future.done():
+                        del pending[future]
+                        future.result()
+                capacity = min(64, self.workers * 2 - len(pending), limit-used)
+                if capacity <= 0 or exhausted or self.stop.is_set():
+                    if pending:
+                        wait(pending, timeout=.25, return_when=FIRST_COMPLETED)
+                    continue
+                rows = self.journal.rows(binding.source_id, ('Ready',), capacity, exclude=tuple(pending.values()))
                 page_count = len(rows)
                 next_cursor = cursor
                 if not rows:
-                    prepared = self.api.prepare_enrichment(binding.source_id,
-                        {'types': self.types, 'executionMode': 'BYOK', 'limit': min(64, limit-used), 'descriptionModel': self.model,
-                         **({'cursor': cursor} if cursor else {})}, device_id=self.device_id, key=f'byok-prepare:{uuid4()}')
+                    with self.backend_lock:
+                        if self.stop.is_set():
+                            continue
+                        try:
+                            prepared = self.api.prepare_enrichment(binding.source_id,
+                                {'types': self.types, 'executionMode': 'BYOK', 'limit': capacity, 'descriptionModel': self.model,
+                                 **({'cursor': cursor} if cursor else {})}, device_id=self.device_id, key=f'byok-prepare:{uuid4()}')
+                        except Exception:
+                            self.backend_failed = True
+                            self.stop.set()
+                            raise
                     if prepared.get('sourceId') != binding.source_id:
                         raise ValueError('BYOK preparation returned a different source')
                     for task in prepared.get('sceneDescriptionTasks', []):
                         self.journal.add(binding.source_id, task, self.model)
-                    rows = self.journal.rows(binding.source_id, ('Ready',), min(64, limit-used))
+                    rows = self.journal.rows(binding.source_id, ('Ready',), capacity, exclude=tuple(pending.values()))
                     page_count = max(len(rows), int(prepared.get('assetsConsidered', len(rows))))
                     next_cursor = prepared.get('nextCursor')
                 if not rows:
                     used += page_count
-                    if not next_cursor or next_cursor in seen: break
+                    if not next_cursor or next_cursor in seen:
+                        exhausted = True
+                        continue
                     seen.add(next_cursor); cursor = next_cursor
                     continue
-                futures = []
                 for row in rows:
                     if self.stop.is_set(): break
-                    if row['Model'] != self.model:
-                        raise ValueError('Resume pending BYOK work with its original model before changing models')
-                    try:
-                        response = self.remote(row)
-                    except ApiError as error:
-                        if error.problem.code == 'BYOK_JOB_UNAVAILABLE':
-                            self.journal.set(row['JobId'], 'Skipped', 'EXISTING_CLOUD_WORK')
-                            continue
-                        raise
-                    if response['status'] == 'Succeeded':
-                        self.journal.set(row['JobId'], 'Synced'); continue
-                    self.state.mark_description_skipped(row['JobId'], code='BYOK_DEVICE_OWNED',
-                        message='Analysis is now owned by the direct BYOK workflow.')
-                    futures.append(pool.submit(self.analyze, row))
-                for future in as_completed(futures):
-                    if future.result():
-                        completed_count += 1
-                        self.progress(f'BYOK analyzed · {completed_count:,}/{limit:,} descriptions completed · saved locally')
-                        for completed in self.journal.rows(binding.source_id, ('ResultReady',)):
-                            self.sync_result(completed)
-                # Provider threads never use the shared backend auth session.
-                for row in self.journal.rows(binding.source_id, ('ResultReady',)):
-                    self.sync_result(row)
+                    pending[pool.submit(self.process, row)] = row['JobId']
                 used += page_count
-                self.progress(f'BYOK progress · {used:,}/{limit:,} photos considered')
                 cursor = next_cursor
                 if next_cursor: seen.add(next_cursor)
+        report_events()
         counts = self.journal.counts(binding.source_id)
         self.progress('BYOK status · ' + ' · '.join(f'{key}: {value:,}' for key,value in counts.items()))
         if self.stop.is_set():

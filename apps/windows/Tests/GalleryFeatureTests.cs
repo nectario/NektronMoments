@@ -36,8 +36,11 @@ internal static class GalleryFeatureTests
         catch (InvalidOperationException) { check(true, "Off cannot create a processing command"); }
         var fullProgress = new MetadataProgress(); fullProgress.ConfigureSources(["Photos"], withEnrichment: true);
         var byokProgress = new MetadataProgress(); byokProgress.ConfigureSources(["Photos"], withEnrichment: true);
-        byokProgress.Source("Photos", 1, 1); byokProgress.Report("BYOK analyzed · 1/10 descriptions completed · saved locally");
+        byokProgress.Source("Photos", 1, 1); byokProgress.Report("BYOK analyzed · 1/10 descriptions completed · saved locally · 2.50 items/s");
+        check(byokProgress.Snapshot.ItemsPerSecond == 2.5, "BYOK exposes measured AI throughput");
+        check(byokProgress.Snapshot.PhaseRemaining?.TotalSeconds == 3.6, "BYOK estimates remaining phase time");
         byokProgress.Report("BYOK synchronized · description saved to your library");
+        check(byokProgress.Snapshot.ItemsPerSecond == 2.5, "Synchronization preserves AI throughput");
         check(byokProgress.Snapshot.Completed == 1 && byokProgress.Snapshot.Total == 10, "BYOK preserves actual completion progress while synchronizing");
         byokProgress.Finish(false, false);
         check(byokProgress.Snapshot.Message.StartsWith("BYOK pass complete"), "BYOK completion is not presented as an AI job still queued");

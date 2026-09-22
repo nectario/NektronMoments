@@ -163,6 +163,91 @@ def test_parallelism_is_bounded(tmp_path):
     assert p.calls==8 and p.maximum==2
 
 
+def test_hardware_defaults_and_explicit_worker_bounds(tmp_path, monkeypatch):
+    from cli.nektron_moments_cli.byok import recommended_ai_workers
+    import cli.nektron_moments_cli.byok as module
+    monkeypatch.setattr(module.os, 'cpu_count', lambda:192)
+    monkeypatch.setattr(module.os, 'sysconf', lambda name: 4096 if name == 'SC_PAGE_SIZE' else 192*1024**3//4096)
+    assert recommended_ai_workers()==64
+    monkeypatch.setattr(module.os, 'cpu_count', lambda:8)
+    assert recommended_ai_workers()==16
+    monkeypatch.setattr(module.os, 'sysconf', lambda _: (_ for _ in ()).throw(OSError()))
+    assert recommended_ai_workers()==4
+    for count in (0,65):
+        with pytest.raises(ValueError):runner(tmp_path,Api(),Provider(),workers=count)
+
+
+def seed_jobs(r, count):
+    for i in range(count):
+        r.journal.add('source',dict(jobId=f'job-{i}',localLocator=str(i),assetContentSha256='a'*64),'gpt-5.6-terra')
+
+
+def test_all_64_workers_can_be_in_flight_and_backend_is_serialized(tmp_path):
+    import threading, time
+    class CheckedApi(Api):
+        def __init__(self):super().__init__(); self.active=0; self.maximum=0
+        def request(self,*args,**kwargs):
+            self.active+=1; self.maximum=max(self.maximum,self.active)
+            try:time.sleep(.001); return super().request(*args,**kwargs)
+            finally:self.active-=1
+    class BarrierProvider(Provider):
+        barrier=threading.Barrier(64, timeout=20)
+        def describe_bytes(self,value):
+            self.barrier.wait()
+            return super().describe_bytes(value)
+    api=CheckedApi(); p=BarrierProvider(); r=runner(tmp_path,api,p,workers=64)
+    seed_jobs(r,64)
+    assert r.run(SimpleNamespace(source_id='source'),64)=={'Synced':64}
+    assert p.calls==64 and api.maximum==1
+
+
+def test_rolling_pipeline_does_not_wait_for_slow_first_page(tmp_path):
+    import threading
+    reached_next_page=threading.Event()
+    class StragglerProvider(Provider):
+        def describe_bytes(self,value):
+            if value == b'0':
+                assert reached_next_page.wait(20), '64-photo page barrier stalled the pipeline'
+            if value == b'64':reached_next_page.set()
+            return super().describe_bytes(value)
+    p=StragglerProvider(); r=runner(tmp_path,Api(),p,workers=4)
+    r.preview=lambda path:SimpleNamespace(content=path.encode(),source_sha256_hex='a'*64)
+    seed_jobs(r,96)
+    messages=[]; r.progress=messages.append
+    assert r.run(SimpleNamespace(source_id='source'),96)=={'Synced':96}
+    assert reached_next_page.is_set() and p.calls==96
+    assert any('96/96 descriptions completed' in message and 'items/s' in message for message in messages)
+
+
+def test_parallel_budget_reservations_never_exceed_cap(tmp_path):
+    import threading
+    release=threading.Event()
+    class HoldingProvider(Provider):
+        def describe_bytes(self,value):
+            release.wait(1)
+            return super().describe_bytes(value)
+    p=HoldingProvider(); r=runner(tmp_path,Api(),p,workers=64,monthly_cap=Decimal('.01'))
+    seed_jobs(r,64)
+    r.run(SimpleNamespace(source_id='source'),64)
+    assert p.calls<=1
+    assert r.stop.is_set() and r.pause_reason=='LOCAL_MONTHLY_LIMIT'
+
+
+def test_backend_failure_circuits_queued_requests_without_losing_results(tmp_path):
+    class OfflineApi(Api):
+        def __init__(self):super().__init__(); self.failed_requests=0
+        def request(self,*args,**kwargs):
+            if 'description' in kwargs['json']:
+                self.failed_requests+=1
+                raise RuntimeError('backend offline')
+            return super().request(*args,**kwargs)
+    api=OfflineApi(); p=Provider(); r=runner(tmp_path,api,p,workers=64)
+    seed_jobs(r,64)
+    with pytest.raises(RuntimeError):r.run(SimpleNamespace(source_id='source'),64)
+    assert api.failed_requests==1
+    assert r.journal.counts('source').get('ResultReady',0)==p.calls
+
+
 def test_api_never_accepts_a_key_or_image():
     from pydantic import ValidationError
     from services.api.models import ByokResultRequest
