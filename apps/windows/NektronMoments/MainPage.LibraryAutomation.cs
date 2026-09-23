@@ -112,7 +112,7 @@ public sealed partial class MainPage
                     _metadataProgress.CompleteSource();
                 }
             }, sourceNames: sources.Select(source => source.Name).ToArray(),
-                withEnrichment: mode == StartupProcessingMode.Full, aiOptions: aiOptions);
+                withEnrichment: mode == StartupProcessingMode.Full, aiOptions: aiOptions, showProgress: false);
         });
     }
     private void StartScreenshotLookup()

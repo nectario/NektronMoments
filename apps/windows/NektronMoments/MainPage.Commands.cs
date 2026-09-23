@@ -60,7 +60,7 @@ public sealed partial class MainPage
         EnsureProcessingWindow();
         return _processingWindow!.ShowSetup(sources, options ?? _aiOptions, ActualTheme);
     }
-    private async Task RunMetadataJobAsync(Func<CancellationToken, Task> work, Func<Task>? refreshForVerification = null, IReadOnlyList<string>? sourceNames = null, bool withEnrichment = false, Models.AiProcessingOptions? aiOptions = null)
+    private async Task RunMetadataJobAsync(Func<CancellationToken, Task> work, Func<Task>? refreshForVerification = null, IReadOnlyList<string>? sourceNames = null, bool withEnrichment = false, Models.AiProcessingOptions? aiOptions = null, bool showProgress = true)
     {
         if (_importing) return;
         _jobAiOptions = aiOptions ?? _aiOptions;
@@ -70,7 +70,7 @@ public sealed partial class MainPage
         CancelProcessingButton.Visibility = Visibility.Visible; CancelProcessingButton.IsEnabled = true;
         _jobCancellation = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
         SetBusy(true); Notice.IsOpen = false;
-        StartProcessingPresentation(sourceNames, withEnrichment);
+        StartProcessingPresentation(sourceNames, withEnrichment, showProgress);
         var stopped = false;
         Exception? failure = null;
         try {

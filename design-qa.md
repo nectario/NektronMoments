@@ -1,5 +1,17 @@
 # Processing window — reference QA
 
+## Comparisons and quiet startup — 0.1.39
+
+Selecting a pricing row updates the beige comparison amount and model while
+retaining the actual run model, allowance and source count. Native checks cover
+Luna ($6.32) and Astra ($306.00) at 10,000 descriptions, unchanged Terra execution,
+and comparison retention through progress updates. This is illustrative pricing,
+not a switch of provider/model or a spending quote.
+The native title bar is unchanged; processing body and actions share a 15-pixel
+content inset. Light/dark captures in `build/processing-comparison/check-01/`
+were inspected and all 163 native checks passed. Startup-style jobs remain hidden
+and the button reopens the same job; manual processing remains visible.
+
 ## Read-only AI status clarity — 0.1.38
 
 AI-options heading increased to 20, labels/values to 14, and locked note to 13.

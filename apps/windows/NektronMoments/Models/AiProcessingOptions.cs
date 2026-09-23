@@ -40,9 +40,14 @@ public sealed record AiProcessingOptions(int Limit = 64, string Model = "gpt-5.6
     public decimal Estimate(int sources = 1)
     {
         Validate();
+        return EstimateComparison(Model, Limit, sources);
+    }
+    public static decimal EstimateComparison(string modelId, int limit, int sources = 1)
+    {
+        if (limit is < 1 or > MaximumRunLimit) throw new ArgumentOutOfRangeException(nameof(limit));
         if (sources < 0) throw new ArgumentOutOfRangeException(nameof(sources));
-        var model = Models.Single(item => item.Id == Model);
-        return Limit * (decimal)sources * (2560 * model.InputRate + 100 * model.OutputRate) / 1_000_000m;
+        var model = PricingModels.Single(item => item.Id == modelId);
+        return limit * (decimal)sources * (2560 * model.InputRate + 100 * model.OutputRate) / 1_000_000m;
     }
     public string EstimateSummary() => $"US${Estimate().ToString(Estimate() < .01m ? "F4" : "F2", CultureInfo.InvariantCulture)} estimated per source\n{Model} · Up to {Limit:N0} photos";
     public string Preview(int sources = 1) => $"{Model} · Up to {Limit:N0} assets per source\n" +

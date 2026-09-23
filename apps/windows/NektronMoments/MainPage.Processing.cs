@@ -10,12 +10,12 @@ public sealed partial class MainPage
     private Microsoft.UI.Dispatching.DispatcherQueueTimer? _processingTimer;
     private ProcessingSnapshot? _lastProgressPaint;
     private AiProcessingOptions _jobAiOptions = new();
-    private void StartProcessingPresentation(IReadOnlyList<string>? sourceNames = null, bool withEnrichment = false)
+    private void StartProcessingPresentation(IReadOnlyList<string>? sourceNames = null, bool withEnrichment = false, bool showProgress = true)
     {
         _metadataProgress = new(); _metadataProgress.ConfigureSources(sourceNames ?? [], withEnrichment); _lastProgressPaint = null;
         _processingTimer ??= DispatcherQueue.CreateTimer(); _processingTimer.Interval = TimeSpan.FromMilliseconds(150);
         _processingTimer.Tick -= ProcessingTick; _processingTimer.Tick += ProcessingTick; _processingTimer.Start();
-        _ = ShowProcessingProgressAsync();
+        if (showProgress) _ = ShowProcessingProgressAsync();
     }
     private void ProcessingTick(Microsoft.UI.Dispatching.DispatcherQueueTimer sender, object args) => PaintProcessingProgress();
     private void PaintProcessingProgress()

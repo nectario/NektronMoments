@@ -35,12 +35,12 @@
    </ResourceDictionary>
   </Grid.Resources>
   <Grid.KeyboardAccelerators><KeyboardAccelerator Key="Escape" Invoked="HideKey"/><KeyboardAccelerator Key="C" Modifiers="Control" Invoked="CopySelectedRows"/></Grid.KeyboardAccelerators>
-  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
   <TitleBar x:Name="ProcessingTitleBar" Title="Nektron Moments · Processing" Background="{ThemeResource MomentsTitlebarBrush}" Foreground="{ThemeResource MomentsTextBrush}">
    <TitleBar.IconSource><ImageIconSource ImageSource="{ThemeResource MomentsActivityImage}"/></TitleBar.IconSource>
   </TitleBar>
-  <ScrollViewer x:Name="ProcessingBody" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-   <StackPanel Margin="14,8,14,6" Spacing="4">
+  <Grid x:Name="ProcessingContent" Grid.Row="1" Padding="15"><Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><ScrollViewer x:Name="ProcessingBody" Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+   <StackPanel Margin="0" Spacing="4">
     <Grid>
      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
      <StackPanel Spacing="5">
@@ -89,7 +89,7 @@
           <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="90"/><ColumnDefinition Width="90"/></Grid.ColumnDefinitions>
           <TextBlock Text="Model" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="Input" HorizontalAlignment="Right" FontWeight="SemiBold"/><TextBlock Grid.Column="2" Text="Output" HorizontalAlignment="Right" FontWeight="SemiBold"/>
          </Grid>
-         <ListView x:Name="PricingRows" SelectionMode="Single" IsItemClickEnabled="False" AutomationProperties.Name="Model pricing"><ListView.ItemContainerStyle><Style TargetType="ListViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Padding" Value="0"/><Setter Property="MinHeight" Value="24"/></Style></ListView.ItemContainerStyle>
+         <ListView x:Name="PricingRows" SelectionMode="Single" SelectionChanged="PricingSelectionChanged" IsItemClickEnabled="False" AutomationProperties.Name="Model pricing"><ListView.ItemContainerStyle><Style TargetType="ListViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Padding" Value="0"/><Setter Property="MinHeight" Value="24"/></Style></ListView.ItemContainerStyle>
           <ListView.ItemTemplate><DataTemplate><Grid>
 
            <Border Width="3" Background="{ThemeResource MomentsAccentBrush}" HorizontalAlignment="Left" Visibility="{Binding Selected}" CornerRadius="2"/>
@@ -107,7 +107,7 @@
      </Border>
      <Border x:Name="EstimateCard" Grid.Column="1" Style="{StaticResource SectionCard}" Background="{ThemeResource EstimateFill}" BorderBrush="{ThemeResource EstimateStroke}">
       <StackPanel Spacing="4">
-       <StackPanel Orientation="Horizontal" Spacing="4"><Image Source="ms-appx:///Assets/FluentDatabase.svg" Width="32" Height="32"/><TextBlock Text="Illustrative AI cost" Style="{StaticResource SectionTitle}" FontSize="18"/></StackPanel>
+       <StackPanel Orientation="Horizontal" Spacing="4"><Image Source="ms-appx:///Assets/FluentDatabase.svg" Width="32" Height="32"/><TextBlock x:Name="EstimateHeading" Text="Illustrative AI cost" Style="{StaticResource SectionTitle}" FontSize="18"/></StackPanel>
        <Grid ColumnSpacing="12"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><StackPanel Orientation="Horizontal" Spacing="10"><TextBlock x:Name="EstimateAmount" Text="$63.20" FontSize="36" FontWeight="SemiBold"/><TextBlock Text="USD" VerticalAlignment="Bottom" Margin="0,0,0,8" FontSize="16"/></StackPanel>
        <TextBlock x:Name="EstimateCount" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap"/></Grid>
        <ListView x:Name="EstimateRows" SelectionMode="Single" BorderThickness="0,1,0,1" BorderBrush="{ThemeResource EstimateStroke}" AutomationProperties.Name="Cost assumptions">
@@ -170,7 +170,7 @@
     </StackPanel>
    </StackPanel>
   </ScrollViewer>
-  <Grid x:Name="FooterGrid" Grid.Row="2" Padding="14,6" Background="{ThemeResource MomentsTitlebarBrush}" RowSpacing="10">
+  <Grid x:Name="FooterGrid" Grid.Row="1" Padding="0" Background="{ThemeResource MomentsTitlebarBrush}" RowSpacing="10">
    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
    <Grid x:Name="FooterNotice" Margin="0,0,20,0" VerticalAlignment="Center"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><Image Source="{ThemeResource MomentsInfoImage}" Width="24" Height="24" Margin="0,0,10,0"/><TextBlock x:Name="FooterText" Grid.Column="1" Text="Your library stays usable. Hiding keeps processing in the background." TextWrapping="Wrap" FontSize="13" Foreground="{ThemeResource MomentsMutedBrush}" VerticalAlignment="Center"/></Grid>
    <StackPanel x:Name="FooterActions" Grid.Column="1" Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right">
@@ -180,5 +180,6 @@
     <Button x:Name="StopButton" Content="Stop processing" MinWidth="145" Click="StopClick"/>
    </StackPanel>
   </Grid>
+ </Grid>
  </Grid>
 </Window>

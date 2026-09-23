@@ -1,5 +1,14 @@
 # Nektron Moments Windows releases
 
+## [0.1.39] - 2026-09-22
+
+- Model-row selection updates the beige cost card for the current allowance and
+  source count, including pricing-only Astra. Comparisons do not change execution
+  settings and survive live progress updates.
+- Add a 15-pixel inset around processing content and footer actions.
+- Keep startup processing hidden; View progress and Activity reopen its existing
+  job. Manually started processing still opens its progress window.
+
 ## [0.1.38] - 2026-09-22
 
 - Increase AI-options text one step: heading 20, labels/values 14, locked note 13.

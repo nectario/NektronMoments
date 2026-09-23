@@ -186,17 +186,16 @@ public sealed partial class MainPage
             check(HideScreenshotsCheck.Content?.ToString() == "Hide screenshots" && LibraryAutomationDisabled,
                 "Screenshot control is available and diagnostic launches suppress real startup processing");
             var quietFinish = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-            var quietJob = RunMetadataJobAsync(token => quietFinish.Task.WaitAsync(token), () => Task.CompletedTask);
-            await WaitForAsync(() => _processingWindow?.IsVisible == true);
-            check(_importing && _metadataProgress is not null && Busy.Visibility == Visibility.Collapsed,
-                "Startup-style processing opens detailed progress without the top busy stripe");
+            _processingWindow?.Hide();
+            var quietJob = RunMetadataJobAsync(token => quietFinish.Task.WaitAsync(token), () => Task.CompletedTask, showProgress: false);
+            check(_importing && _metadataProgress is not null && Busy.Visibility == Visibility.Collapsed && _processingWindow?.IsVisible != true,
+                "Startup-style processing stays in the background without opening progress or the top busy stripe");
             SetBusy(true);
             check(Busy.Visibility == Visibility.Collapsed && ProcessButton.IsEnabled && ProcessButton.Label == "View progress",
                 "Processing keeps the stripe hidden during refresh and offers View progress in the ribbon");
             var startupProgress = _metadataProgress; var startupWindow = _processingWindow;
-            _processingWindow!.Hide();
             await ProcessPhotosAsync();
-            check(ReferenceEquals(startupProgress, _metadataProgress) && ReferenceEquals(startupWindow, _processingWindow) && _processingWindow.IsVisible && !quietJob.IsCompleted,
+            check(ReferenceEquals(startupProgress, _metadataProgress) && ReferenceEquals(startupWindow, _processingWindow) && _processingWindow?.IsVisible == true && !quietJob.IsCompleted,
                 "The processing button reopens the same startup job without starting new work");
             quietFinish.SetResult(); await quietJob;
             check(!_importing && _metadataProgress!.Snapshot.State == "Complete" && ProcessButton.Label == "Process metadata", "Startup-style processing completes and restores the normal command label");
@@ -258,10 +257,17 @@ public sealed partial class MainPage
                     selection.Select();
                     check(table.SelectedIndex == index, table.Name + " supports native row selection");
                 }
-                check(modelChoice.SelectedIndex == 0 && estimate.Text == "$63.20", "Pricing selection does not change the running model or estimate");
+                check(modelChoice.SelectedIndex == 0 && estimate.Text == "$6.32", "Luna row updates the estimate without changing the running Terra model");
+                var astraPeer = new ListViewItemDataAutomationPeer(priceRows.Items[3], new ListViewAutomationPeer(priceRows));
+                ((ISelectionItemProvider)astraPeer.GetPattern(PatternInterface.SelectionItem)).Select();
+                check(estimate.Text == "$306.00" && modelChoice.SelectedIndex == 0,
+                    "Astra pricing-only comparison updates the beige card without enabling Astra execution");
+                check(AssetDescendants(referenceWindow.VisualRoot).OfType<Grid>().Single(item => item.Name == "ProcessingContent").Padding == new Thickness(15),
+                    "Processing content has 15-pixel padding around the body and actions");
                 var selectedSequence = ((ProcessingLogEntry)logRows.SelectedItem).Sequence;
                 for (var update = 0; update < 20; update++) referenceProgress.Report("Discovering media · verification update " + update);
                 referenceWindow.Refresh(true);
+                check(estimate.Text == "$306.00", "Live progress does not overwrite the selected model comparison");
                 check(sourceRows.SelectedIndex == 0 && ((ProcessingLogEntry)logRows.SelectedItem).Sequence == selectedSequence,
                     "Source and activity selections survive live collection replacement");
                 check(!AssetDescendants(referenceWindow.VisualRoot).OfType<CheckBox>().Single(item => item.Name == "FollowLog").IsChecked.GetValueOrDefault(),

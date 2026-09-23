@@ -22,6 +22,8 @@ public sealed partial class ProcessingWindow : Window
     private bool _closing;
     private bool _setupReady;
     private bool _updatingSelection;
+    private bool _updatingPricing;
+    private string? _comparisonModelId;
     private int _setupSourceCount;
     private TaskCompletionSource<ProcessingSelection?>? _setup;
     private AiProcessingOptions _runOptions = new();
@@ -53,6 +55,7 @@ public sealed partial class ProcessingWindow : Window
     }
     public void Show(MetadataProgress model, bool canStop, ElementTheme theme, AiProcessingOptions? options = null)
     {
+        if (!ReferenceEquals(model, _model)) ResetPriceComparison();
         _setup?.TrySetResult(null); _setup = null;
         _runOptions = options ?? new();
         IncludeAiChoice.IsChecked = model.Snapshot.EnrichmentEnabled;
@@ -82,6 +85,7 @@ public sealed partial class ProcessingWindow : Window
         SetTheme(theme); AppWindow.Show(); Activate();
         if (_setup is not null) return Task.FromResult<ProcessingSelection?>(null);
         _setup = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        ResetPriceComparison();
         _model = null; _painted = null; Operations.Clear(); Log.Clear();
         Operations.ReplaceAll(sources.Select((name, index) => new ProcessingOperation(index + 1, name, "Ready", "Waiting for Start", null, null)));
         _setupSourceCount = sources.Count;
@@ -128,6 +132,8 @@ public sealed partial class ProcessingWindow : Window
         _pricing = pricing;
         ModeBadge.Text = includeAi ? "Full" : "Metadata";
         var selectedPrice = PricingRows.SelectedIndex;
+        _updatingPricing = true;
+        try {
         PricingRows.ItemsSource = AiProcessingOptions.PricingModels.Select(item => new PricingRow(
             item.Id == "gpt-6-astra" ? item.Label : item.Label.Split(" — ")[0],
             "$" + item.InputRate.ToString("F2", CultureInfo.InvariantCulture),
@@ -135,11 +141,34 @@ public sealed partial class ProcessingWindow : Window
             includeAi && item.Id == options.Model ? Visibility.Visible : Visibility.Collapsed
         )).ToArray();
         PricingRows.SelectedIndex = selectedPrice;
-        var amount = includeAi ? options.Estimate(sources) : 0m;
-        EstimateAmount.Text = "$" + amount.ToString(amount is > 0 and < .01m ? "F4" : "N2", CultureInfo.InvariantCulture);
-        EstimateCount.Text = includeAi ? $"For up to {options.Limit * (long)sources:N0} photo descriptions" : "File metadata only · No new AI requests";
-        EstimateModel.Text = AiProcessingOptions.Models.Single(item => item.Id == options.Model).Label.Split(" — ")[0];
+        } finally { _updatingPricing = false; }
+        UpdateEstimateCard();
         SetupEstimate.Text = includeAi ? "Actual cost varies with tokens, retries and pending jobs. Flex and cache reuse may lower costs. Excludes address lookup and AWS costs." : "AI is not included in this run. Existing queued jobs are unaffected.";
+    }
+    private void ResetPriceComparison()
+    {
+        _comparisonModelId = null; _pricing = null;
+        _updatingPricing = true;
+        try { PricingRows.SelectedIndex = -1; } finally { _updatingPricing = false; }
+    }
+    private void PricingSelectionChanged(object sender, SelectionChangedEventArgs args)
+    {
+        if (_updatingPricing) return;
+        _comparisonModelId = PricingRows.SelectedIndex >= 0 ? AiProcessingOptions.PricingModels[PricingRows.SelectedIndex].Id : null;
+        UpdateEstimateCard();
+    }
+    private void UpdateEstimateCard()
+    {
+        if (_pricing is not { } pricing) return;
+        var (options, sources, includeAi) = pricing;
+        var modelId = _comparisonModelId ?? options.Model;
+        var comparison = _comparisonModelId is not null;
+        var amount = includeAi || comparison ? AiProcessingOptions.EstimateComparison(modelId, options.Limit, sources) : 0m;
+        EstimateHeading.Text = comparison ? "AI cost comparison" : "Illustrative AI cost";
+        EstimateAmount.Text = "$" + amount.ToString(amount is > 0 and < .01m ? "F4" : "N2", CultureInfo.InvariantCulture);
+        EstimateCount.Text = includeAi || comparison ? $"For up to {options.Limit * (long)sources:N0} photo descriptions" : "File metadata only · No new AI requests";
+        EstimateModel.Text = AiProcessingOptions.PricingModels.Single(item => item.Id == modelId).Label.Split(" — ")[0];
+        ToolTipService.SetToolTip(EstimateCard, comparison ? "Comparison only. This does not change the model or AI inclusion for your run." : "Illustrative estimate for your selected run.");
     }
     private void SurfaceSizeChanged(object sender, SizeChangedEventArgs args)
     {

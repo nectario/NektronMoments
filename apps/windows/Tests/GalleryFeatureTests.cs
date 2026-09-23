@@ -17,6 +17,9 @@ internal static class GalleryFeatureTests
             unavailable.Begin(); check(!unavailable.IsHeld, "Unsupported high-refresh APIs degrade safely");
         }
         var ai = AiProcessingOptions.Resolve(null);
+        check(AiProcessingOptions.EstimateComparison("gpt-5.6-luna", 10000) == 6.32m, "Luna comparison uses the current allowance");
+        check(AiProcessingOptions.EstimateComparison("gpt-6-astra", 10000) == 306m, "Astra can be compared without enabling execution");
+        check(AiProcessingOptions.EstimateComparison("gpt-6-astra", 10000, 2) == 612m, "Comparison respects source count");
         var astraPrice = AiProcessingOptions.PricingModels.Single(item => item.Id == "gpt-6-astra");
         check(astraPrice.InputRate == 10m && astraPrice.OutputRate == 50m, "Astra comparison uses verified standard input/output pricing");
         check(!AiProcessingOptions.Models.Any(item => item.Id == astraPrice.Id), "Pricing-only Astra is not silently enabled for execution");
