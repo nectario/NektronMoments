@@ -66,7 +66,7 @@ public sealed partial class ProcessingWindow : Window
         IncludeAiChoice.Visibility = ModelChoice.Visibility = LimitChoice.Visibility = Visibility.Collapsed;
         AiReadOnly.Visibility = ModelDisplay.Visibility = LimitDisplay.Visibility = Visibility.Visible;
         AiStateText.Text = model.Snapshot.EnrichmentEnabled ? "Enabled" : "Not included";
-        AiStateIcon.Glyph = model.Snapshot.EnrichmentEnabled ? "\uE73A" : "\uE739";
+        AiStateIcon.Glyph = model.Snapshot.EnrichmentEnabled ? "\uE73E" : "\uE738";
         ModelValue.Text = AiProcessingOptions.Models.Single(item => item.Id == _runOptions.Model).Label;
         LimitValue.Text = _runOptions.Limit.ToString("N0");
         CatchUpButton.IsEnabled = false;

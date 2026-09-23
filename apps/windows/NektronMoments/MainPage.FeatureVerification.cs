@@ -240,8 +240,11 @@ public sealed partial class MainPage
                 check(priceRows.Items.Count == 4 && ProcessingWindow.FormatRow(priceRows.Items[3]).Contains("$50.00"),
                     "Astra pricing is included without changing execution choices");
                 foreach (var name in new[] { "ElapsedText", "AiStateText", "ModelValue", "LimitValue" })
-                    check(AssetDescendants(referenceWindow.VisualRoot).OfType<TextBlock>().Single(item => item.Name == name).FontSize == 13,
-                        name + " uses the requested smaller text");
+                    check(AssetDescendants(referenceWindow.VisualRoot).OfType<TextBlock>().Single(item => item.Name == name).FontSize == (name == "ElapsedText" ? 13 : 14),
+                        name + " uses the requested text size");
+                var aiStatusIcon = AssetDescendants(referenceWindow.VisualRoot).OfType<FontIcon>().Single(item => item.Name == "AiStateIcon");
+                check(aiStatusIcon.Glyph == "\uE73E" && aiStatusIcon.FontSize == 18,
+                    "Locked AI state uses a small borderless checkmark rather than a clickable-looking checkbox");
                 check(AssetDescendants(referenceWindow.VisualRoot).OfType<TextBlock>().Single(item => item.Name == "ModeBadge").FontSize == 16,
                     "Full badge uses the requested smaller text");
                 var sourceRows = AssetDescendants(referenceWindow.VisualRoot).OfType<ListView>().Single(item => item.Name == "OperationsList");

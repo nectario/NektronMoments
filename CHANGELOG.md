@@ -1,5 +1,13 @@
 # Nektron Moments Windows releases
 
+## [0.1.38] - 2026-09-22
+
+- Increase AI-options text one step: heading 20, labels/values 14, locked note 13.
+- Show the locked Enabled state with a small, borderless 18-unit checkmark;
+  the editable setup checkbox remains a native interactive control. No square
+  indicator is shown for the read-only disabled state either.
+- Keep the 1000 × 923 size, pricing, other typography and processing unchanged.
+
 ## [0.1.37] - 2026-09-22
 
 - Set the default processing window to 1000 × 923. Reduce the Full badge,

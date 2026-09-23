@@ -1,5 +1,15 @@
 # Processing window — reference QA
 
+## Read-only AI status clarity — 0.1.38
+
+AI-options heading increased to 20, labels/values to 14, and locked note to 13.
+Running Enabled status now uses an 18-unit checkmark with no square; Not included
+uses a dash. The actual setup checkbox retains native interaction and appearance.
+The 1000 × 923 layout, pricing and other typography are unchanged.
+Published light/setup captures were inspected under
+`build/installer/0.1.38/14ad7c9783e741688db5503a77c06225/published-browsing/`.
+Native checks confirm the borderless glyph and full setup/running visibility.
+
 ## Exact size and Astra comparison — 0.1.37
 
 Default window: 1000 × 923. Full badge: 16; elapsed time, Enabled, model value and
