@@ -7,8 +7,8 @@ namespace NektronMoments;
 
 public sealed partial class MainPage
 {
-    // Read-only access to the GridView's own bar. WinUI owns its range, value,
-    // pointer capture and viewport connection, exactly as in version 0.1.1.
+    // The GridView's own bar still owns its range and viewport connection.
+    // Mouse thumb input is animated; keyboard, paging and touch remain native.
     private ScrollBar? _galleryScrollbar;
     private Thumb? _galleryThumb;
     private ScrollBar GalleryScrollbar => _galleryScrollbar ??

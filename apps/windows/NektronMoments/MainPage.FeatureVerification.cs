@@ -38,6 +38,9 @@ public sealed partial class MainPage
             await WaitForAsync(() => BrowseItems.Count >= 500);
             _browseThumbTracking = true; Gallery.UpdateLayout();
             check(BrowseItems.Count >= 500 && BrowsingBatch == 500, "Small thumbnails expand to the adaptive 500-position browsing range");
+            var dragErrors = new List<string>();
+            await MeasureAnimatedThumbMotionAsync(dragErrors);
+            check(dragErrors.Count == 0, "Animated thumb destinations traverse intermediate photo positions and settle: " + string.Join("; ", dragErrors));
             var retained = BrowseItems.Count;
             ApplyThumbnailSize(336, false); _browseThumbTracking = true; await Task.Delay(250);
             check(BrowseItems.Count == retained && BrowsingBatch == 200, "Growing thumbnails changes future batches without shrinking the current range");
@@ -131,7 +134,11 @@ public sealed partial class MainPage
                 var savedModes = new List<StartupProcessingMode>();
                 var settings = ShowStartupProcessingSettingsAsync(mode => { savedModes.Add(mode); return Task.CompletedTask; });
                 await WaitForAsync(() => SettingsHost.Visibility == Visibility.Visible);
-                await Task.Delay(100);
+                // Visibility precedes Pivot template materialization. Wait for
+                // the controls under test, not an arbitrary 100-ms delay.
+                await WaitForAsync(() => AssetDescendants(SettingsHost).OfType<ComboBox>().Any(combo => combo.Name == "StartupModePicker") &&
+                    AssetDescendants(SettingsHost).OfType<ComboBox>().Any(combo => combo.Name == "AiModelPicker") &&
+                    AssetDescendants(SettingsHost).OfType<NumberBox>().Any());
                 var settingsContent = SettingsHost;
                 var picker = AssetDescendants(settingsContent).OfType<ComboBox>().Single(combo => combo.Name == "StartupModePicker");
                 var aiModel = AssetDescendants(settingsContent).OfType<ComboBox>().Single(combo => combo.Name == "AiModelPicker");

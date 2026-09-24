@@ -130,7 +130,7 @@ public sealed partial class MainPage : Page
         Items.CollectionChanged -= CatalogItemsChanged;
         CancelScrollbarGesture();
         CancelSelectionDetails();
-        _nativeWheel?.Dispose(); _pixelScroll?.Dispose(); _lifetime.Cancel(); _sizingFinished?.TrySetCanceled();
+        _animatedThumb?.Dispose(); _nativeWheel?.Dispose(); _pixelScroll?.Dispose(); _lifetime.Cancel(); _sizingFinished?.TrySetCanceled();
         _search?.Cancel(); _thumbnailPrefetch?.Cancel(); _jobCancellation?.Cancel(); Viewer.Close(); _bridge.Dispose();
     }
     private async Task ReloadAsync(bool refresh, bool invalidateThumbnails = true)
@@ -412,8 +412,15 @@ public sealed partial class MainPage : Page
                 if (!queue.Value.EnumerateObject().Any()) lines.Add("  No saved work");
                 lines.Add("");
             }
+            if (activity.TryGetProperty("failedPhotos", out var failures) && failures.GetArrayLength() > 0) {
+                lines.Add("Failed photos (latest 100)");
+                lines.Add("Isolated from processing. Uncertain means the provider may have billed the call; no automatic paid retry.");
+                foreach (var failure in failures.EnumerateArray())
+                    lines.Add($"  {failure.GetProperty("file").GetString()} · {failure.GetProperty("reason").GetString()} · {failure.GetProperty("state").GetString()}");
+                lines.Add("");
+            }
             lines.Add("Full startup mode can request paid AI/address enrichment, including older pending photos. Metadata-only mode does not. Originals remain on their source drive.");
-            await ShowDialogAsync("Activity", new TextBlock { Text = string.Join("\n", lines), TextWrapping = TextWrapping.Wrap, MaxWidth = 520 });
+            await ShowDialogAsync("Saved queues", new ScrollViewer { MaxHeight = 540, Content = new TextBlock { Text = string.Join("\n", lines), IsTextSelectionEnabled = true, TextWrapping = TextWrapping.Wrap, MaxWidth = 680 } });
         }
         catch (Exception ex) { ShowError(ex); }
     }

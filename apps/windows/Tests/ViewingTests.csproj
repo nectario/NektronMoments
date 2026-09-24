@@ -6,6 +6,7 @@
   <Compile Include="../NektronMoments/Models/NativeScrollPrecision.cs" Link="NativeScrollPrecision.cs"/>
   <Compile Include="../NektronMoments/Models/NativeWheelTarget.cs" Link="NativeWheelTarget.cs"/>
   <Compile Include="../NektronMoments/Models/ScrollbarGlide.cs" Link="ScrollbarGlide.cs"/>
+  <Compile Include="../NektronMoments/Models/ThumbDragTarget.cs" Link="ThumbDragTarget.cs"/>
   <Compile Include="../NektronMoments/Models/BulkObservableCollection.cs" Link="BulkObservableCollection.cs"/>
   <Compile Include="../NektronMoments/Models/BrowsingPolicy.cs" Link="BrowsingPolicy.cs"/>
   <Compile Include="../NektronMoments/Models/SharedThumbnailPreparation.cs" Link="SharedThumbnailPreparation.cs"/>

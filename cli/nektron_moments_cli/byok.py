@@ -163,10 +163,10 @@ class ByokRunner:
                     return
                 preview = self.preview(task['localLocator'])
             if preview.source_sha256_hex.lower() != task['assetContentSha256'].lower():
-                self.journal.set(row['JobId'], 'NeedsAttention', 'SOURCE_CHANGED')
+                self.quarantine(row, 'NeedsAttention', 'SOURCE_CHANGED', cost=Decimal(0))
                 return
         except (OSError, ScenePreviewError):
-            self.journal.set(row['JobId'], 'NeedsAttention', 'PHOTO_UNREADABLE')
+            self.quarantine(row, 'NeedsAttention', 'PHOTO_UNREADABLE', cost=Decimal(0))
             return
         rates = SCENE_MODEL_RATES[row['Model']]
         if self.stop.is_set():
@@ -181,6 +181,16 @@ class ByokRunner:
             # No blind retry of an ambiguous paid request. Keep the reservation.
             rejected = error.failure.code in {'OpenAIRateLimited', 'OpenAICreditsExhausted', 'OpenAIQuotaDeferred', 'OpenAIAuthenticationFailed'}
             state = 'Ready' if rejected else 'NeedsAttention' if not error.provider_called else 'Uncertain'
+            # A rejected output belongs to one photo, not to the whole account.
+            # Retain possibly billed reservations and never retry it automatically.
+            image_failure = error.failure.code == 'OpenAIInvalidResponse' or error.provider_error_code in {
+                'invalid_image', 'invalid_image_format', 'invalid_image_size', 'image_too_large',
+                'image_too_small', 'image_parse_error', 'unsupported_image', 'invalid_base64_image',
+            }
+            if image_failure:
+                reason = error.failure.code + (f':{error.provider_error_code}' if error.provider_error_code else '')
+                self.quarantine(row, state, reason, cost=Decimal(0) if not error.provider_called else None)
+                return
             self.journal.set(row['JobId'], state, error.failure.code,
                 cost=Decimal(0) if rejected or not error.provider_called else None)
             self.pause_reason = error.failure.code + (f' ({error.provider_error_code})' if error.provider_error_code else '')
@@ -198,6 +208,12 @@ class ByokRunner:
         self.journal.set(row['JobId'], 'ResultReady', result=asdict(result), cost=charge[0] if charge else rates[3])
         self.events.put('analyzed')
         return True
+
+    def quarantine(self, row, state, reason, *, cost=None):
+        self.journal.set(row['JobId'], state, reason, cost=cost)
+        # TaskJson already preserves the source filename. Log only stable IDs and
+        # sanitized codes, never image bytes, response text, credentials or URLs.
+        self.events.put(f'BYOK failed photo · {row["JobId"]} · {reason} · saved in failed bucket; continuing')
 
     def process(self, row):
         try:
@@ -244,8 +260,10 @@ class ByokRunner:
                     completed_count += 1
                     rate = completed_count / max(.001, perf_counter() - started)
                     self.progress(f'BYOK analyzed · {completed_count:,}/{limit:,} descriptions completed · saved locally · {rate:.2f} items/s')
-                else:
+                elif event == 'synced':
                     self.progress('BYOK synchronized · description saved to your library')
+                else:
+                    self.progress(event)
         self.progress(f'BYOK workers · {self.workers} AI requests · up to {min(8, self.workers)} preview decoders')
         seen = set()
         pending = {}
@@ -302,4 +320,6 @@ class ByokRunner:
         self.progress('BYOK status · ' + ' · '.join(f'{key}: {value:,}' for key,value in counts.items()))
         if self.stop.is_set():
             self.progress(f'BYOK paused · {self.pause_reason or "STOPPED"} · completed results are saved; resume after resolving this condition')
+        elif failed := counts.get('Uncertain', 0) + counts.get('NeedsAttention', 0):
+            self.progress(f'BYOK completed with failures · {failed:,} photos in the saved failed bucket; no automatic paid retries')
         return counts

@@ -613,7 +613,7 @@ def byok_analyze(
             runner = ByokRunner(runtime.api, runtime.state, _registered_device_id(runtime),
                 model=model, workers=workers, progress=lambda message: console.print(escape(message)))
             counts = runner.run(binding, limit)
-            if runner.stop.is_set() or counts.get('Uncertain', 0) or counts.get('NeedsAttention', 0):
+            if runner.stop.is_set():
                 _error("BYOK paused or needs attention. Completed results are saved; review the BYOK status before resuming.", ExitCode.PARTIAL_SYNC)
 
 
@@ -741,7 +741,9 @@ def sync(
                 byok_counts = None
                 if byok_runner is not None and not summary.failed and not summary.queued_batches:
                     byok_counts = byok_runner.run(binding, enrichment_limit)
-                    summary.failed += byok_counts.get('Uncertain', 0) + byok_counts.get('NeedsAttention', 0) + int(byok_runner.stop.is_set())
+                    # Isolated photo failures are durable review items, not a
+                    # failed source/run. Only a shared blocking condition pauses.
+                    summary.failed += int(byok_runner.stop.is_set())
                 if json_output:
                     _emit({**summary.as_dict(), **({'byok': byok_counts} if byok_counts is not None else {})})
                 else:

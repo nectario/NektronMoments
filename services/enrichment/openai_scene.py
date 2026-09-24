@@ -382,12 +382,12 @@ class OpenAISceneDescriptionProvider:
                 self._api_key = ""
             raise
         if response.payload is None:
-            raise self._invalid_response()
+            raise self._invalid_response('MALFORMED_JSON')
 
         description = self._extract_output_text(response.payload)
         normalized = self._normalize_description(description)
         if normalized is None:
-            raise self._invalid_response()
+            raise self._invalid_response('MISSING_OUTPUT_TEXT' if description is None else 'DESCRIPTION_FORMAT_INVALID')
 
         return SceneDescriptionResult(
             description=normalized,
@@ -544,10 +544,12 @@ class OpenAISceneDescriptionProvider:
         )
 
     @staticmethod
-    def _invalid_response() -> SceneDescriptionProviderError:
-        return _failure(
+    def _invalid_response(reason: str = 'INVALID_OUTPUT') -> SceneDescriptionProviderError:
+        error = _failure(
             ProviderFailureClass.INTERNAL,
             "OpenAIInvalidResponse",
             "The scene description provider returned an invalid response.",
             retryable=False,
         )
+        error.provider_error_code = reason
+        return error

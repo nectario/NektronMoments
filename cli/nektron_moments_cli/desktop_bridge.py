@@ -395,13 +395,19 @@ class DesktopCatalog:
     def activity(self):
         with closing(self._source_db()) as source:
             counts = {}
+            failures = []
             for table in ("ManifestOutbox", "BulkManifestOutbox", "DescriptionOutbox", "ByokAnalysis"):
                 exists = source.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)).fetchone()
                 counts[table] = dict(source.execute(f"SELECT State,COUNT(*) FROM {table} GROUP BY State")) if exists else {}
+                if table == 'ByokAnalysis' and exists:
+                    for row in source.execute("SELECT JobId,TaskJson,State,ErrorCode FROM ByokAnalysis WHERE State IN ('NeedsAttention','Uncertain') ORDER BY rowid DESC LIMIT 100"):
+                        task = json.loads(row['TaskJson'])
+                        failures.append({'jobId': row['JobId'], 'file': str(task.get('localLocator', '')).replace('\\', '/').rsplit('/', 1)[-1],
+                                         'state': row['State'], 'reason': row['ErrorCode'] or 'Unknown'})
             scans = [dict(row) for row in source.execute(
                 "SELECT Status,StartedAtUtc,CompletedAtUtc FROM ScanRun ORDER BY StartedAtUtc DESC LIMIT 5"
             )]
-        return {"queues": counts, "scans": scans}
+        return {"queues": counts, "scans": scans, "failedPhotos": failures}
 
 
 class Bridge:

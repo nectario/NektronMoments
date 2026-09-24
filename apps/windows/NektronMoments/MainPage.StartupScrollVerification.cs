@@ -12,7 +12,7 @@ namespace NektronMoments;
 
 public sealed partial class MainPage
 {
-    // Native app-driven scrubbing during warm-up; not OS pointer replay or GPU FPS.
+    // App-driven animated thumb destinations during warm-up; not OS pointer replay or GPU FPS.
     private async Task VerifyStartupScrollingAsync(string output)
     {
         output = Path.GetFullPath(output);
@@ -56,7 +56,6 @@ public sealed partial class MainPage
             MediaThumbnail.SetThumbInput(true); // Window resize cancels native gestures; start the measured gesture afterwards.
             var scroll = _pixelScroll!.Scroll;
             _pixelScroll.YieldToNativeInput();
-            var provider = (IScrollProvider)new ScrollViewerAutomationPeer(scroll).GetPattern(PatternInterface.Scroll);
             var contentExtent = scroll.ScrollableHeight;
             var rangeBefore = BrowseItems.Count;
             watch.Start();
@@ -67,7 +66,7 @@ public sealed partial class MainPage
                 // A bounded triangle-wave path over the initial browsing range.
                 var phase = watch.Elapsed.TotalSeconds % 4 / 2;
                 var percent = 10 + 75 * (phase <= 1 ? phase : 2 - phase);
-                provider.SetScrollPercent(-1, percent);
+                _pixelScroll.SeekFromScrollbar(contentExtent * percent / 100);
                 ++nativeMoves;
                 realizedMax = Math.Max(realizedMax, Gallery.ItemsPanelRoot?.Children.Count ?? 0);
             };
@@ -107,6 +106,7 @@ public sealed partial class MainPage
                 completed = errors.Count == 0, errors, catalogCount = Items.Count, browsingCount = BrowseItems.Count,
                 materializedCatalogItems = Items.MaterializedCount, managedHeapBytes = GC.GetTotalMemory(false),
                 durationMs = watch.Elapsed.TotalMilliseconds, nativeMoves, realizedMax, contentExtent,
+                animatedThumbDestinations = true,
                 galleryCacheLength = (Gallery.ItemsPanelRoot as ItemsWrapGrid)?.CacheLength,
                 expandedViewportCache = _expandedViewportCache, profileName = Services.PerformanceProfile.Current.Name,
                 renderCallbackHz = gaps.Length > 0 ? 1000 / gaps.Average() : 0,

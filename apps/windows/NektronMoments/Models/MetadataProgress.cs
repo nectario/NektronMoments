@@ -48,6 +48,8 @@ public sealed class MetadataProgress
     private static readonly Regex Rate = new(@"(?<rate>[\d,.]+)\s+(?:files|rows|items)/s", RegexOptions.Compiled | RegexOptions.CultureInvariant);
     private readonly object _gate = new();
     private bool _byok;
+    private string? _pauseMessage;
+    private bool _hasPhotoFailures;
     private readonly Queue<ProcessingLogEntry> _log = new();
     private ProcessingSnapshot _current = new("Running", "Starting", "Preparing metadata processing…", "", 0, 0, null, null, DateTimeOffset.UtcNow, null);
     public ProcessingSnapshot Snapshot { get { lock (_gate) return _current; } }
@@ -111,6 +113,8 @@ public sealed class MetadataProgress
         lock (_gate) {
             if (_current.State != "Running") return;
             if (line.StartsWith("BYOK ")) _byok = true;
+            if (line.StartsWith("BYOK failed photo") || line.StartsWith("BYOK completed with failures")) _hasPhotoFailures = true;
+            if (line.StartsWith("BYOK paused")) _pauseMessage = PauseExplanation(line);
             if (_byok && phase == _current.Phase && done is null) { done = _current.Completed; total = _current.Total; }
             if (_byok && phase == _current.Phase && rate is null) rate = _current.ItemsPerSecond;
             _current = _current with { Phase = phase, Message = line, Completed = done, Total = total, ItemsPerSecond = rate };
@@ -121,11 +125,13 @@ public sealed class MetadataProgress
     public void StopRequested() { lock (_gate) if (_current.Running) { _current = _current with { State = "Stopping", Message = "Stopping safely · Keeping completed work…" }; UpdateOperation("Stopping"); AddLog("Stopping", _current.Message); } }
     public void Finish(bool stopped, bool failed) {
         lock (_gate) {
-            var state = failed ? "Failed" : stopped ? "Stopped" : "Complete";
+            var paused = failed && !stopped && _pauseMessage is not null;
+            var state = paused ? "Paused" : failed ? "Failed" : stopped ? "Stopped" : "Complete";
             if (_current.SourceNumber > 0 && _current.Operations.ElementAtOrDefault(_current.SourceNumber - 1)?.State != "Complete") UpdateOperation(state);
             _current = _current with { State = state,
-            Phase = failed ? "Needs attention" : stopped ? "Stopped safely" : _current.EnrichmentEnabled ? "Processing pass complete" : "Metadata pass complete",
-            Message = failed ? "The operation could not finish. Saved progress is retained; retry when ready." : stopped ? "Completed work is saved. Queued server-side jobs may continue; unfinished local work remains resumable." :
+            Phase = paused ? "AI processing paused" : failed ? "Needs attention" : stopped ? "Stopped safely" : _hasPhotoFailures ? "Complete with photo failures" : _current.EnrichmentEnabled ? "Processing pass complete" : "Metadata pass complete",
+            Message = paused ? _pauseMessage! : failed ? "The operation could not finish. Saved progress is retained; retry when ready." : stopped ? "Completed work is saved. Queued server-side jobs may continue; unfinished local work remains resumable." :
+                _hasPhotoFailures ? "Pass complete. Individual photo failures are saved in Saved queues > Failed photos. Successful descriptions are retained; failed or uncertain calls are not automatically billed again." :
                 _byok ? "BYOK pass complete. Finished descriptions are saved locally and synchronized. Remaining photos can be resumed; separate address jobs may still be queued." :
                 _current.EnrichmentEnabled ? "Library refreshed. Requested AI/address jobs may still be queued, processing or quota-deferred. Older pending photos remain eligible for later bounded passes." :
                 "Library refreshed. Saved or server-side work may still appear in the processing queues. No paid enrichment was started.",
@@ -133,4 +139,11 @@ public sealed class MetadataProgress
             AddLog(_current.State, _current.Message);
         }
     }
+    private static string PauseExplanation(string line) => line.Contains("OpenAICreditsExhausted")
+        ? "OpenAI API credits are exhausted. Add credits in OpenAI billing, then start processing again. Completed descriptions are saved; unprocessed photos remain queued. This is an account issue, not a failed photo."
+        : line.Contains("LOCAL_MONTHLY_LIMIT") ? "Your local monthly AI spending limit was reached. Completed work is saved. Review your spending limit before resuming."
+        : line.Contains("OpenAIQuotaDeferred") ? "OpenAI quota or spending limit reached. Review your OpenAI billing and limits before resuming. Completed work is saved."
+        : line.Contains("OpenAIAuthenticationFailed") || line.Contains("OpenAICredentialUnavailable") ? "OpenAI rejected or could not load your API credential. Check your key and access before resuming. Completed work is saved."
+        : line.Contains("OpenAIRateLimited") ? "OpenAI temporarily rate limited requests. Wait before resuming, or reduce concurrency. Completed work is saved. " + line
+        : line + ". Completed work is saved; resolve this shared provider issue before resuming.";
 }

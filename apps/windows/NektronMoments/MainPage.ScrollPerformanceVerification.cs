@@ -11,6 +11,45 @@ namespace NektronMoments;
 
 public sealed partial class MainPage
 {
+    private async Task MeasureAnimatedThumbMotionAsync(List<string> errors)
+    {
+        var controller = _pixelScroll!;
+        var scroll = controller.Scroll;
+        var tracking = _browseThumbTracking;
+        var original = scroll.VerticalOffset;
+        var fallbacks = controller.NativeScrollFallbacks;
+        var offsets = new List<double>();
+        void Observe(object? sender, ScrollViewerViewChangedEventArgs args) => offsets.Add(scroll.VerticalOffset);
+        try {
+            if (_animatedThumb is null) errors.Add("Animated native-thumb input adapter is missing.");
+            _browseThumbTracking = true;
+            Controls.MediaThumbnail.SetThumbInput(true);
+            controller.JumpTo(0); await WaitForProbeOffsetAsync(0);
+            scroll.ViewChanged += Observe;
+            var destination = Math.Min(650, scroll.ScrollableHeight);
+            controller.SeekFromScrollbar(destination);
+            await WaitForProbeOffsetAsync(destination);
+            if (!offsets.Any(value => value > 1 && value < destination - 1))
+                errors.Add("Animated thumb destination had no intermediate movement.");
+            // Rapid absolute retargeting must keep only the latest destination.
+            foreach (var fraction in new[] { .8, .6, .4, .2, .35, .5 }) {
+                controller.SeekFromScrollbar(destination * fraction);
+                await Task.Delay(16);
+            }
+            await WaitForProbeOffsetAsync(destination * .5);
+            controller.SeekFromScrollbar(destination);
+            await Task.Delay(35);
+            controller.Stop(); controller.JumpTo(0); await WaitForProbeOffsetAsync(0);
+            await Task.Delay(180);
+            if (scroll.VerticalOffset > 1) errors.Add("Canceled thumb destination overwrote navigation.");
+            if (controller.NativeScrollFallbacks != fallbacks) errors.Add("Animated thumb fell back to UI-thread scrolling.");
+        } finally {
+            scroll.ViewChanged -= Observe;
+            controller.JumpTo(original); await WaitForProbeOffsetAsync(original);
+            _browseThumbTracking = tracking; Controls.MediaThumbnail.SetThumbInput(tracking);
+        }
+    }
+
     // Native range/automation checks are intentionally not described as mouse-drag replay.
     private async Task<object> MeasureWideScrollingAsync(List<string> errors)
     {

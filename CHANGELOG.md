@@ -1,5 +1,22 @@
 # Nektron Moments Windows releases
 
+## [0.1.40] - 2026-09-23
+
+- Animate mouse thumb destinations through the same native scroll path as the
+  wheel. Preserve the native range, keyboard, paging, accessibility and touch;
+  freeze range growth during dragging and its settling animation.
+- Use a gesture-scoped low-latency GC policy to reduce blocking collection during
+  thumbnail warm-up, restoring the previous policy after drag/settle. Collection
+  remains enabled and thumbnail memory budgets are unchanged.
+- Isolate invalid AI output and unreadable/rejected photos in a persistent failed
+  bucket without stopping remaining photos. Never automatically retry uncertain
+  paid calls. Saved queues shows filenames and sanitized reasons.
+- Display exhausted API credits and other shared provider limits as actionable
+  pauses, retaining completed work instead of replacing the reason with a generic
+  failure. Keep monthly spending protection and account-wide stop conditions.
+- Add parallel failure-isolation, safe-resume, pause-message, drag-geometry and
+  native animation regressions. No paid AI requests are used by these tests.
+
 ## [0.1.39] - 2026-09-22
 
 - Model-row selection updates the beige cost card for the current allowance and

@@ -46,6 +46,15 @@ def test_windows_paths(source, expected):
     assert windows_path(source) == expected
 
 
+def test_activity_has_a_read_only_failed_photo_bucket(catalog):
+    with sqlite3.connect(catalog.state_path) as db:
+        db.execute('CREATE TABLE ByokAnalysis(JobId TEXT, TaskJson TEXT, State TEXT, ErrorCode TEXT)')
+        db.execute('INSERT INTO ByokAnalysis VALUES(?,?,?,?)', ('bad', json.dumps({'localLocator':'/mnt/d/Pictures/test.jpg'}), 'Uncertain', 'OpenAIInvalidResponse:MISSING_OUTPUT_TEXT'))
+    result = catalog.activity()
+    assert result['queues']['ByokAnalysis'] == {'Uncertain':1}
+    assert result['failedPhotos'] == [{'jobId':'bad', 'file':'test.jpg', 'state':'Uncertain', 'reason':'OpenAIInvalidResponse:MISSING_OUTPUT_TEXT'}]
+
+
 def test_saved_byok_description_is_visible_without_backend(catalog):
     with sqlite3.connect(catalog.state_path) as db:
         db.execute('CREATE TABLE ByokAnalysis(ContentHash TEXT,ResultJson TEXT,State TEXT)')

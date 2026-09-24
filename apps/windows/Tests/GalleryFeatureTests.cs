@@ -9,14 +9,36 @@ internal static class GalleryFeatureTests
         check(BrowsingPolicy.DisplayWarmCount(512, 8UL << 30) == 160 && BrowsingPolicy.DisplayWarmCount(64, 192UL << 30) == 64,
             "Display warming respects machine capacity and the available image budget");
         var refreshRequests = new List<bool>();
+        var originalGcMode = System.Runtime.GCSettings.LatencyMode;
         using (var refresh = new CompositorRefreshLease(enable => { refreshRequests.Add(enable); return 0; })) {
-            refresh.Begin(); refresh.Begin(); refresh.End(); refresh.End();
+            refresh.Begin(); refresh.Begin();
+            check(System.Runtime.GCSettings.LatencyMode == System.Runtime.GCLatencyMode.SustainedLowLatency, "Drag keeps GC enabled in low-latency mode");
+            refresh.End(); refresh.End();
+            check(System.Runtime.GCSettings.LatencyMode == originalGcMode, "Release restores the prior GC policy exactly");
             check(refreshRequests.SequenceEqual(new[] { true, false }), "High-refresh requests are balanced once per gesture");
         }
         using (var unavailable = new CompositorRefreshLease(_ => -1)) {
             unavailable.Begin(); check(!unavailable.IsHeld, "Unsupported high-refresh APIs degrade safely");
         }
+        check(System.Runtime.GCSettings.LatencyMode == originalGcMode, "Failed refresh boost still restores the GC gesture lease");
         var ai = AiProcessingOptions.Resolve(null);
+        check(ThumbDragTarget.Resolve(100, 20, 25, 1000, 100) == 150, "Thumb target uses absolute pointer distance, not stale animated offsets");
+        check(ThumbDragTarget.Resolve(100, 20, 15, 1000, 100) == 50, "Thumb reversal responds without cumulative drift");
+        check(ThumbDragTarget.Resolve(100, 20, 500, 1000, 100) == 1000 && ThumbDragTarget.Resolve(100, 20, -500, 1000, 100) == 0, "Captured pointer outside track clamps to endpoints");
+        check(ThumbDragTarget.Resolve(100, 20, 25, 1000, 0) == 0, "Zero travel cannot divide by zero");
+        var paused = new MetadataProgress(); paused.ConfigureSources(["Photos"], true); paused.Source("Photos", 1, 1);
+        paused.Report("BYOK analyzed · 15/100 descriptions completed · saved locally");
+        paused.Report("BYOK paused · OpenAICreditsExhausted (credit_balance_exhausted)");
+        paused.Finish(false, true);
+        check(paused.Snapshot.State == "Paused" && paused.Snapshot.Message.Contains("Add credits") && paused.Snapshot.Completed == 15,
+            "Account credit exhaustion is an actionable pause retaining completed counts");
+        check(paused.Snapshot.Operations[0].State == "Paused", "Source row distinguishes account pauses from failed photos");
+        var isolated = new MetadataProgress(); isolated.ConfigureSources(["Photos"], true); isolated.Source("Photos", 1, 1);
+        isolated.Report("BYOK failed photo · job · OpenAIInvalidResponse · saved in failed bucket; continuing");
+        check(isolated.Snapshot.Running, "One failed photo does not stop progress");
+        isolated.Report("BYOK analyzed · 19/20 descriptions completed · saved locally"); isolated.CompleteSource(); isolated.Finish(false, false);
+        check(isolated.Snapshot.State == "Complete" && isolated.Snapshot.Phase == "Complete with photo failures" && isolated.Snapshot.Message.Contains("Saved queues"),
+            "Completed run links isolated photo failures to their review bucket");
         check(AiProcessingOptions.EstimateComparison("gpt-5.6-luna", 10000) == 6.32m, "Luna comparison uses the current allowance");
         check(AiProcessingOptions.EstimateComparison("gpt-6-astra", 10000) == 306m, "Astra can be compared without enabling execution");
         check(AiProcessingOptions.EstimateComparison("gpt-6-astra", 10000, 2) == 612m, "Comparison respects source count");

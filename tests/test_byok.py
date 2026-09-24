@@ -182,6 +182,51 @@ def seed_jobs(r, count):
         r.journal.add('source',dict(jobId=f'job-{i}',localLocator=str(i),assetContentSha256='a'*64),'gpt-5.6-terra')
 
 
+@pytest.mark.parametrize('workers', [1, 8, 64])
+def test_bad_ai_output_is_quarantined_while_other_photos_finish(tmp_path, workers):
+    class MixedProvider(Provider):
+        def describe_bytes(self, value):
+            if value == b'0':
+                raise OpenAISceneDescriptionProvider._invalid_response('DESCRIPTION_FORMAT_INVALID')
+            return super().describe_bytes(value)
+    p = MixedProvider(); r = runner(tmp_path, Api(), p, workers=workers)
+    r.preview = lambda path: SimpleNamespace(content=path.encode(), source_sha256_hex='a'*64)
+    messages = []; r.progress = messages.append
+    seed_jobs(r, 20)
+    assert r.run(SimpleNamespace(source_id='source'), 20) == {'Synced':19, 'Uncertain':1}
+    assert not r.stop.is_set() and p.calls == 19
+    bad = r.journal.result_row('job-0')
+    assert bad['ErrorCode'] == 'OpenAIInvalidResponse:DESCRIPTION_FORMAT_INVALID'
+    assert Decimal(bad['CostUsd']) > 0  # Possibly billed: preserve the reservation.
+    assert any('failed bucket; continuing' in line for line in messages)
+    assert any('completed with failures' in line for line in messages)
+    resumed = runner(tmp_path, Api(), p, workers=workers)
+    resumed.api.claimed.add('already-prepared')
+    resumed.run(SimpleNamespace(source_id='source'), 20)
+    assert p.calls == 19  # Neither successes nor uncertain calls get billed again.
+
+
+def test_unreadable_photo_does_not_stop_later_photos(tmp_path):
+    p = Provider(); r = runner(tmp_path, Api(), p, workers=1)
+    def preview(path):
+        if path == '0': raise OSError('unreadable')
+        return SimpleNamespace(content=b'jpeg', source_sha256_hex='a'*64)
+    r.preview = preview; seed_jobs(r, 4)
+    assert r.run(SimpleNamespace(source_id='source'), 4) == {'NeedsAttention':1, 'Synced':3}
+    assert not r.stop.is_set() and p.calls == 3
+
+
+def test_credit_pause_leaves_unstarted_photos_ready(tmp_path):
+    class EmptyCreditProvider(Provider):
+        def describe_bytes(self, value):
+            self.calls += 1
+            OpenAISceneDescriptionProvider._raise_for_http_status(JsonHttpResponse(429, None, error_code='credit_balance_exhausted'))
+    p = EmptyCreditProvider(); r = runner(tmp_path, Api(), p, workers=1)
+    seed_jobs(r, 20)
+    assert r.run(SimpleNamespace(source_id='source'), 20) == {'Ready':20}
+    assert r.stop.is_set() and p.calls == 1
+
+
 def test_all_64_workers_can_be_in_flight_and_backend_is_serialized(tmp_path):
     import threading, time
     class CheckedApi(Api):

@@ -115,6 +115,7 @@ public sealed partial class MainPage
                     sizing.GetProperty("mutationsDuringDrag").GetInt64() != 0 ||
                     sizing.GetProperty("liveColumnCounts").GetArrayLength() < 3) errors.Add("Live thumbnail reflow regressed.");
                 var wideScrolling = await MeasureWideScrollingAsync(errors);
+                await MeasureAnimatedThumbMotionAsync(errors);
                 if (_pixelScroll.NativeScrollFallbacks != 0) errors.Add("Native wheel animation needed a fallback.");
                 var realized = Gallery.ItemsPanelRoot?.Children.Count ?? 0;
                 if (realized is <= 0 or > 1000) errors.Add("Gallery virtualization is not bounded.");
@@ -122,7 +123,7 @@ public sealed partial class MainPage
                 await File.WriteAllTextAsync(Path.Combine(output, "scroll.json"), JsonSerializer.Serialize(new {
                     passed = errors.Count == 0, errors, samples, originalRange,
                     itemCount = Gallery.Items.Count, realizedContainers = realized,
-                    nativeScrollbar = true, addedDragAnimation = false, deferredScrolling = scroll.IsDeferredScrollingEnabled,
+                    nativeScrollbar = true, addedDragAnimation = true, deferredScrolling = scroll.IsDeferredScrollingEnabled,
                     nativeInputWindows = _nativeWheel.RegisteredWindows,
                     nativeWheelSubmissions = _pixelScroll.NativeWheelSubmissions,
                     nativeWheelFallbacks = _pixelScroll.NativeWheelFallbacks,

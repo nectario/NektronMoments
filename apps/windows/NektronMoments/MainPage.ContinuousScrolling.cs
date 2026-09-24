@@ -7,6 +7,7 @@ public sealed partial class MainPage
     private bool _suspendingGalleryMotion;
     private void CancelScrollbarGesture()
     {
+        _animatedThumb?.Cancel();
         _scrollRefresh.End();
         if (GalleryThumb is { IsDragging: true } thumb) thumb.CancelDrag();
         Controls.MediaThumbnail.SetThumbInput(false);
@@ -19,9 +20,10 @@ public sealed partial class MainPage
     }
     private void GalleryMotionSettled()
     {
-        if (_pixelScroll is null || _pixelScroll.IsAnimating || GalleryThumb?.IsDragging == true ||
+        if (_pixelScroll is null || _pixelScroll.IsAnimating || _browseThumbTracking || GalleryThumb?.IsDragging == true ||
             Viewer.IsOpen || _suspendingGalleryMotion || _lifetime.IsCancellationRequested ||
             LibraryCanvas.Visibility != Visibility.Visible) return;
+        _scrollRefresh.End();
         QueueGalleryWork();
     }
 }

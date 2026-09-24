@@ -40,6 +40,7 @@ public sealed class PixelWheelScroller : IDisposable
     public ScrollViewer Scroll => _scroll;
     public bool IsAnimating => _rendering || _nativeActive;
     public bool IsWheelMotion => IsAnimating && _inputMode == InputMode.Wheel;
+    public bool ScrollbarInputActive { get; set; }
     public double Target => _nativeActive ? _nativeTarget : _usingGlide ? _glide.Target : _motion.Target;
     public bool NativeScrollbarAnimationEnabled => _nativeScrollbarAnimationEnabled;
     public bool NativeWheelAnimationEnabled => _nativeScrollbarAnimationEnabled;
@@ -76,6 +77,7 @@ public sealed class PixelWheelScroller : IDisposable
         // row/page wheel handling. Never add a second movement after a handled event.
         _content.PointerWheelChanged += WheelChanged;
         _pressed = (_, args) => {
+            if (ScrollbarInputActive) return;
             // The built-in bar owns its drag, paging and capture. A queued Stop
             // would otherwise overwrite the native target later in this turn.
             for (var node = args.OriginalSource as DependencyObject; node is not null && node != _scroll;

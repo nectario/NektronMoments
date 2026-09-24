@@ -13,6 +13,7 @@ public sealed partial class MainPage
     private readonly SemaphoreSlim _catalogGate = new(1);
     private PixelWheelScroller? _pixelScroll;
     private NativeGalleryWheelBridge? _nativeWheel;
+    private AnimatedThumbDrag? _animatedThumb;
     private readonly CompositorRefreshLease _scrollRefresh = new();
 
     private void GalleryLoaded(object sender, RoutedEventArgs e)
@@ -48,6 +49,19 @@ public sealed partial class MainPage
                 WheelDistance = UserPreferences.Number("wheelPixelsPerNotch", PixelScrollMotion.PixelsPerNotch),
             };
             _pixelScroll.Settled += GalleryMotionSettled;
+            if (_galleryThumb is { } nativeThumb && _galleryScrollbar is { } nativeBar) {
+                nativeThumb.ApplyTemplate();
+                if (Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(nativeThumb) > 0 &&
+                    Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(nativeThumb, 0) is FrameworkElement surface)
+                    _animatedThumb = new AnimatedThumbDrag(surface, nativeBar, nativeThumb, _pixelScroll, held => {
+                        _browseThumbTracking = held; MediaThumbnail.SetThumbInput(held);
+                        if (held) _scrollRefresh.Begin(); else {
+                            if (_pixelScroll?.IsAnimating != true) _scrollRefresh.End();
+                            QueueGalleryWork();
+                        }
+                        DiagnosticTrace.Thumb(held ? "AnimatedStart" : "AnimatedStop", scroll.VerticalOffset);
+                    });
+            }
             scroll.ViewChanged += (_, args) => {
                 MediaThumbnail.NotifyScrollInput();
                 QueueGalleryWork(); if (!args.IsIntermediate) GalleryMotionSettled();
@@ -102,14 +116,14 @@ public sealed partial class MainPage
     }
     private async void QueueGalleryWork()
     {
-        if (_galleryWorkQueued || _settingsOpen || !_ready || !UsesBrowseProjection || Viewer.IsOpen || _browseThumbTracking || _isThumbnailSizing || _reorderActive || _orderCommitActive ||
+        if (_galleryWorkQueued || _settingsOpen || !_ready || !UsesBrowseProjection || Viewer.IsOpen || _browseThumbTracking || _pixelScroll?.ActiveInputMode == "Scrollbar" || _isThumbnailSizing || _reorderActive || _orderCommitActive ||
             Items.Count == 0 || _lifetime.IsCancellationRequested) return;
         _galleryWorkQueued = true;
         var version = _browseVersion;
         var extended = false;
         try {
             await Task.Delay(100, _lifetime.Token);
-            if (!UsesBrowseProjection || Viewer.IsOpen || _browseThumbTracking || _isThumbnailSizing || _reorderActive || _orderCommitActive || version != _browseVersion) return;
+            if (!UsesBrowseProjection || Viewer.IsOpen || _browseThumbTracking || _pixelScroll?.ActiveInputMode == "Scrollbar" || _isThumbnailSizing || _reorderActive || _orderCommitActive || version != _browseVersion) return;
             ResizeGallery();
             if (Gallery.ItemsPanelRoot is ItemsWrapGrid panel) {
                 var first = Math.Max(0, panel.FirstVisibleIndex);
