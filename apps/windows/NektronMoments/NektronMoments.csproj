@@ -16,10 +16,10 @@
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <AssemblyTitle>Nektron Moments</AssemblyTitle>
     <Product>Nektron Moments</Product>
-    <Version>0.1.40</Version>
-    <AssemblyVersion>0.1.40.0</AssemblyVersion>
-    <FileVersion>0.1.40.0</FileVersion>
-    <InformationalVersion>0.1.40</InformationalVersion>
+    <Version>0.1.41</Version>
+    <AssemblyVersion>0.1.41.0</AssemblyVersion>
+    <FileVersion>0.1.41.0</FileVersion>
+    <InformationalVersion>0.1.41</InformationalVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 

@@ -23,6 +23,7 @@ public sealed partial class ProcessingWindow : Window
     private bool _setupReady;
     private bool _updatingSelection;
     private bool _updatingPricing;
+    private bool _logLayoutQueued;
     private string? _comparisonModelId;
     private int _setupSourceCount;
     private TaskCompletionSource<ProcessingSelection?>? _setup;
@@ -35,6 +36,27 @@ public sealed partial class ProcessingWindow : Window
     internal bool CurrentIndeterminate => PhaseBar.IsIndeterminate;
     internal string CurrentCountText => CountText.Text;
     internal bool StopEnabled => StopButton.IsEnabled;
+    private void LogLayoutChanged(object sender, SizeChangedEventArgs args)
+    {
+        if (_logLayoutQueued || _closing) return;
+        _logLayoutQueued = DispatcherQueue.TryEnqueue(() => {
+            _logLayoutQueued = false;
+            if (_closing || !ProcessingStack.IsLoaded || ProcessingBody.ActualHeight <= 0 || LogList.ActualHeight <= 0) return;
+            // Give all spare height to the log, after measuring the surrounding
+            // content (including wrapped pricing text and progress). A finite
+            // viewport retains ListView virtualization; small windows keep the
+            // three-row minimum and let the outer body scroll when needed.
+            // ScrollContentPresenter can arrange its StackPanel to the viewport
+            // height even when the content is shorter. Measure the children,
+            // not that stretched parent, so spare space is not counted twice.
+            var children = ProcessingStack.Children.OfType<FrameworkElement>().Where(child => child.Visibility == Visibility.Visible).ToArray();
+            var contentHeight = children.Sum(child => child.DesiredSize.Height) + ProcessingStack.Spacing * Math.Max(0, children.Length - 1);
+            var otherContent = contentHeight - LogViewportRow.Height.Value;
+            var height = Math.Max(96, Math.Floor(ProcessingBody.ActualHeight - otherContent));
+            if (Math.Abs(LogViewportRow.Height.Value - height) >= 1)
+                LogViewportRow.Height = new GridLength(height);
+        });
+    }
     public ProcessingWindow(Window owner, ElementTheme theme)
     {
         InitializeComponent();

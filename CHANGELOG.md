@@ -1,5 +1,13 @@
 # Nektron Moments Windows releases
 
+## [0.1.41] - 2026-09-24
+
+- Expand the processing activity log into available vertical space when its
+  window grows, and shrink it again on restore. Preserve fonts, row selection,
+  virtualization, progress indicators and footer actions; small windows retain
+  a three-row log viewport and accessible outer scrolling.
+- Add native resize/restore checks and an expanded processing-window capture.
+
 ## [0.1.40] - 2026-09-23
 
 - Animate mouse thumb destinations through the same native scroll path as the

@@ -39,8 +39,8 @@
   <TitleBar x:Name="ProcessingTitleBar" Title="Nektron Moments · Processing" Background="{ThemeResource MomentsTitlebarBrush}" Foreground="{ThemeResource MomentsTextBrush}">
    <TitleBar.IconSource><ImageIconSource ImageSource="{ThemeResource MomentsActivityImage}"/></TitleBar.IconSource>
   </TitleBar>
-  <Grid x:Name="ProcessingContent" Grid.Row="1" Padding="15"><Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><ScrollViewer x:Name="ProcessingBody" Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-   <StackPanel Margin="0" Spacing="4">
+  <Grid x:Name="ProcessingContent" Grid.Row="1" Padding="15"><Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><ScrollViewer x:Name="ProcessingBody" Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" VerticalContentAlignment="Top" SizeChanged="LogLayoutChanged">
+   <StackPanel x:Name="ProcessingStack" Margin="0" Spacing="4" SizeChanged="LogLayoutChanged">
     <Grid>
      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
      <StackPanel Spacing="5">
@@ -146,7 +146,7 @@
     <StackPanel Spacing="4">
      <Grid><TextBlock x:Name="LogHeading" Text="Activity log" Style="{StaticResource SectionTitle}"/><CheckBox x:Name="FollowLog" Content="Follow latest" IsChecked="True" HorizontalAlignment="Right"/></Grid>
      <Border CornerRadius="8" BorderBrush="{ThemeResource MomentsBorderBrush}" BorderThickness="1">
-      <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="96"/></Grid.RowDefinitions>
+      <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition x:Name="LogViewportRow" Height="96"/></Grid.RowDefinitions>
        <Grid Padding="12,4" Background="{ThemeResource MomentsSecondaryBrush}"><Grid.ColumnDefinitions><ColumnDefinition Width="88"/><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Text="Time"/><TextBlock Grid.Column="1" Text="Operation"/><TextBlock Grid.Column="2" Text="Description"/></Grid>
        <ListView x:Name="LogList" Grid.Row="1" SelectionMode="Extended" SelectionChanged="LogSelectionChanged" Background="{ThemeResource MomentsSurfaceBrush}">
         <ListView.ItemContainerTransitions><TransitionCollection/></ListView.ItemContainerTransitions>

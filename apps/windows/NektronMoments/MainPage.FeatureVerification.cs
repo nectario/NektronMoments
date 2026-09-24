@@ -236,6 +236,23 @@ public sealed partial class MainPage
                 await SaveFeatureImageAsync(referenceWindow.VisualRoot, Path.Combine(output, "processing-reference-light.png"));
                 var compactBody = AssetDescendants(referenceWindow.VisualRoot).OfType<ScrollViewer>().Single(control => control.Name == "ProcessingBody");
                 check(compactBody.ScrollableHeight <= 1, "The 20-percent-smaller processing window shows every section without outer scrolling");
+                var expandingLog = AssetDescendants(referenceWindow.VisualRoot).OfType<ListView>().Single(control => control.Name == "LogList");
+                var compactLogHeight = expandingLog.ActualHeight;
+                var compactViewportHeight = compactBody.ViewportHeight;
+                referenceWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32(1000, 1123));
+                await Task.Delay(300);
+                var extraHeight = compactBody.ViewportHeight - compactViewportHeight;
+                await File.WriteAllTextAsync(Path.Combine(output, "processing-log-layout.json"), System.Text.Json.JsonSerializer.Serialize(new {
+                    compactLogHeight, expandedLogHeight = expandingLog.ActualHeight, extraHeight,
+                    viewportHeight = compactBody.ViewportHeight, outerScrollableHeight = compactBody.ScrollableHeight,
+                }));
+                check(extraHeight > 20 && expandingLog.ActualHeight >= compactLogHeight + extraHeight - 2 && compactBody.ScrollableHeight <= 1,
+                    "The activity log absorbs extra window height without hiding progress or creating outer scrolling");
+                await SaveFeatureImageAsync(referenceWindow.VisualRoot, Path.Combine(output, "processing-expanded-log.png"));
+                referenceWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32(1000, 923));
+                await Task.Delay(300);
+                check(Math.Abs(expandingLog.ActualHeight - compactLogHeight) <= 2,
+                    "The activity log shrinks back with the processing window");
                 check(AssetDescendants(referenceWindow.VisualRoot).OfType<TextBlock>().Single(item => item.Name == "Heading").FontSize == 32,
                     "Compact processing retains the original heading font size");
                 var estimate = AssetDescendants(referenceWindow.VisualRoot).OfType<TextBlock>().Single(item => item.Name == "EstimateAmount");
