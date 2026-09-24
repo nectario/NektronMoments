@@ -58,6 +58,24 @@ class ByokJournal:
             db.execute('CREATE INDEX IF NOT EXISTS IX_Byok_ContentHash ON ByokAnalysis(ContentHash)')
             db.execute('CREATE INDEX IF NOT EXISTS IX_Byok_SourceState ON ByokAnalysis(SourceId,State)')
             db.execute('CREATE INDEX IF NOT EXISTS IX_Byok_MonthCost ON ByokAnalysis(UsageMonth,CostUsd)')
+            db.execute('''CREATE TABLE IF NOT EXISTS ByokPastAttempt (
+                AttemptId TEXT PRIMARY KEY, JobId TEXT NOT NULL, Model TEXT NOT NULL,
+                UsageMonth TEXT, CostUsd TEXT NOT NULL, ErrorCode TEXT)''')
+            db.execute('CREATE INDEX IF NOT EXISTS IX_ByokPast_Month ON ByokPastAttempt(UsageMonth)')
+
+    def requeue_failure(self, job, *, include_uncertain=False):
+        """Explicit retry only. Archive possibly billed attempts before resetting."""
+        allowed = ('NeedsAttention', 'Uncertain') if include_uncertain else ('NeedsAttention',)
+        with self.state._connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            row = db.execute('SELECT * FROM ByokAnalysis WHERE JobId=?', (job,)).fetchone()
+            if row is None or row['State'] not in allowed or row['ResultJson'] is not None:
+                return False
+            db.execute('INSERT INTO ByokPastAttempt VALUES(?,?,?,?,?,?)',
+                (str(uuid4()), job, row['Model'], row['UsageMonth'], row['CostUsd'], row['ErrorCode']))
+            # Keep the original claim: the server still recognizes this owner.
+            db.execute("UPDATE ByokAnalysis SET State='Ready',ErrorCode=NULL,UsageMonth=NULL,CostUsd='0' WHERE JobId=?", (job,))
+            return True
 
     def recover(self, source):
         with self.state._connect() as db:
@@ -89,6 +107,7 @@ class ByokJournal:
         with self.state._connect() as db:
             db.execute('BEGIN IMMEDIATE')
             total = sum((Decimal(row[0]) for row in db.execute('SELECT CostUsd FROM ByokAnalysis WHERE UsageMonth=?', (month,))), Decimal(0))
+            total += sum((Decimal(row[0]) for row in db.execute('SELECT CostUsd FROM ByokPastAttempt WHERE UsageMonth=?', (month,))), Decimal(0))
             if total + amount > cap:
                 return False
             db.execute("UPDATE ByokAnalysis SET State='Calling',UsageMonth=?,CostUsd=? WHERE JobId=? AND State='Ready'", (month, str(amount), job))
@@ -215,7 +234,7 @@ class ByokRunner:
         # sanitized codes, never image bytes, response text, credentials or URLs.
         self.events.put(f'BYOK failed photo · {row["JobId"]} · {reason} · saved in failed bucket; continuing')
 
-    def process(self, row):
+    def process(self, row, *, retry=False, include_uncertain=False):
         try:
             if self.stop.is_set():
                 return
@@ -231,6 +250,8 @@ class ByokRunner:
             if response['status'] == 'Succeeded':
                 self.journal.set(row['JobId'], 'Synced')
                 return
+            if retry and not self.journal.requeue_failure(row['JobId'], include_uncertain=include_uncertain):
+                return
             self.state.mark_description_skipped(row['JobId'], code='BYOK_DEVICE_OWNED',
                 message='Analysis is now owned by the direct BYOK workflow.')
             if self.analyze(row):
@@ -238,6 +259,37 @@ class ByokRunner:
         except BaseException:
             self.stop.set()
             raise
+
+    def retry_rows(self, rows, *, include_uncertain=False):
+        """Try each selected failure once, never discovering unrelated backlog."""
+        pending = set()
+        remaining = iter(rows)
+        exhausted = False
+        completed = 0
+        self.progress(f'BYOK retry · {len(rows):,} failed photos · original model {self.model}')
+        with self.worker_pool() as pool:
+            while pending or (not exhausted and not self.stop.is_set()):
+                while len(pending) < self.workers * 2 and not exhausted and not self.stop.is_set():
+                    row = next(remaining, None)
+                    if row is None:
+                        exhausted = True
+                    else:
+                        pending.add(pool.submit(self.process, row, retry=True, include_uncertain=include_uncertain))
+                if pending:
+                    done, pending = wait(pending, timeout=.25, return_when=FIRST_COMPLETED)
+                    for future in done:
+                        future.result()
+                        completed += 1
+                    if done:
+                        self.progress(f'BYOK retry · {completed:,}/{len(rows):,} selected photos checked')
+                while not self.events.empty():
+                    event = self.events.get_nowait()
+                    if event not in {'analyzed', 'synced'}:
+                        self.progress(event)
+        if self.stop.is_set():
+            self.progress(f'BYOK paused · {self.pause_reason or "STOPPED"} · completed results are saved')
+        else:
+            self.progress('BYOK retry finished · successful results saved; remaining failures stay in the failed bucket')
 
     def run(self, binding, limit):
         if not 1 <= limit <= 1_000_000:

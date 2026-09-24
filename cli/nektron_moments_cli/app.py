@@ -597,6 +597,37 @@ def _print_enrichment(summary: EnrichmentSummary) -> None:
     console.print(table)
 
 
+@app.command("retry-photos")
+def retry_photos(
+    source: Annotated[str, typer.Argument(help="Registered source name or ID.")],
+    include_uncertain: Annotated[bool, typer.Option(help="Explicitly accept possible duplicate charges for uncertain calls.")] = False,
+    limit: Annotated[int, typer.Option(min=1, max=10000)] = 10000,
+    no_input: Annotated[bool, typer.Option(help="The caller has confirmed these paid retries.")] = False,
+) -> None:
+    """Retry only saved failed photos, using their original models; no rescan."""
+    with command_errors(interrupt_message="Stopped. Completed retries are saved; interrupted calls require review."):
+        from .byok import ByokJournal, ByokRunner
+        runtime = _runtime()
+        binding = runtime.state.resolve_binding(source)
+        if not no_input and not typer.confirm("Retry failed photos using your OpenAI key? Additional API charges may apply" +
+                ("; uncertain calls may be charged again" if include_uncertain else "") + "."):
+            return
+        with runtime.state.source_sync_lock(binding.source_id):
+            journal = ByokJournal(runtime.state)
+            states = ('NeedsAttention', 'Uncertain') if include_uncertain else ('NeedsAttention',)
+            rows = journal.rows(binding.source_id, states, limit)
+            for model in dict.fromkeys(row['Model'] for row in rows):
+                runner = ByokRunner(runtime.api, runtime.state, _registered_device_id(runtime), model=model,
+                    progress=lambda message: console.print(escape(message)))
+                runner.retry_rows([row for row in rows if row['Model'] == model], include_uncertain=include_uncertain)
+                if runner.stop.is_set():
+                    _error("Retry paused. Completed results are saved.", ExitCode.PARTIAL_SYNC)
+            counts = journal.counts(binding.source_id)
+            failed = counts.get('NeedsAttention', 0) + counts.get('Uncertain', 0)
+            console.print(f"BYOK completed with failures · {failed:,} photos remain in the failed bucket" if failed else
+                "BYOK retry finished · no saved failed photos remain")
+
+
 @app.command("byok")
 def byok_analyze(
     source: Annotated[str | None, typer.Argument(help="Registered source name or ID.")] = None,

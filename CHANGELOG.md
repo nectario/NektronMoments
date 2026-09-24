@@ -1,5 +1,15 @@
 # Nektron Moments Windows releases
 
+## [0.1.42] - 2026-09-24
+
+- Add Retry failed photos to Saved queues. Uncertain calls require an explicit
+  duplicate-charge opt-in; active processing and empty buckets disable retry.
+- Retry only saved failures, once per pass, with original models and source
+  locking. No rescan or new backlog is included. Limits apply per source, up to
+  10,000 per retry pass; successful or unsynchronized results are not reanalyzed.
+- Preserve prior attempts and their potential costs in the monthly spending
+  ledger. Check server completion before repeating a paid request.
+
 ## [0.1.41] - 2026-09-24
 
 - Expand the processing activity log into available vertical space when its

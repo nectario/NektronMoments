@@ -31,6 +31,7 @@ public sealed record ProcessingSnapshot(string State, string Phase, string Messa
     public long LogSequence { get; init; }
     public double? ItemsPerSecond { get; init; }
     public bool EnrichmentEnabled { get; init; }
+    public bool RetryFailedPhotos { get; init; }
     public int CompletedSources => Operations.Count(operation => operation.State == "Complete");
     public double? OverallPercent => SourceCount > 0 ? 100d * CompletedSources / SourceCount : State == "Complete" ? 100 : null;
     public TimeSpan? PhaseRemaining => Running && ItemsPerSecond is > 0 && Total > 0 && Completed.HasValue
@@ -56,11 +57,11 @@ public sealed class MetadataProgress
     public ProcessingLogEntry[] LogAfter(long sequence, int maximum = 500) {
         lock (_gate) return _log.Where(entry => entry.Sequence > sequence).TakeLast(Math.Clamp(maximum, 1, 1000)).ToArray();
     }
-    public void ConfigureSources(IReadOnlyList<string> names, bool withEnrichment = false) {
+    public void ConfigureSources(IReadOnlyList<string> names, bool withEnrichment = false, bool retryFailedPhotos = false) {
         lock (_gate) {
-            _current = _current with { SourceCount = names.Count, EnrichmentEnabled = withEnrichment,
+            _current = _current with { SourceCount = names.Count, EnrichmentEnabled = withEnrichment, RetryFailedPhotos = retryFailedPhotos,
                 Operations = names.Select((name, index) => new ProcessingOperation(index + 1, name, "Waiting", "Not started", null, null)).ToArray() };
-            AddLog("Session", withEnrichment
+            AddLog("Session", retryFailedPhotos ? "Retrying saved failed photos only, with original models. No rescan or new-photo backlog. Additional API charges may apply." : withEnrichment
                 ? "Full processing started: file metadata plus bounded AI/address enrichment, including older pending photos. API charges may apply; quotas remain in effect."
                 : "Metadata processing started. Originals stay in place; no paid enrichment is enabled.");
         }

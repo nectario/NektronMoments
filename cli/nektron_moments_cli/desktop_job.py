@@ -9,6 +9,13 @@ from .sync import MAX_ENRICHMENT_RUN_LIMIT
 
 
 def permitted(arguments: list[str]) -> bool:
+    if len(arguments) in (5, 6) and arguments[0] == 'retry-photos':
+        try:
+            UUID(arguments[1]); limit = int(arguments[3])
+        except ValueError:
+            return False
+        return arguments[2] == '--limit' and 1 <= limit <= 10000 and arguments[4:] in (
+            ['--no-input'], ['--include-uncertain', '--no-input'])
     if len(arguments) in (5, 7, 9) and arguments[-2:] == ["--byok", "--no-input"]:
         return permitted(arguments[:-2] + ["--no-input"])
     if len(arguments) in (6, 8) and arguments[0] == "sync":

@@ -182,6 +182,100 @@ def seed_jobs(r, count):
         r.journal.add('source',dict(jobId=f'job-{i}',localLocator=str(i),assetContentSha256='a'*64),'gpt-5.6-terra')
 
 
+def test_retry_only_processes_selected_failures_without_discovering_backlog(tmp_path):
+    api = Api(); p = Provider(); r = runner(tmp_path, api, p, workers=2)
+    api.prepare_enrichment = lambda *a, **kw: pytest.fail('Retry must not discover new work')
+    seed_jobs(r, 4)
+    r.journal.set('job-0', 'NeedsAttention', 'PHOTO_UNREADABLE')
+    r.journal.set('job-1', 'Uncertain', 'OpenAIInvalidResponse')
+    r.journal.set('job-2', 'Synced')
+    r.retry_rows(r.journal.rows('source', ('NeedsAttention',)))
+    assert p.calls == 1
+    assert r.journal.counts('source') == {'Synced':2, 'Uncertain':1, 'Ready':1}
+
+
+def test_uncertain_retry_requires_opt_in_and_preserves_cost_and_claim(tmp_path):
+    r = runner(tmp_path, Api(), Provider()); seed_jobs(r, 1)
+    claim = r.journal.result_row('job-0')['ClaimId']
+    assert r.journal.reserve('job-0', Decimal('.01'), Decimal('230'))
+    r.journal.set('job-0', 'Uncertain', 'INTERRUPTED_CALL')
+    assert not r.journal.requeue_failure('job-0')
+    assert r.journal.requeue_failure('job-0', include_uncertain=True)
+    assert r.journal.result_row('job-0')['ClaimId'] == claim
+    assert not r.journal.reserve('job-0', Decimal('.01'), Decimal('.01'))
+    with r.state._connect() as db:
+        row = db.execute('SELECT * FROM ByokPastAttempt').fetchone()
+        assert row['CostUsd'] == '0.01' and row['ErrorCode'] == 'INTERRUPTED_CALL'
+    assert not r.journal.requeue_failure('job-0', include_uncertain=True)
+
+
+def test_failed_retry_is_attempted_once_and_remains_quarantined(tmp_path):
+    class BadProvider(Provider):
+        def describe_bytes(self, value):
+            self.calls += 1
+            raise OpenAISceneDescriptionProvider._invalid_response()
+    p = BadProvider(); r = runner(tmp_path, Api(), p); seed_jobs(r, 1)
+    r.journal.set('job-0', 'NeedsAttention', 'PHOTO_UNREADABLE')
+    r.retry_rows(r.journal.rows('source', ('NeedsAttention',)))
+    assert p.calls == 1 and r.journal.counts('source') == {'Uncertain':1}
+    assert not r.stop.is_set()
+
+
+def test_retry_checks_server_success_before_another_paid_call(tmp_path):
+    class CompletedApi(Api):
+        def request(self, *a, **kw): return {'status':'Succeeded'}
+    p = Provider(); r = runner(tmp_path, CompletedApi(), p); seed_jobs(r, 1)
+    r.journal.set('job-0', 'Uncertain', 'INTERRUPTED_CALL')
+    r.retry_rows(r.journal.rows('source', ('Uncertain',)), include_uncertain=True)
+    assert p.calls == 0 and r.journal.counts('source') == {'Synced':1}
+
+
+@pytest.mark.parametrize('state', ['Synced', 'ResultReady', 'Calling', 'Ready', 'Skipped'])
+def test_retry_never_resets_successes_or_active_work(tmp_path, state):
+    r = runner(tmp_path, Api(), Provider()); seed_jobs(r, 1)
+    r.journal.set('job-0', state)
+    assert not r.journal.requeue_failure('job-0', include_uncertain=True)
+
+
+def test_desktop_retry_command_is_strictly_allowlisted():
+    from cli.nektron_moments_cli.desktop_job import permitted
+    source = '10000000-0000-4000-8000-000000000001'
+    assert permitted(['retry-photos', source, '--limit', '10000', '--no-input'])
+    assert permitted(['retry-photos', source, '--limit', '64', '--include-uncertain', '--no-input'])
+    assert not permitted(['retry-photos', source, '--limit', '0', '--no-input'])
+    assert not permitted(['retry-photos', source, '--limit', '10001', '--no-input'])
+    assert not permitted(['retry-photos', source, '--limit', '64', '--force', '--no-input'])
+
+
+@pytest.mark.parametrize('uncertain', [False, True])
+def test_retry_cli_groups_original_models_and_leaves_new_work_alone(tmp_path, monkeypatch, uncertain):
+    import importlib
+    from typer.testing import CliRunner
+    app_module = importlib.import_module('cli.nektron_moments_cli.app')
+    byok_module = importlib.import_module('cli.nektron_moments_cli.byok')
+    api = Api(); p = Provider(); r = runner(tmp_path, api, p); seed_jobs(r, 4)
+    r.journal.set('job-0', 'NeedsAttention', 'PHOTO_UNREADABLE')
+    r.journal.set('job-1', 'Uncertain', 'OpenAIInvalidResponse')
+    r.journal.set('job-3', 'Synced')
+    with r.state._connect() as db: db.execute("UPDATE ByokAnalysis SET Model='gpt-5.6-luna' WHERE JobId='job-1'")
+    monkeypatch.setattr(r.state, 'resolve_binding', lambda _: SimpleNamespace(source_id='source'))
+    monkeypatch.setattr(app_module, '_runtime', lambda: SimpleNamespace(api=api, state=r.state))
+    monkeypatch.setattr(app_module, '_registered_device_id', lambda _: 'device')
+    models = []
+    def factory(api, state, device, **kwargs):
+        models.append(kwargs['model'])
+        return ByokRunner(api, state, device, provider=p, preview_factory=r.preview, workers=1, **kwargs)
+    monkeypatch.setattr(byok_module, 'ByokRunner', factory)
+    args = ['retry-photos', 'source', '--limit', '10', '--no-input']
+    if uncertain: args.append('--include-uncertain')
+    result = CliRunner().invoke(app_module.app, args)
+    assert result.exit_code == 0, result.output
+    assert models == (['gpt-5.6-terra', 'gpt-5.6-luna'] if uncertain else ['gpt-5.6-terra'])
+    assert p.calls == (2 if uncertain else 1)
+    assert r.journal.result_row('job-2')['State'] == 'Ready'
+    assert r.journal.result_row('job-3')['State'] == 'Synced'
+
+
 @pytest.mark.parametrize('workers', [1, 8, 64])
 def test_bad_ai_output_is_quarantined_while_other_photos_finish(tmp_path, workers):
     class MixedProvider(Provider):

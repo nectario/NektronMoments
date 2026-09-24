@@ -92,7 +92,7 @@ public sealed partial class ProcessingWindow : Window
         AiReadOnly.Visibility = ModelDisplay.Visibility = LimitDisplay.Visibility = Visibility.Visible;
         AiStateText.Text = model.Snapshot.EnrichmentEnabled ? "Enabled" : "Not included";
         AiStateIcon.Glyph = model.Snapshot.EnrichmentEnabled ? "\uE73E" : "\uE738";
-        ModelValue.Text = AiProcessingOptions.Models.Single(item => item.Id == _runOptions.Model).Label;
+        ModelValue.Text = model.Snapshot.RetryFailedPhotos ? "Original saved models" : AiProcessingOptions.Models.Single(item => item.Id == _runOptions.Model).Label;
         LimitValue.Text = _runOptions.Limit.ToString("N0");
         CatchUpButton.IsEnabled = false;
         HideButton.Content = "Hide"; HideButton.Style = StartButton.Style; SavedQueuesButton.IsEnabled = true;
@@ -152,7 +152,7 @@ public sealed partial class ProcessingWindow : Window
         var pricing = (options, sources, includeAi);
         if (_pricing == pricing) return; // Never rebuild the table for each worker log event.
         _pricing = pricing;
-        ModeBadge.Text = includeAi ? "Full" : "Metadata";
+        ModeBadge.Text = _model?.Snapshot.RetryFailedPhotos == true ? "Retry" : includeAi ? "Full" : "Metadata";
         var selectedPrice = PricingRows.SelectedIndex;
         _updatingPricing = true;
         try {
@@ -160,7 +160,7 @@ public sealed partial class ProcessingWindow : Window
             item.Id == "gpt-6-astra" ? item.Label : item.Label.Split(" — ")[0],
             "$" + item.InputRate.ToString("F2", CultureInfo.InvariantCulture),
             "$" + item.OutputRate.ToString("F2", CultureInfo.InvariantCulture),
-            includeAi && item.Id == options.Model ? Visibility.Visible : Visibility.Collapsed
+            includeAi && _model?.Snapshot.RetryFailedPhotos != true && item.Id == options.Model ? Visibility.Visible : Visibility.Collapsed
         )).ToArray();
         PricingRows.SelectedIndex = selectedPrice;
         } finally { _updatingPricing = false; }
@@ -185,6 +185,14 @@ public sealed partial class ProcessingWindow : Window
         var (options, sources, includeAi) = pricing;
         var modelId = _comparisonModelId ?? options.Model;
         var comparison = _comparisonModelId is not null;
+        if (_model?.Snapshot.RetryFailedPhotos == true && !comparison) {
+            ModeBadge.Text = "Retry";
+            EstimateHeading.Text = "Retry cost"; EstimateAmount.Text = "Varies";
+            EstimateCount.Text = "Original saved models · Additional API charges apply";
+            EstimateModel.Text = "Original saved models";
+            ToolTipService.SetToolTip(EstimateCard, "Only saved failures are retried. Prior charges or reservations remain recorded. Select a pricing row for an illustrative comparison.");
+            return;
+        }
         var amount = includeAi || comparison ? AiProcessingOptions.EstimateComparison(modelId, options.Limit, sources) : 0m;
         EstimateHeading.Text = comparison ? "AI cost comparison" : "Illustrative AI cost";
         EstimateAmount.Text = "$" + amount.ToString(amount is > 0 and < .01m ? "F4" : "N2", CultureInfo.InvariantCulture);
@@ -230,7 +238,7 @@ public sealed partial class ProcessingWindow : Window
         if (changed) {
             _painted = state;
             UpdatePricing(_runOptions, state.SourceCount, state.EnrichmentEnabled);
-            Heading.Text = state.Running ? "Processing photos" : state.Phase;
+            Heading.Text = state.Running ? state.RetryFailedPhotos ? "Retrying failed photos" : "Processing photos" : state.Phase;
             SessionText.Text = state.Source.Length > 0 ? state.Source + " · " + state.Phase : state.Message;
             PreserveSelection<ProcessingOperation>(OperationsList, () => Operations.ReplaceAll(state.Operations), item => item.Number);
             OverallText.Text = state.SourceCount > 0 ? $"{state.CompletedSources:N0} of {state.SourceCount:N0} sources complete" : state.State == "Complete" ? "Pass complete" : "Preparing source list";

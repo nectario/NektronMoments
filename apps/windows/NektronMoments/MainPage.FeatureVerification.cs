@@ -23,6 +23,28 @@ public sealed partial class MainPage
         var choiceBefore = _sortChoice; var sortBefore = _activeSort;
         var sizesBefore = _thumbnailSize;
         try {
+            var retryDialog = CreateFailedPhotoRetryDialog("Offline retry verification", 0, 3);
+            var retryChoice = ((StackPanel)retryDialog.Content).Children.OfType<CheckBox>().Single();
+            check(!retryChoice.IsChecked.GetValueOrDefault() && !retryDialog.IsPrimaryButtonEnabled,
+                "Uncertain paid calls are excluded from retry by default");
+            retryChoice.IsChecked = true;
+            check(retryDialog.IsPrimaryButtonEnabled, "Explicit duplicate-charge consent enables uncertain retries");
+            retryChoice.IsChecked = false;
+            check(!retryDialog.IsPrimaryButtonEnabled, "Removing duplicate-charge consent disables uncertain-only retry");
+            check(CreateFailedPhotoRetryDialog("Offline retry verification", 2, 3).IsPrimaryButtonEnabled,
+                "Ordinary failed photos can be retried without opting into uncertain calls");
+            check(!CreateFailedPhotoRetryDialog("Offline retry verification", 0, 0).IsPrimaryButtonEnabled,
+                "An empty failed bucket cannot start a retry job");
+            var importingBefore = _importing;
+            try {
+                _importing = true;
+                check(!CreateFailedPhotoRetryDialog("Offline retry verification", 2, 3).IsPrimaryButtonEnabled,
+                    "Retry cannot race an active processing job");
+            } finally { _importing = importingBefore; }
+            App.MainWindowInstance!.AppWindow.Show(); App.MainWindowInstance.Activate();
+            var retryPreview = retryDialog.ShowAsync().AsTask();
+            try { await Task.Delay(250); await SaveFeatureImageAsync((FrameworkElement)App.MainWindowInstance!.Content, Path.Combine(output, "retry-failed-photos.png")); }
+            finally { retryDialog.Hide(); await retryPreview; }
             _orderStore = new LibraryOrderStore(Path.Combine(output, "arrangements"));
             var items = Enumerable.Range(0, 1000).Select(index => new MediaItem {
                 Key = "feature-" + index, Name = $"Moment {index:0000}.png", Path = photoPath, Paths = [photoPath],
@@ -308,6 +330,10 @@ public sealed partial class MainPage
                 referenceWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32(760, 660));
                 await Task.Delay(200);
                 await SaveFeatureImageAsync(referenceWindow.VisualRoot, Path.Combine(output, "processing-reference-small.png"));
+                var retryProgress = new MetadataProgress(); retryProgress.ConfigureSources(["My Photos"], true, retryFailedPhotos: true);
+                referenceWindow.Show(retryProgress, true, ElementTheme.Light);
+                check(AssetDescendants(referenceWindow.VisualRoot).OfType<TextBlock>().Single(item => item.Name == "ModelValue").Text == "Original saved models" && estimate.Text == "Varies",
+                    "Retry progress does not misrepresent original mixed models as the current configured model or quote a misleading cost");
             } finally { referenceWindow.ClosePermanently(); }
             var model = _metadataProgress;
             var processingWindow = _processingWindow;

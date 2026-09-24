@@ -420,7 +420,11 @@ public sealed partial class MainPage : Page
                 lines.Add("");
             }
             lines.Add("Full startup mode can request paid AI/address enrichment, including older pending photos. Metadata-only mode does not. Originals remain on their source drive.");
-            await ShowDialogAsync("Saved queues", new ScrollViewer { MaxHeight = 540, Content = new TextBlock { Text = string.Join("\n", lines), IsTextSelectionEnabled = true, TextWrapping = TextWrapping.Wrap, MaxWidth = 680 } });
+            var byok = activity.GetProperty("queues").GetProperty("ByokAnalysis");
+            var failedCount = byok.TryGetProperty("NeedsAttention", out var failedValue) ? failedValue.GetInt32() : 0;
+            var uncertainCount = byok.TryGetProperty("Uncertain", out var uncertainValue) ? uncertainValue.GetInt32() : 0;
+            var choice = await ConfirmFailedPhotoRetryAsync(string.Join("\n", lines), failedCount, uncertainCount);
+            if (choice is { } includeUncertain) await RetryFailedPhotosAsync(includeUncertain);
         }
         catch (Exception ex) { ShowError(ex); }
     }
