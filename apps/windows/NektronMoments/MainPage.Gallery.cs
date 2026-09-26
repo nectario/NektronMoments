@@ -237,7 +237,6 @@ public sealed partial class MainPage
         CancelSelectionDetails();
         _selected = selected;
         _thumbnailPrefetch?.Cancel();
-        DetailsSplit.IsPaneOpen = false;
         CancelDisplayWarm();
         LibraryCanvas.Visibility = Visibility.Collapsed;
         await Viewer.OpenAsync(index, slideshow);
@@ -281,7 +280,8 @@ public sealed partial class MainPage
         if (ViewerOwnsKeys()) { args.Handled = true; await Viewer.MoveAsync(1); }
     }
     private async void ViewerPlayKey(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) {
-        if (ViewerOwnsKeys()) { args.Handled = true; await Viewer.ToggleSlideshowAsync(); }
+        // Space belongs to a focused button/checkbox (including the info toggle).
+        if (ViewerOwnsKeys() && FocusManager.GetFocusedElement(XamlRoot) is not ButtonBase) { args.Handled = true; await Viewer.ToggleSlideshowAsync(); }
     }
     private void FullScreenKey(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) {
         args.Handled = true; ToggleFullScreen();

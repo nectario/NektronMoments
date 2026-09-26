@@ -62,7 +62,10 @@ public sealed partial class MainPage
                     errors.Add($"{theme}: Activity must use the distinct branded list-and-clock icon.");
                 if (ToolTipService.GetToolTip(ActivityButton)?.ToString() != "View processing queues, progress, and items that need attention.")
                     errors.Add("Processing activity tooltip is missing or incorrect.");
-                CheckCommandSizes(RibbonBar, "ribbon", 24, 48, 9);
+                CheckCommandSizes(RibbonBar, "ribbon", 24, 48, 8);
+                if (DetailsToggle.Content is not ImageIcon info || Math.Abs(info.ActualWidth - 24) > 1 || Math.Abs(info.ActualHeight - 24) > 1 ||
+                    DetailsToggle.TransformToVisual(this).TransformPoint(new Windows.Foundation.Point()).X < ActualWidth - 90)
+                    errors.Add($"{theme}: the relocated info toggle must render its 24-pixel icon at the top-right.");
                 CheckCommandSizes(Viewer, "viewer", 24, 48, 5);
                 var icons = AssetDescendants(shell).OfType<ImageIcon>()
                     .Where(icon => icon.ActualWidth > 0 && icon.ActualHeight > 0 && icon.Visibility == Visibility.Visible).ToArray();

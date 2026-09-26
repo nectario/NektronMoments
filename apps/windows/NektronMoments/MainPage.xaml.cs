@@ -51,7 +51,14 @@ public sealed partial class MainPage : Page
         _controlsReady = true;
         Viewer.ItemAt = ItemAtAsync;
         Viewer.BackRequested += ReturnToGallery;
-        Viewer.ItemChanged += item => { CancelSelectionDetails(); _selected = item; };
+        Viewer.ItemChanged += async item => {
+            CancelSelectionDetails(); _selected = item;
+            if (DetailsSplit.IsPaneOpen) await LoadSelectedDetailsAsync(item);
+        };
+        DetailsSplit.RegisterPropertyChangedCallback(SplitView.IsPaneOpenProperty, (_, _) => {
+            DetailsToggle.IsChecked = DetailsSplit.IsPaneOpen;
+            if (!DetailsSplit.IsPaneOpen) CancelSelectionDetails();
+        });
         ActualThemeChanged += (_, _) => UpdateThemeChrome();
         ApplyThumbnailSize(UserPreferences.Number("thumbnailSize", 240), false);
         if (App.MainWindowInstance != null)

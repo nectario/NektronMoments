@@ -9,6 +9,7 @@ namespace NektronMoments;
 public sealed partial class MainPage
 {
     private CancellationTokenSource? _selectionDetails;
+    private Func<MediaItem, CancellationToken, Task<MediaDetail>>? _detailsForVerification;
 
     private void CancelSelectionDetails()
     {
@@ -43,9 +44,10 @@ public sealed partial class MainPage
         _selectionDetails = cancellation;
         FillDetails(item, null, "Loading indexed details…");
         bool IsCurrent() => !cancellation.IsCancellationRequested && selection == _selectionGeneration &&
-            library == _generation && _selected?.Key == item.Key && !Viewer.IsOpen && DetailsSplit.IsPaneOpen;
+            library == _generation && _selected?.Key == item.Key && DetailsSplit.IsPaneOpen;
         try {
-            var detail = await _bridge.CallAsync<MediaDetail>(new { command = "detail", key = item.Key }, cancellation.Token);
+            var detail = _detailsForVerification is { } fixture ? await fixture(item, cancellation.Token) :
+                await _bridge.CallAsync<MediaDetail>(new { command = "detail", key = item.Key }, cancellation.Token);
             if (IsCurrent()) {
                 // Metadata responses enrich the details pane, not the identity or
                 // original path chosen by the gallery click.

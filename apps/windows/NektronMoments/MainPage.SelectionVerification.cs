@@ -131,9 +131,42 @@ public sealed partial class MainPage
             await OpenCanvasAsync(false, Items[1]); await Task.Delay(220);
             Check(Viewer.HasPhoto && Viewer.UnavailableMessage is null,
                 "A valid photo opens normally after a missing or corrupt original");
+            _detailsForVerification = (item, _) => Task.FromResult(new MediaDetail { Item = new MediaItem {
+                Key = item.Key, Name = item.Name, Path = item.Path, MediaType = item.MediaType,
+                Captured = item.Captured, Description = "Indexed description " + item.Key, Address = "Fixture location",
+                Metadata = JsonSerializer.SerializeToElement(new { widthPixels = 96, heightPixels = 64 }),
+            }, Notice = "Generated details fixture" });
+            ToggleDetails(DetailsToggle, new RoutedEventArgs()); await Task.Delay(150);
+            Check(DetailsSplit.IsPaneOpen && DetailsToggle.IsChecked == true && DetailDescription.Text == "Indexed description " + Viewer.CurrentItemKey,
+                "The top-right info toggle opens indexed details for the expanded photo");
+            var infoPosition = DetailsToggle.TransformToVisual(this).TransformPoint(new Windows.Foundation.Point());
+            Check(infoPosition.X > ActualWidth - 90, "Photo info stays at the top-right of the ribbon");
+            await Viewer.MoveAsync(1); await Task.Delay(100);
+            Check(DetailDescription.Text == "Indexed description " + Viewer.CurrentItemKey,
+                "Open photo details follow viewer next-photo navigation");
+            ToggleFullScreen(); await Task.Delay(200);
+            Check(App.MainWindowInstance!.AppWindow.Presenter.Kind == Microsoft.UI.Windowing.AppWindowPresenterKind.FullScreen && DetailsSplit.IsPaneOpen && DetailsToggle.IsChecked == true,
+                "Photo information remains available in full-screen mode");
+            await CaptureAssetShellAsync((FrameworkElement)App.MainWindowInstance.Content, output, "viewer-info-fullscreen.png");
+            ToggleFullScreen();
+            ReturnToGallery(); await Task.Delay(100);
+            await OpenCanvasAsync(false, Items[1]); await Task.Delay(100);
+            Check(DetailsSplit.IsPaneOpen && DetailDescription.Text == "Indexed description " + Items[1].Key,
+                "Double-click canvas opening preserves an enabled information pane");
+            var oldDetails = new TaskCompletionSource<MediaDetail>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _detailsForVerification = (item, _) => item.Key == Items[1].Key ? oldDetails.Task : Task.FromResult(new MediaDetail { Item = item });
+            var oldRequest = LoadSelectedDetailsAsync(Items[1]);
+            await Viewer.MoveAsync(1);
+            oldDetails.SetResult(new MediaDetail { Item = Items[1] }); await oldRequest;
+            Check(DetailName.Text == Items[2].Name, "Late previous-photo metadata cannot overwrite the current viewer details");
+            CloseDetails(this, new RoutedEventArgs());
+            Check(!DetailsSplit.IsPaneOpen && DetailsToggle.IsChecked == false, "Closing photo details synchronizes the top-right toggle");
             await CaptureAssetShellAsync((FrameworkElement)App.MainWindowInstance!.Content, output, "selection-photo.png");
         } catch (Exception error) { errors.Add(error.ToString()); Progress("Managed failure: " + error); }
         finally {
+            _detailsForVerification = null;
+            DetailsSplit.IsPaneOpen = false;
+            if (App.MainWindowInstance!.AppWindow.Presenter.Kind == Microsoft.UI.Windowing.AppWindowPresenterKind.FullScreen) ToggleFullScreen();
             Progress("Restoring fixture preferences and gallery");
             Viewer.FileResolverForVerification = null;
             Viewer.SetAllowUpscale(upscaleBefore);

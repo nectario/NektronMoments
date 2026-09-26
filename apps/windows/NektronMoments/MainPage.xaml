@@ -109,9 +109,6 @@
             <AppBarButton Label="Open original" Click="OpenOriginal" ToolTipService.ToolTip="Open with the default application" LabelPosition="Collapsed">
                 <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsOpenImage}"/></AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton Label="Details" Click="ToggleDetails" ToolTipService.ToolTip="Show or hide photo details" LabelPosition="Collapsed">
-                <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsInfoImage}"/></AppBarButton.Icon>
-            </AppBarButton>
             <AppBarSeparator/>
             <AppBarButton x:Name="ThemeButton" Label="Light theme" Click="ChangeTheme" ToolTipService.ToolTip="Switch to dark theme" LabelPosition="Collapsed">
                 <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsThemeImage}"/></AppBarButton.Icon>
@@ -122,7 +119,8 @@
                 <AppBarButton.Icon><ImageIcon Width="24" Height="24" Source="{ThemeResource MomentsActivityImage}"/></AppBarButton.Icon>
             </AppBarButton>
         </CommandBar>
-        <StackPanel x:Name="ThumbnailSizePanel" Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+        <StackPanel x:Name="ThumbnailSizePanel" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
             <ComboBox x:Name="SizePreset" Width="105" SelectionChanged="SizePresetChanged" AutomationProperties.Name="Thumbnail size preset">
                 <ComboBoxItem Content="Small" Tag="144"/><ComboBoxItem Content="Medium" Tag="240"/>
                 <ComboBoxItem Content="Large" Tag="336"/><ComboBoxItem Content="X-large" Tag="432"/>
@@ -130,6 +128,11 @@
             </ComboBox>
             <Slider x:Name="ThumbnailSlider" Width="148" Minimum="112" Maximum="480" Value="240" StepFrequency="1" Loaded="ThumbnailSliderLoaded"
                     ValueChanged="ThumbnailSizeChanged" AutomationProperties.Name="Thumbnail size" ToolTipService.ToolTip="Adjust thumbnail size"/>
+        </StackPanel>
+        <ToggleButton x:Name="DetailsToggle" Width="40" Height="36" Padding="5" VerticalAlignment="Center" Click="ToggleDetails"
+            AutomationProperties.Name="Photo information" ToolTipService.ToolTip="Show or hide photo information, including in the photo viewer">
+            <ImageIcon Source="{ThemeResource MomentsInfoImage}" Width="24" Height="24"/>
+        </ToggleButton>
         </StackPanel>
         </Grid>
         <NavigationView x:Name="Navigation" Grid.Row="2" PaneDisplayMode="Auto"

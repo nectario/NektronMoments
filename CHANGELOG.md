@@ -1,5 +1,14 @@
 # Nektron Moments Windows releases
 
+## [0.1.43] - 2026-09-25
+
+- Move the photo-information toggle to the top-right of the ribbon, with its
+  selected state synchronized to the details pane and close/menu actions.
+- Preserve an open details pane when double-clicking into the photo viewer.
+  Indexed descriptions, locations and file details update during navigation and
+  remain available in full-screen mode, without accepting stale photo responses.
+- Add native viewer, full-screen, toggle-position and stale-metadata regressions.
+
 ## [0.1.42] - 2026-09-24
 
 - Add Retry failed photos to Saved queues. Uncertain calls require an explicit
